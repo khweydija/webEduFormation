@@ -18,7 +18,7 @@ class Sidebar extends StatelessWidget {
           Row(
             children: [
               Image.asset('assets/images/logo.png',
-                  height: 190, width: 200), // Placeholder for logo
+                  height: 200, width: 210), // Placeholder for logo
             ],
           ),
           _SidebarItem(

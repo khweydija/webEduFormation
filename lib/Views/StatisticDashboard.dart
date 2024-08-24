@@ -2,8 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:webpfe/Views/AppBar.dart';
 import 'package:webpfe/Views/Sidebar.dart';
-import 'package:webpfe/controllers/StatisticController.dart';
-// Path for the Sidebar file
+import 'package:webpfe/controllers/StatisticController.dart'; // Update with your actual path
 
 class StatisticsPage extends StatefulWidget {
   @override
@@ -57,7 +56,7 @@ class MainContent extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Color.fromARGB(255, 245, 244, 244),
-      appBar: CustomAppBar(),  // Add CustomAppBar here
+      appBar: CustomAppBar(), // Add CustomAppBar here
       body: Container(
         color: Color.fromARGB(255, 245, 244, 244),
         child: SingleChildScrollView(
@@ -66,22 +65,12 @@ class MainContent extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          'Statistics',
-                          style: TextStyle(
-                              fontSize: 24,
-                              fontWeight: FontWeight.bold,
-                              color: Color(0xFF228D6D)),
-                        ),
-                      ],
-                    ),
-                  ],
+                Text(
+                  'Statistics',
+                  style: TextStyle(
+                      fontSize: 24,
+                      fontWeight: FontWeight.bold,
+                      color: Color(0xFF228D6D)),
                 ),
                 SizedBox(height: 20),
                 Obx(() {
@@ -89,17 +78,20 @@ class MainContent extends StatelessWidget {
                     return Center(child: CircularProgressIndicator());
                   }
 
-                  return Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
+                  return Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                     children: [
-                      Text(
-                        'Total Employees: ${_statisticController.employeeCount.value}',
-                        style: TextStyle(fontSize: 18),
+                      _buildStatisticCard(
+                        icon: Icons.people_alt,
+                        label: 'Total des Employés',
+                        count: _statisticController.employeeCount.value,
+                        backgroundColor: Color(0xFFEAF8F4),
                       ),
-                      SizedBox(height: 10),
-                      Text(
-                        'Total Formateurs: ${_statisticController.formateurCount.value}',
-                        style: TextStyle(fontSize: 18),
+                      _buildStatisticCard(
+                        icon: Icons.school,
+                        label: 'Total des Formateurs',
+                        count: _statisticController.formateurCount.value,
+                        backgroundColor: Color(0xFFEAEFF8),
                       ),
                     ],
                   );
@@ -107,6 +99,56 @@ class MainContent extends StatelessWidget {
               ],
             ),
           ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildStatisticCard({
+    required IconData icon,
+    required String label,
+    required int count,
+    required Color backgroundColor,
+  }) {
+    return Card(
+      elevation: 4,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(15),
+      ),
+      child: Container(
+        width: 200,
+        padding: EdgeInsets.all(16),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            CircleAvatar(
+              radius: 30,
+              backgroundColor: backgroundColor,
+              child: Icon(
+                icon,
+                size: 40,
+                color: Colors.black87,
+              ),
+            ),
+            SizedBox(height: 16),
+            Text(
+              '$count',
+              style: TextStyle(
+                fontSize: 40,
+                fontWeight: FontWeight.bold,
+                color: Colors.black87,
+              ),
+            ),
+            SizedBox(height: 8),
+            Text(
+              label,
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                fontSize: 16,
+                color: Colors.black54,
+              ),
+            ),
+          ],
         ),
       ),
     );

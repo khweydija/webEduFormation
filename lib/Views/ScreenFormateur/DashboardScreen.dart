@@ -1,9 +1,7 @@
 import 'dart:io';
-import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:http/http.dart' as http;
 import 'package:webpfe/Views/AppBar.dart';
 import 'package:webpfe/Views/ScreenFormateur/SearchAndAdd.dart';
 import 'package:webpfe/Views/Sidebar.dart';
@@ -15,8 +13,7 @@ class AdminDashboard extends StatefulWidget {
 }
 
 class _AdminDashboardState extends State<AdminDashboard> {
-  final FormateurController _formateurController =
-      Get.put(FormateurController());
+  final FormateurController _formateurController = Get.put(FormateurController());
   int selectedIndex = 1;
 
   @override
@@ -62,7 +59,7 @@ class MainContent extends StatefulWidget {
 
 class _MainContentState extends State<MainContent> {
   final FormateurController _formateurController = Get.find();
-  XFile? _selectedPhoto;
+  XFile? _selectedPhotoForUpdate;
 
   @override
   Widget build(BuildContext context) {
@@ -126,8 +123,7 @@ class _MainContentState extends State<MainContent> {
                             DataColumn(label: Text('Status')),
                             DataColumn(label: Text('Action')),
                           ],
-                          rows:
-                              _formateurController.formateurs.map((formateur) {
+                          rows: _formateurController.formateurs.map((formateur) {
                             return DataRow(cells: [
                               DataCell(Text(formateur['nom'] ?? '')),
                               DataCell(Text(formateur['email'] ?? '')),
@@ -145,11 +141,19 @@ class _MainContentState extends State<MainContent> {
                                 ),
                               ),
                               DataCell(Switch(
-
-                                //splashRadius: 15,
-                                activeColor: (const Color.fromARGB(255, 48, 112, 101)),
-                                  value: formateur['active'],
-                                  onChanged: (Value) {})),
+                                activeColor: Color.fromARGB(255, 48, 112, 101),
+                                value: formateur['active'] ?? false,
+                                onChanged: (bool newValue) {
+                                  _formateurController.updateFormateur(
+                                    id: formateur['id'],
+                                    nom: formateur['nom'],
+                                    specialite: formateur['specialite'],
+                                    departement: formateur['departement'],
+                                    email: formateur['email'],
+                                    active: newValue, // Toggle active status
+                                  );
+                                },
+                              )),
                               DataCell(Row(
                                 children: [
                                   IconButton(
@@ -205,6 +209,8 @@ class _MainContentState extends State<MainContent> {
           }
 
           var details = _formateurController.formateurDetails;
+          bool isActive = details['active'] ?? false;  // Get active status from backend
+
           return Dialog(
             insetPadding: EdgeInsets.all(20),
             shape: RoundedRectangleBorder(
@@ -262,6 +268,28 @@ class _MainContentState extends State<MainContent> {
                                     InputDecoration(labelText: 'Email*'),
                                 readOnly: true,
                               ),
+                              SizedBox(height: 10),
+                              Row(
+                                children: [
+                                  Text('Active Status: '),
+                                  Switch(
+                                    activeColor: isActive
+                                        ? Color.fromARGB(255, 105, 156, 148)
+                                        : Colors.grey,  // Use specified color when active
+                                    value: isActive,  // Display the active status from the backend
+                                    onChanged: null,  // Read-only in details
+                                  ),
+                                  Text(
+                                    isActive ? "Active" : "Inactive",
+                                    style: TextStyle(
+                                      color: isActive
+                                          ? Color.fromARGB(255, 105, 156, 148)
+                                          : Colors.red,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                ],
+                              ),
                             ],
                           ),
                         ),
@@ -275,10 +303,8 @@ class _MainContentState extends State<MainContent> {
                           ),
                           child: details['photo'] != null &&
                                   details['photo'].isNotEmpty
-                              ? Image.network(details['photo'],
-                                  fit: BoxFit.cover)
-                              : Icon(Icons.person,
-                                  size: 100, color: Colors.grey),
+                              ? Image.network(details['photo'], fit: BoxFit.cover)
+                              : Icon(Icons.person, size: 100, color: Colors.grey),
                         ),
                       ],
                     ),
@@ -326,130 +352,145 @@ class _MainContentState extends State<MainContent> {
           final TextEditingController departementController =
               TextEditingController(text: details['departement'] ?? '');
 
-          XFile? _selectedPhotoForUpdate;
-
-          Future<void> _selectPhotoForUpdate() async {
-            final picker = ImagePicker();
-            final pickedFile =
-                await picker.pickImage(source: ImageSource.gallery);
-
-            if (pickedFile != null) {
-              setState(() {
-                _selectedPhotoForUpdate = pickedFile;
-              });
-            }
-          }
+          bool isActive = details['active'] ?? false;  // Use the correct active status from backend
 
           return Dialog(
             insetPadding: EdgeInsets.all(20),
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(15),
             ),
-            child: Container(
-              width: MediaQuery.of(context).size.width * 0.8,
-              padding: EdgeInsets.all(20),
-              child: SingleChildScrollView(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      'Modifier Formateur',
-                      style: TextStyle(
-                        fontSize: 24,
-                        fontWeight: FontWeight.bold,
-                        color: Color(0xFF228D6D),
-                      ),
-                    ),
-                    SizedBox(height: 20),
-                    Row(
+            child: StatefulBuilder(
+              builder: (BuildContext context, StateSetter setState) {
+                return Container(
+                  width: MediaQuery.of(context).size.width * 0.8,
+                  padding: EdgeInsets.all(20),
+                  child: SingleChildScrollView(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
+                        Text(
+                          'Modifier Formateur',
+                          style: TextStyle(
+                            fontSize: 24,
+                            fontWeight: FontWeight.bold,
+                            color: Color(0xFF228D6D),
+                          ),
+                        ),
+                        SizedBox(height: 20),
+                        Row(
+                          children: [
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  TextField(
+                                    controller: nomController,
+                                    decoration: InputDecoration(labelText: 'Nom*'),
+                                  ),
+                                  SizedBox(height: 10),
+                                  TextField(
+                                    controller: specialiteController,
+                                    decoration: InputDecoration(labelText: 'Spécialité*'),
+                                  ),
+                                  SizedBox(height: 10),
+                                  TextField(
+                                    controller: departementController,
+                                    decoration: InputDecoration(labelText: 'Departement*'),
+                                  ),
+                                  SizedBox(height: 10),
+                                  TextField(
+                                    controller: emailController,
+                                    decoration: InputDecoration(labelText: 'Email*'),
+                                  ),
+                                  SizedBox(height: 10),
+                                  Row(
+                                    children: [
+                                      Text('Active Status: '),
+                                      Switch(
+                                        activeColor: Color.fromARGB(255, 48, 112, 101),
+                                        value: isActive,  // Use the correct active status
+                                        onChanged: (bool newValue) {
+                                          setState(() {
+                                            isActive = newValue;  // Update the switch value
+                                          });
+                                        },
+                                      ),
+                                    ],
+                                  ),
+                                ],
+                              ),
+                            ),
+                            SizedBox(width: 20),
+                            Container(
+                              width: 150,
+                              height: 150,
+                              decoration: BoxDecoration(
+                                border: Border.all(color: Colors.grey),
+                                borderRadius: BorderRadius.circular(10),
+                              ),
+                              child: GestureDetector(
+                                onTap: () async {
+                                  final picker = ImagePicker();
+                                  final pickedFile = await picker.pickImage(source: ImageSource.gallery);
+                                  setState(() {
+                                    _selectedPhotoForUpdate = pickedFile;
+                                  });
+                                },
+                                child: _selectedPhotoForUpdate != null
+                                    ? Image.file(
+                                        File(_selectedPhotoForUpdate!.path),
+                                        fit: BoxFit.cover,
+                                        width: 100,
+                                        height: 100,
+                                      )
+                                    : (details['photo'] != null && details['photo'].isNotEmpty
+                                        ? Image.network(details['photo'], fit: BoxFit.cover, width: 100, height: 100)
+                                        : Icon(Icons.person, size: 100, color: Colors.grey)),
+                              ),
+                            ),
+                          ],
+                        ),
+                        SizedBox(height: 20),
+                        Align(
+                          alignment: Alignment.centerRight,
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.end,
                             children: [
-                              TextField(
-                                controller: nomController,
-                                decoration: InputDecoration(labelText: 'Nom*'),
+                              ElevatedButton(
+                                onPressed: () {
+                                  Navigator.of(context).pop();  // Close the dialog without saving changes
+                                },
+                                child: Text('Cancel'),
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor: Colors.red,  // Color for the cancel button
+                                ),
                               ),
-                              SizedBox(height: 10),
-                              TextField(
-                                controller: specialiteController,
-                                decoration:
-                                    InputDecoration(labelText: 'Spécialité*'),
-                              ),
-                              SizedBox(height: 10),
-                              TextField(
-                                controller: departementController,
-                                decoration:
-                                    InputDecoration(labelText: 'Departement*'),
-                              ),
-                              SizedBox(height: 10),
-                              TextField(
-                                controller: emailController,
-                                decoration:
-                                    InputDecoration(labelText: 'Email*'),
+                              SizedBox(width: 10),
+                              ElevatedButton(
+                                onPressed: () {
+                                  _formateurController.updateFormateur(
+                                    id: formateurId,
+                                    nom: nomController.text,
+                                    email: emailController.text,
+                                    specialite: specialiteController.text,
+                                    departement: departementController.text,
+                                    active: isActive,  // Pass the updated active status
+                                  );
+                                  Navigator.of(context).pop();
+                                },
+                                child: Text('Enregistrer'),
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor: Color(0xFF228D6D),
+                                ),
                               ),
                             ],
                           ),
                         ),
-                        SizedBox(width: 20),
-                        Container(
-                          width: 150,
-                          height: 150,
-                          decoration: BoxDecoration(
-                            border: Border.all(color: Colors.grey),
-                            borderRadius: BorderRadius.circular(10),
-                          ),
-                          child: GestureDetector(
-                            onTap: () async {
-                              await _selectPhotoForUpdate();
-                            },
-                            child: _selectedPhotoForUpdate != null
-                                ? Image.file(
-                                    File(_selectedPhotoForUpdate!.path),
-                                    fit: BoxFit.cover,
-                                    width: 100,
-                                    height: 100,
-                                  )
-                                : (details['photo'] != null &&
-                                        details['photo'].isNotEmpty
-                                    ? Image.network(details['photo'],
-                                        fit: BoxFit.cover,
-                                        width: 100,
-                                        height: 100)
-                                    : Icon(Icons.person,
-                                        size: 100, color: Colors.grey)),
-                          ),
-                        ),
                       ],
                     ),
-                    SizedBox(height: 20),
-                    Align(
-                      alignment: Alignment.centerRight,
-                      child: ElevatedButton(
-                        onPressed: () {
-                          _formateurController.updateFormateur(
-                            id: formateurId,
-                            nom: nomController.text,
-                            email: emailController.text,
-                            specialite: specialiteController.text,
-                            departement: departementController.text,
-                            photo: _selectedPhotoForUpdate != null
-                                ? File(_selectedPhotoForUpdate!.path)
-                                : null,
-                            active: true,
-                          );
-                          Navigator.of(context).pop();
-                        },
-                        child: Text('Enregistrer'),
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: Color(0xFF228D6D),
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
+                  ),
+                );
+              },
             ),
           );
         });
