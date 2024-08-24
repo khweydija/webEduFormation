@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:get/get_navigation/src/root/get_material_app.dart';
+import 'package:webpfe/Views/ScreenCatagories/DashboardCatagories.dart';
 
-import 'package:webpfe/Views/Dashboard/DashboardFormateur.dart';
+
 import 'package:webpfe/Views/ForgetScreen/ForgotPassAdmine.dart';
 import 'package:webpfe/Views/ForgetScreen/SetPasswordAdmin.dart';
 import 'package:webpfe/Views/LoginScreen/LoginAdmin.dart';
@@ -9,6 +10,9 @@ import 'package:webpfe/Views/LoginScreen/LoginAdmin.dart';
 
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:webpfe/Views/ScreenEmploye/AdminDashboardEmploye.dart';
+import 'package:webpfe/Views/ScreenFormateur/DashboardScreen.dart';
+import 'package:webpfe/Views/StatisticDashboard.dart';
 
 void main() async {
   // WidgetsFlutterBinding.ensureInitialized();
@@ -36,7 +40,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return GetMaterialApp(
       debugShowCheckedModeBanner: false,
-      home: AdminDashboard(),
+      home:AdminDashboard(),
     );
   }
 }

@@ -1,11 +1,13 @@
+import 'dart:io';
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:webpfe/Views/Dashboard/SearchAndAdd.dart';
-import 'package:webpfe/Views/Dashboard/Sidebar.dart';
-import 'package:webpfe/controllers/FormateurController/AffichageFController.dart';
-import 'package:webpfe/controllers/FormateurController/DeleteFController.dart';
-import 'package:webpfe/controllers/FormateurController/GetFDetailsController.dart';
-import 'package:webpfe/controllers/FormateurController/UpdateFController.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:http/http.dart' as http;
+import 'package:webpfe/Views/AppBar.dart';
+import 'package:webpfe/Views/ScreenFormateur/SearchAndAdd.dart';
+import 'package:webpfe/Views/Sidebar.dart';
+import 'package:webpfe/controllers/FormateurController.dart';
 
 class AdminDashboard extends StatefulWidget {
   @override
@@ -13,15 +15,14 @@ class AdminDashboard extends StatefulWidget {
 }
 
 class _AdminDashboardState extends State<AdminDashboard> {
-  final AffichageFController _affichageFController =
-      Get.put(AffichageFController());
-  int selectedIndex = 1; // Default selected index
+  final FormateurController _formateurController =
+      Get.put(FormateurController());
+  int selectedIndex = 1;
 
   @override
   void initState() {
     super.initState();
-    _affichageFController
-        .fetchFormateurs(); // Fetch formateurs when the dashboard loads
+    _formateurController.fetchAllFormateurs();
   }
 
   void onItemSelected(int index) {
@@ -33,8 +34,7 @@ class _AdminDashboardState extends State<AdminDashboard> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Color.fromARGB(
-          255, 245, 244, 244), // Background color for the entire screen
+      backgroundColor: Color.fromARGB(255, 245, 244, 244),
       body: LayoutBuilder(
         builder: (context, constraints) {
           return Row(
@@ -43,7 +43,7 @@ class _AdminDashboardState extends State<AdminDashboard> {
                 Sidebar(
                   selectedIndex: selectedIndex,
                   onItemSelected: onItemSelected,
-                ), // Sidebar inherits the same background color
+                ),
               Expanded(
                 child: MainContent(),
               ),
@@ -55,63 +55,22 @@ class _AdminDashboardState extends State<AdminDashboard> {
   }
 }
 
-class MainContent extends StatelessWidget {
-  final AffichageFController _affichageFController = Get.find();
-  final DeleteFormateurController _deleteFormateurController =
-      Get.put(DeleteFormateurController());
-  final GetFormateurDetailsController _getFormateurDetailsController =
-      Get.put(GetFormateurDetailsController());
-  final UpdateFController _updateFormateurController =
-      Get.put(UpdateFController());
+class MainContent extends StatefulWidget {
+  @override
+  _MainContentState createState() => _MainContentState();
+}
+
+class _MainContentState extends State<MainContent> {
+  final FormateurController _formateurController = Get.find();
+  XFile? _selectedPhoto;
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Color.fromARGB(
-          255, 245, 244, 244), // Background color for the content area
-      appBar: AppBar(
-        backgroundColor: Color.fromARGB(
-            255, 245, 244, 244), // Background color for the app bar
-        elevation: 0, // Removes the shadow under the AppBar
-        title: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  'Hello Admin',
-                  style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
-                ),
-                Text(
-                  'Have a nice day',
-                  style: TextStyle(fontSize: 16, color: Colors.grey),
-                ),
-              ],
-            ),
-            Row(
-              children: [
-                IconButton(
-                  icon: Icon(Icons.notifications),
-                  onPressed: () {},
-                ),
-                CircleAvatar(
-                    // backgroundImage: AssetImage('assets/profile.jpg'), // Replace with your image
-                    ),
-                SizedBox(width: 10),
-                Text(
-                  'M. Inam',
-                  style: TextStyle(fontWeight: FontWeight.bold),
-                ),
-                Icon(Icons.arrow_drop_down),
-              ],
-            ),
-          ],
-        ),
-      ),
+      backgroundColor: Color.fromARGB(255, 245, 244, 244),
+      appBar: CustomAppBar(),
       body: Container(
-        color: Color.fromARGB(
-            255, 245, 244, 244), // Background color for the content area
+        color: Color.fromARGB(255, 245, 244, 244),
         child: SingleChildScrollView(
           child: Padding(
             padding: EdgeInsets.all(20),
@@ -139,7 +98,7 @@ class MainContent extends StatelessWidget {
                 SearchAndAdd(),
                 SizedBox(height: 20),
                 Obx(() {
-                  if (_affichageFController.formateurs.isEmpty) {
+                  if (_formateurController.formateurs.isEmpty) {
                     return Center(child: CircularProgressIndicator());
                   } else {
                     return Container(
@@ -164,40 +123,37 @@ class MainContent extends StatelessWidget {
                             DataColumn(label: Text('Spécialité')),
                             DataColumn(label: Text('Departement')),
                             DataColumn(label: Text('Photo')),
-                            DataColumn(label: Text('Create Date')),
                             DataColumn(label: Text('Status')),
                             DataColumn(label: Text('Action')),
                           ],
                           rows:
-                              _affichageFController.formateurs.map((formateur) {
+                              _formateurController.formateurs.map((formateur) {
                             return DataRow(cells: [
                               DataCell(Text(formateur['nom'] ?? '')),
                               DataCell(Text(formateur['email'] ?? '')),
                               DataCell(Text(formateur['specialite'] ?? '')),
                               DataCell(Text(formateur['departement'] ?? '')),
                               DataCell(
-                                formateur['photo'] != null &&
-                                        formateur['photo'].isNotEmpty
-                                    ? Image.network(
-                                        formateur['photo'],
-                                        width: 100,
-                                        height: 100,
-                                        errorBuilder:
-                                            (context, error, stackTrace) {
-                                          print(error);
-                                          return Icon(Icons.error,
-                                              color: Colors.red);
-                                        },
-                                      )
-                                    : Icon(Icons.person,
-                                        size: 50, color: Colors.grey),
+                                CircleAvatar(
+                                  radius: 50,
+                                  backgroundImage: formateur['photo'] != null &&
+                                          formateur['photo'].isNotEmpty
+                                      ? NetworkImage(formateur['photo'])
+                                      : AssetImage('assets/default-avatar.png')
+                                          as ImageProvider,
+                                  backgroundColor: Colors.transparent,
+                                ),
                               ),
-                              DataCell(Text(formateur['createDate'] ?? '')),
-                              DataCell(Text(formateur['status'] ?? '')),
+                              DataCell(Switch(
+
+                                //splashRadius: 15,
+                                activeColor: (const Color.fromARGB(255, 48, 112, 101)),
+                                  value: formateur['active'],
+                                  onChanged: (Value) {})),
                               DataCell(Row(
                                 children: [
                                   IconButton(
-                                    icon: Icon(Icons.visibility,
+                                    icon: const Icon(Icons.visibility,
                                         color: Color(0xFF00352C)),
                                     onPressed: () {
                                       _showFormateurDetailsDialog(
@@ -205,7 +161,7 @@ class MainContent extends StatelessWidget {
                                     },
                                   ),
                                   IconButton(
-                                    icon: Icon(Icons.edit,
+                                    icon: const Icon(Icons.edit,
                                         color: Color(0xFF00352C)),
                                     onPressed: () {
                                       _showUpdateFormateurDialog(
@@ -213,7 +169,7 @@ class MainContent extends StatelessWidget {
                                     },
                                   ),
                                   IconButton(
-                                    icon: Icon(Icons.delete,
+                                    icon: const Icon(Icons.delete,
                                         color: Color(0xFF00352C)),
                                     onPressed: () {
                                       _showDeleteConfirmationDialog(context,
@@ -238,17 +194,17 @@ class MainContent extends StatelessWidget {
   }
 
   void _showFormateurDetailsDialog(BuildContext context, int formateurId) {
-    _getFormateurDetailsController.getFormateurDetails(formateurId);
+    _formateurController.getFormateurDetails(formateurId);
 
     showDialog(
       context: context,
       builder: (BuildContext context) {
         return Obx(() {
-          if (_getFormateurDetailsController.isLoading.value) {
+          if (_formateurController.isLoading.value) {
             return Center(child: CircularProgressIndicator());
           }
 
-          var details = _getFormateurDetailsController.formateurDetails;
+          var details = _formateurController.formateurDetails;
           return Dialog(
             insetPadding: EdgeInsets.all(20),
             shape: RoundedRectangleBorder(
@@ -319,8 +275,7 @@ class MainContent extends StatelessWidget {
                           ),
                           child: details['photo'] != null &&
                                   details['photo'].isNotEmpty
-                              ? Image.network(
-                                  'http://localhost:8080/' + details['photo'],
+                              ? Image.network(details['photo'],
                                   fit: BoxFit.cover)
                               : Icon(Icons.person,
                                   size: 100, color: Colors.grey),
@@ -351,30 +306,39 @@ class MainContent extends StatelessWidget {
   }
 
   void _showUpdateFormateurDialog(BuildContext context, int formateurId) {
-    _getFormateurDetailsController.getFormateurDetails(formateurId);
+    _formateurController.getFormateurDetails(formateurId);
 
     showDialog(
       context: context,
       builder: (BuildContext context) {
         return Obx(() {
-          if (_getFormateurDetailsController.isLoading.value) {
+          if (_formateurController.isLoading.value) {
             return Center(child: CircularProgressIndicator());
           }
 
-          var details = _getFormateurDetailsController.formateurDetails;
+          var details = _formateurController.formateurDetails;
           final TextEditingController nomController =
               TextEditingController(text: details['nom'] ?? '');
           final TextEditingController emailController =
               TextEditingController(text: details['email'] ?? '');
-          final TextEditingController passwordController =
-              TextEditingController();
           final TextEditingController specialiteController =
               TextEditingController(text: details['specialite'] ?? '');
           final TextEditingController departementController =
               TextEditingController(text: details['departement'] ?? '');
-          final TextEditingController confirmPasswordController =
-              TextEditingController();
-          String? selectedPhotoPath;
+
+          XFile? _selectedPhotoForUpdate;
+
+          Future<void> _selectPhotoForUpdate() async {
+            final picker = ImagePicker();
+            final pickedFile =
+                await picker.pickImage(source: ImageSource.gallery);
+
+            if (pickedFile != null) {
+              setState(() {
+                _selectedPhotoForUpdate = pickedFile;
+              });
+            }
+          }
 
           return Dialog(
             insetPadding: EdgeInsets.all(20),
@@ -425,20 +389,6 @@ class MainContent extends StatelessWidget {
                                 decoration:
                                     InputDecoration(labelText: 'Email*'),
                               ),
-                              SizedBox(height: 10),
-                              TextField(
-                                controller: passwordController,
-                                decoration:
-                                    InputDecoration(labelText: 'Password*'),
-                                obscureText: true,
-                              ),
-                              SizedBox(height: 10),
-                              TextField(
-                                controller: confirmPasswordController,
-                                decoration: InputDecoration(
-                                    labelText: 'Confirm Password*'),
-                                obscureText: true,
-                              ),
                             ],
                           ),
                         ),
@@ -452,18 +402,23 @@ class MainContent extends StatelessWidget {
                           ),
                           child: GestureDetector(
                             onTap: () async {
-                              // Implement photo selection here
-                              // Once selected, set `selectedPhotoPath`
-                              selectedPhotoPath =
-                                  await _selectPhoto(); // Example method, needs implementation
+                              await _selectPhotoForUpdate();
                             },
-                            child: details['photo'] != null &&
-                                    details['photo'].isNotEmpty
-                                ? Image.network(
-                                    'http://localhost:8080/' + details['photo'],
-                                    fit: BoxFit.cover)
-                                : Icon(Icons.person,
-                                    size: 100, color: Colors.grey),
+                            child: _selectedPhotoForUpdate != null
+                                ? Image.file(
+                                    File(_selectedPhotoForUpdate!.path),
+                                    fit: BoxFit.cover,
+                                    width: 100,
+                                    height: 100,
+                                  )
+                                : (details['photo'] != null &&
+                                        details['photo'].isNotEmpty
+                                    ? Image.network(details['photo'],
+                                        fit: BoxFit.cover,
+                                        width: 100,
+                                        height: 100)
+                                    : Icon(Icons.person,
+                                        size: 100, color: Colors.grey)),
                           ),
                         ),
                       ],
@@ -473,21 +428,18 @@ class MainContent extends StatelessWidget {
                       alignment: Alignment.centerRight,
                       child: ElevatedButton(
                         onPressed: () {
-                          if (passwordController.text ==
-                              confirmPasswordController.text) {
-                            _updateFormateurController.updateFormateur(
-                              id: formateurId,
-                              nom: nomController.text,
-                              email: emailController.text,
-                              password: passwordController.text,
-                              specialite: specialiteController.text,
-                              departement: departementController.text,
-                              photoPath: selectedPhotoPath,
-                            );
-                            Navigator.of(context).pop();
-                          } else {
-                            Get.snackbar('Error', 'Passwords do not match');
-                          }
+                          _formateurController.updateFormateur(
+                            id: formateurId,
+                            nom: nomController.text,
+                            email: emailController.text,
+                            specialite: specialiteController.text,
+                            departement: departementController.text,
+                            photo: _selectedPhotoForUpdate != null
+                                ? File(_selectedPhotoForUpdate!.path)
+                                : null,
+                            active: true,
+                          );
+                          Navigator.of(context).pop();
                         },
                         child: Text('Enregistrer'),
                         style: ElevatedButton.styleFrom(
@@ -505,12 +457,6 @@ class MainContent extends StatelessWidget {
     );
   }
 
-  Future<String?> _selectPhoto() async {
-    // Implement this method to select a photo from the device
-    // Return the path of the selected photo
-    return null; // Placeholder implementation
-  }
-
   void _showDeleteConfirmationDialog(
       BuildContext context, int formateurId, String formateurEmail) {
     showDialog(
@@ -523,16 +469,15 @@ class MainContent extends StatelessWidget {
           actions: [
             TextButton(
               onPressed: () {
-                Navigator.of(context).pop(); // Close the dialog
+                Navigator.of(context).pop();
               },
               child: Text('No'),
             ),
             ElevatedButton(
               onPressed: () {
-                _deleteFormateurController.deleteFormateur(formateurId);
-                _affichageFController
-                    .fetchFormateurs(); // Refresh the list after deletion
-                Navigator.of(context).pop(); // Close the dialog
+                _formateurController.deleteFormateur(formateurId);
+                _formateurController.fetchAllFormateurs();
+                Navigator.of(context).pop();
               },
               child: Text('Yes'),
               style: ElevatedButton.styleFrom(
