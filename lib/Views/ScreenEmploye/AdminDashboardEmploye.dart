@@ -212,6 +212,39 @@ class _MainContentState extends State<MainContent> {
     );
   }
 
+  void _showDeleteConfirmationDialog(
+      BuildContext context, int employeId, String employeEmail) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('Confirm Deletion'),
+          content: Text(
+              'Are you sure you want to delete the employee with email $employeEmail?'),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              child: Text('No'),
+            ),
+            ElevatedButton(
+              onPressed: () {
+                _employeController.deleteEmploye(employeId);
+                _employeController.fetchAllEmployes();
+                Navigator.of(context).pop();
+              },
+              child: Text('Yes'),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Color.fromARGB(255, 23, 134, 116),
+              ),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
   void _showEmployeDetailsDialog(BuildContext context, int employeId) {
     _employeController.getEmployeById(employeId);
 
@@ -239,7 +272,7 @@ class _MainContentState extends State<MainContent> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      'Details de l\'Employé',
+                      'Détails de l\'Employé',
                       style: TextStyle(
                         fontSize: 24,
                         fontWeight: FontWeight.bold,
@@ -272,7 +305,7 @@ class _MainContentState extends State<MainContent> {
                                 controller: TextEditingController(
                                     text: details['departement'] ?? ''),
                                 decoration:
-                                    InputDecoration(labelText: 'Departement*'),
+                                    InputDecoration(labelText: 'Département*'),
                                 readOnly: true,
                               ),
                               SizedBox(height: 10),
@@ -310,8 +343,7 @@ class _MainContentState extends State<MainContent> {
                           ),
                           child: details['photo'] != null &&
                                   details['photo'].isNotEmpty
-                              ? Image.network(details['photo'],
-                                  fit: BoxFit.cover)
+                              ? Image.network(details['photo'], fit: BoxFit.cover)
                               : Icon(Icons.person,
                                   size: 100, color: Colors.grey),
                         ),
@@ -375,6 +407,7 @@ class _MainContentState extends State<MainContent> {
           final TextEditingController departementController =
               TextEditingController(text: details['departement'] ?? '');
           bool isActive = details['active'] ?? false;
+          String? password;
 
           return Dialog(
             insetPadding: EdgeInsets.all(20),
@@ -423,6 +456,18 @@ class _MainContentState extends State<MainContent> {
                                         InputDecoration(labelText: 'Email*'),
                                   ),
                                   SizedBox(height: 10),
+                                  TextField(
+                                    obscureText: true,
+                                    onChanged: (value) {
+                                      password = value;
+                                    },
+                                    decoration: InputDecoration(
+                                      labelText: 'Password',
+                                      helperText:
+                                          'Leave blank if you do not want to change the password',
+                                    ),
+                                  ),
+                                  SizedBox(height: 10),
                                   Row(
                                     children: [
                                       Text('Active Status: '),
@@ -468,18 +513,30 @@ class _MainContentState extends State<MainContent> {
                           onTap: () async {
                             _selectDiplome();
                           },
-                          child: Container(
-                            width: 150,
-                            height: 50,
-                            color: Colors.blueAccent,
-                            child: Center(
-                              child: Text(
-                                _selectedDiplome != null
-                                    ? 'Diplôme Selected'
-                                    : 'Select Diplôme',
-                                style: TextStyle(color: Colors.white),
-                              ),
-                            ),
+                          child: Center(
+                            child: _selectedDiplome == null
+                                ? Column(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      Icon(Icons.file_present,
+                                          color: Colors.grey.shade600,
+                                          size: 40),
+                                      SizedBox(height: 10),
+                                      Text(
+                                        'Tap to select a diplome (PDF)',
+                                        style: TextStyle(
+                                          color: Colors.grey.shade600,
+                                          fontSize: 16,
+                                        ),
+                                      ),
+                                    ],
+                                  )
+                                : Column(
+                                    children: [
+                                      Icon(Icons.file_present, size: 50),
+                                      Text(_selectedDiplome!.name),
+                                    ],
+                                  ),
                           ),
                         ),
                         SizedBox(height: 20),
@@ -493,6 +550,9 @@ class _MainContentState extends State<MainContent> {
                                 nom: nomController.text,
                                 departement: departementController.text,
                                 active: isActive,
+                                password: password != null && password!.isEmpty
+                                    ? null
+                                    : password,
                                 photo: _selectedPhoto != null
                                     ? File(_selectedPhoto!.path)
                                     : null,
@@ -516,39 +576,6 @@ class _MainContentState extends State<MainContent> {
             ),
           );
         });
-      },
-    );
-  }
-
-  void _showDeleteConfirmationDialog(
-      BuildContext context, int employeId, String employeEmail) {
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: Text('Confirm Deletion'),
-          content: Text(
-              'Are you sure you want to delete the employee with email $employeEmail?'),
-          actions: [
-            TextButton(
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-              child: Text('No'),
-            ),
-            ElevatedButton(
-              onPressed: () {
-                _employeController.deleteEmploye(employeId);
-                _employeController.fetchAllEmployes();
-                Navigator.of(context).pop();
-              },
-              child: Text('Yes'),
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Color.fromARGB(255, 23, 134, 116),
-              ),
-            ),
-          ],
-        );
       },
     );
   }

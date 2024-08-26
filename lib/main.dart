@@ -35,7 +35,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return GetMaterialApp(
       debugShowCheckedModeBanner: false,
-      initialRoute: AppRoutes.adminDashboardFormateur,
+      initialRoute: AppRoutes.loginAdmin,
       getPages: [
         GetPage(name: AppRoutes.loginAdmin, page: () => LoginAdmin()),
         GetPage(name: AppRoutes.statisticsPage, page: () => StatisticsPage()),
