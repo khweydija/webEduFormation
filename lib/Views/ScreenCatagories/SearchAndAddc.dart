@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:webpfe/controllers/catagoriesController.dart';
 
-
 class SearchAndAddc extends StatefulWidget {
   @override
   _SearchAndAddState createState() => _SearchAndAddState();
@@ -20,13 +19,20 @@ class _SearchAndAddState extends State<SearchAndAddc> {
   void _submitCategory() async {
     if (_formKey.currentState?.validate() ?? false) {
       try {
-        await _categorieController.createCategorie(
-          _descriptionController.text,
-          _designationController.text,
-        );
+        bool isDuplicate = _categorieController.categories.any((category) =>
+            category['designation'] == _designationController.text);
 
-        // Close the dialog on success
-        Navigator.of(context).pop();
+        if (isDuplicate) {
+          Get.snackbar('Error', 'Designation already exists');
+        } else {
+          await _categorieController.createCategorie(
+            _descriptionController.text,
+            _designationController.text,
+          );
+          // Close the dialog on success
+          Navigator.of(context).pop();
+          Get.snackbar('Success', 'Category created successfully');
+        }
       } catch (e) {
         Get.snackbar('Error', 'Failed to create category');
       }
@@ -69,20 +75,7 @@ class _SearchAndAddState extends State<SearchAndAddc> {
                       ],
                     ),
                     SizedBox(height: 20),
-                    TextFormField(
-                      controller: _descriptionController,
-                      decoration: InputDecoration(
-                        labelText: 'Description*',
-                        border: OutlineInputBorder(),
-                      ),
-                      validator: (value) {
-                        if (value == null || value.isEmpty) {
-                          return 'Please enter the description';
-                        }
-                        return null;
-                      },
-                    ),
-                    SizedBox(height: 10),
+                    // Designation TextField comes first
                     TextFormField(
                       controller: _designationController,
                       decoration: InputDecoration(
@@ -92,6 +85,21 @@ class _SearchAndAddState extends State<SearchAndAddc> {
                       validator: (value) {
                         if (value == null || value.isEmpty) {
                           return 'Please enter the designation';
+                        }
+                        return null;
+                      },
+                    ),
+                    SizedBox(height: 10),
+                    // Description TextField comes after
+                    TextFormField(
+                      controller: _descriptionController,
+                      decoration: InputDecoration(
+                        labelText: 'Description*',
+                        border: OutlineInputBorder(),
+                      ),
+                      validator: (value) {
+                        if (value == null || value.isEmpty) {
+                          return 'Please enter the description';
                         }
                         return null;
                       },
@@ -184,7 +192,6 @@ class _SearchAndAddState extends State<SearchAndAddc> {
                 ),
               ],
             ),
-            // Additional content or result listing goes here
           ],
         );
       },

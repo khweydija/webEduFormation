@@ -1,14 +1,17 @@
 import 'dart:convert';
+import 'dart:io';
 import 'dart:typed_data';
 import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
 import 'package:url_launcher/url_launcher.dart'; // For opening URLs
 
 class EmployeController extends GetxController {
-  final String apiUrl = 'http://localhost:8080/employes'; // Base URL for employees
+  final String apiUrl =
+      'http://localhost:8080/employes'; // Base URL for employees
 
   var employes = [].obs; // List to store all employees
-  var filteredEmployes = [].obs; // List to store filtered employees based on search query
+  var filteredEmployes =
+      [].obs; // List to store filtered employees based on search query
   var employeDetails = {}.obs; // Store specific employee details
   var isLoading = false.obs; // To manage loading state for details
   var selectedEmploye = {}.obs; // To store a selected employee's details
@@ -25,13 +28,16 @@ class EmployeController extends GetxController {
     required String diplomeFilename,
   }) async {
     try {
-      var request = http.MultipartRequest('POST', Uri.parse('$apiUrl/create/employe'))
-        ..fields['email'] = email
-        ..fields['password'] = password
-        ..fields['nom'] = nom
-        ..fields['departement'] = departement
-        ..files.add(http.MultipartFile.fromBytes('photo', photoBytes, filename: photoFilename))
-        ..files.add(http.MultipartFile.fromBytes('diplome', diplomeBytes, filename: diplomeFilename));
+      var request =
+          http.MultipartRequest('POST', Uri.parse('$apiUrl/create/employe'))
+            ..fields['email'] = email
+            ..fields['password'] = password
+            ..fields['nom'] = nom
+            ..fields['departement'] = departement
+            ..files.add(http.MultipartFile.fromBytes('photo', photoBytes,
+                filename: photoFilename))
+            ..files.add(http.MultipartFile.fromBytes('diplome', diplomeBytes,
+                filename: diplomeFilename));
 
       var response = await request.send();
       return response;
@@ -49,7 +55,8 @@ class EmployeController extends GetxController {
       if (response.statusCode == 200) {
         List data = json.decode(response.body);
         employes.assignAll(data);
-        filteredEmployes.assignAll(data); // Initially set filtered list to all employees
+        filteredEmployes
+            .assignAll(data); // Initially set filtered list to all employees
       } else {
         Get.snackbar('Error', 'Failed to load employees');
       }
@@ -82,35 +89,37 @@ class EmployeController extends GetxController {
     required String nom,
     required String departement,
     required bool active,
-    String? password,
-    Uint8List? photoBytes, // Optional photo file bytes
-    Uint8List? diplomeBytes, // Optional diplome file bytes
-    String? photoFilename,
-    String? diplomeFilename,
+    String? password, // Optional password
+    File? photo, // Optional photo file
+    File? diplome, // Optional diplome file
   }) async {
     try {
-      var request = http.MultipartRequest('PUT', Uri.parse('$apiUrl/update/$id'))
-        ..fields['email'] = email
-        ..fields['nom'] = nom
-        ..fields['departement'] = departement
-        ..fields['active'] = active.toString();
+      var request =
+          http.MultipartRequest('PUT', Uri.parse('$apiUrl/update/$id'))
+            ..fields['email'] = email
+            ..fields['nom'] = nom
+            ..fields['departement'] = departement
+            ..fields['password'] = "hhhhhh"
+            ..fields['active'] = active.toString();
 
-      if (password != null && password.isNotEmpty) {
-        request.fields['password'] = password;
+      // Send file without worrying about the filename
+      if (photo != null) {
+        request.files
+            .add(await http.MultipartFile.fromPath('photo', photo.path));
       }
 
-      if (photoBytes != null && photoFilename != null) {
-        request.files.add(http.MultipartFile.fromBytes('photo', photoBytes, filename: photoFilename));
-      }
-
-      if (diplomeBytes != null && diplomeFilename != null) {
-        request.files.add(http.MultipartFile.fromBytes('diplome', diplomeBytes, filename: diplomeFilename));
+      if (diplome != null) {
+        request.files
+            .add(await http.MultipartFile.fromPath('diplome', diplome.path));
       }
 
       var response = await request.send();
+      var responseBody = await http.Response.fromStream(response);
+      print(responseBody.body); // Print the response body
+
       if (response.statusCode == 200) {
         Get.snackbar('Success', 'Employee updated successfully');
-        fetchAllEmployes(); // Refresh list after update
+        fetchAllEmployes(); // Refresh the employee list after update
       } else {
         Get.snackbar('Error', 'Failed to update employee');
       }
@@ -137,7 +146,8 @@ class EmployeController extends GetxController {
   // Search employees by query (name, email, or department)
   void searchEmploye(String query) {
     if (query.isEmpty) {
-      filteredEmployes.assignAll(employes); // Show all employees if query is empty
+      filteredEmployes
+          .assignAll(employes); // Show all employees if query is empty
     } else {
       filteredEmployes.assignAll(employes.where((employe) {
         var name = employe['nom'].toLowerCase();

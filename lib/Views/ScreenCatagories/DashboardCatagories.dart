@@ -5,15 +5,13 @@ import 'package:webpfe/Views/ScreenCatagories/SearchAndAddc.dart';
 import 'package:webpfe/Views/Sidebar.dart';
 import 'package:webpfe/controllers/catagoriesController.dart';
 
-
-class AdminDashboardC extends StatefulWidget {
+class AdminDashboardCatagorie extends StatefulWidget {
   @override
   _AdminDashboardState createState() => _AdminDashboardState();
 }
 
-class _AdminDashboardState extends State<AdminDashboardC> {
-  final CategorieController _categorieController =
-      Get.put(CategorieController());
+class _AdminDashboardState extends State<AdminDashboardCatagorie> {
+  final CategorieController _categorieController = Get.put(CategorieController());
   int selectedIndex = 3;
 
   @override
@@ -59,7 +57,7 @@ class MainContent extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Color.fromARGB(255, 245, 244, 244),
-      appBar:CustomAppBar(),
+      appBar: CustomAppBar(),
       body: Container(
         color: Color.fromARGB(255, 245, 244, 244),
         child: SingleChildScrollView(
@@ -109,16 +107,16 @@ class MainContent extends StatelessWidget {
                       child: SingleChildScrollView(
                         scrollDirection: Axis.horizontal,
                         child: DataTable(
-                          columnSpacing: 12,
+                          columnSpacing: 200,
                           columns: [
+                            DataColumn(label: Text('Designation')), // Designation column first
                             DataColumn(label: Text('Description')),
-                            DataColumn(label: Text('Designation')),
                             DataColumn(label: Text('Action')),
                           ],
                           rows: _categorieController.categories.map((categorie) {
                             return DataRow(cells: [
+                              DataCell(Text(categorie['designation'] ?? '')),  // Designation first
                               DataCell(Text(categorie['description'] ?? '')),
-                              DataCell(Text(categorie['designation'] ?? '')),
                               DataCell(Row(
                                 children: [
                                   IconButton(
@@ -173,8 +171,10 @@ class MainContent extends StatelessWidget {
               borderRadius: BorderRadius.circular(15),
             ),
             child: Container(
+              width: MediaQuery.of(context).size.width * 0.6, // Adjust dialog width
               padding: EdgeInsets.all(20),
               child: Column(
+                mainAxisSize: MainAxisSize.min, // Minimized height
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
@@ -188,15 +188,15 @@ class MainContent extends StatelessWidget {
                   SizedBox(height: 20),
                   TextField(
                     controller: TextEditingController(
-                        text: details['description'] ?? ''),
-                    decoration: InputDecoration(labelText: 'Description'),
+                        text: details['designation'] ?? ''),  // Designation first
+                    decoration: InputDecoration(labelText: 'Designation'),
                     readOnly: true,
                   ),
                   SizedBox(height: 10),
                   TextField(
                     controller: TextEditingController(
-                        text: details['designation'] ?? ''),
-                    decoration: InputDecoration(labelText: 'Designation'),
+                        text: details['description'] ?? ''),
+                    decoration: InputDecoration(labelText: 'Description'),
                     readOnly: true,
                   ),
                   SizedBox(height: 20),
@@ -232,10 +232,10 @@ class MainContent extends StatelessWidget {
           }
 
           var details = _categorieController.categorieDetails;
+          final TextEditingController designationController =
+              TextEditingController(text: details['designation'] ?? '');  // Designation first
           final TextEditingController descriptionController =
               TextEditingController(text: details['description'] ?? '');
-          final TextEditingController designationController =
-              TextEditingController(text: details['designation'] ?? '');
 
           return Dialog(
             insetPadding: EdgeInsets.all(20),
@@ -243,8 +243,10 @@ class MainContent extends StatelessWidget {
               borderRadius: BorderRadius.circular(15),
             ),
             child: Container(
+              width: MediaQuery.of(context).size.width * 0.6, // Adjust dialog width
               padding: EdgeInsets.all(20),
               child: Column(
+                mainAxisSize: MainAxisSize.min, // Minimized height
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
@@ -256,32 +258,61 @@ class MainContent extends StatelessWidget {
                     ),
                   ),
                   SizedBox(height: 20),
-                  TextField(
-                    controller: descriptionController,
-                    decoration: InputDecoration(labelText: 'Description*'),
-                  ),
-                  SizedBox(height: 10),
+                  // Designation first
                   TextField(
                     controller: designationController,
                     decoration: InputDecoration(labelText: 'Designation*'),
                   ),
+                  SizedBox(height: 10),
+                  TextField(
+                    controller: descriptionController,
+                    decoration: InputDecoration(labelText: 'Description*'),
+                  ),
                   SizedBox(height: 20),
-                  Align(
-                    alignment: Alignment.centerRight,
-                    child: ElevatedButton(
-                      onPressed: () {
-                        _categorieController.updateCategorie(
-                          categorieId,
-                          descriptionController.text,
-                          designationController.text,
-                        );
-                        Navigator.of(context).pop();
-                      },
-                      child: Text('Enregistrer'),
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Color(0xFF228D6D),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    children: [
+                      ElevatedButton(
+                        onPressed: () {
+                          // Only update if there is a change
+                          if (designationController.text != details['designation'] ||
+                              descriptionController.text != details['description']) {
+                            _categorieController.updateCategorie(
+                              categorieId,
+                              descriptionController.text,
+                              designationController.text,
+                            ).then((_) {
+                              // Avoid 'Designation exists' check if the designation is unchanged
+                              if (designationController.text != details['designation'] &&
+                                  _categorieController.categories.any((cat) =>
+                                      cat['designation'] == designationController.text)) {
+                                Get.snackbar('Error', 'Designation already exists');
+                              } else {
+                                Get.snackbar('Success', 'Category updated successfully');
+                                Navigator.of(context).pop();
+                              }
+                            });
+                          } else {
+                            Get.snackbar('Info', 'No changes detected');
+                            Navigator.of(context).pop(); // Close the dialog
+                          }
+                        },
+                        child: Text('Enregistrer'),
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Color(0xFF228D6D),
+                        ),
                       ),
-                    ),
+                      SizedBox(width: 10),
+                      TextButton(
+                        onPressed: () {
+                          Navigator.of(context).pop();
+                        },
+                        child: Text('Cancel'),
+                        style: TextButton.styleFrom(
+                          foregroundColor: Colors.grey,
+                        ),
+                      ),
+                    ],
                   ),
                 ],
               ),
@@ -317,6 +348,74 @@ class MainContent extends StatelessWidget {
               ),
             ),
           ],
+        );
+      },
+    );
+  }
+
+  void _showCreateCategorieDialog(BuildContext context) {
+    final TextEditingController designationController = TextEditingController();  // Designation first
+    final TextEditingController descriptionController = TextEditingController();
+
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return Dialog(
+          insetPadding: EdgeInsets.all(20),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(15),
+          ),
+          child: Container(
+            padding: EdgeInsets.all(20),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'Créer Catégorie',
+                  style: TextStyle(
+                    fontSize: 24,
+                    fontWeight: FontWeight.bold,
+                    color: Color(0xFF228D6D),
+                  ),
+                ),
+                SizedBox(height: 20),
+                // Designation first
+                TextField(
+                  controller: designationController,
+                  decoration: InputDecoration(labelText: 'Designation*'),
+                ),
+                SizedBox(height: 10),
+                TextField(
+                  controller: descriptionController,
+                  decoration: InputDecoration(labelText: 'Description*'),
+                ),
+                SizedBox(height: 20),
+                Align(
+                  alignment: Alignment.centerRight,
+                  child: ElevatedButton(
+                    onPressed: () {
+                      _categorieController.createCategorie(
+                        descriptionController.text,
+                        designationController.text,
+                      ).then((_) {
+                        if (_categorieController.categories.any((cat) =>
+                            cat['designation'] == designationController.text)) {
+                          Get.snackbar('Error', 'Designation already exists');
+                        } else {
+                          Get.snackbar('Success', 'Category created successfully');
+                          Navigator.of(context).pop();
+                        }
+                      });
+                    },
+                    child: Text('Créer'),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Color(0xFF228D6D),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
         );
       },
     );

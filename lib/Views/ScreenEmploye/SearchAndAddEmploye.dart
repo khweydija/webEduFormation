@@ -24,6 +24,7 @@ class _SearchAndAddEmployeState extends State<SearchAndAddEmploye> {
   html.File? _selectedDiplome;
   String? _photoUrl;
   String? _diplomeUrl;
+  Uint8List? _photoBytes; // Store the selected image as Uint8List for preview
   bool _isPasswordVisible = false;
 
   // Picking a photo (image)
@@ -37,7 +38,7 @@ class _SearchAndAddEmployeState extends State<SearchAndAddEmploye> {
       PlatformFile file = result.files.first;
       setState(() {
         _selectedPhoto = html.File([file.bytes!], file.name);
-        _photoUrl = html.Url.createObjectUrl(_selectedPhoto!);
+        _photoBytes = file.bytes; // Save the photo bytes for preview
       });
     }
   }
@@ -115,10 +116,11 @@ class _SearchAndAddEmployeState extends State<SearchAndAddEmploye> {
     _passwordController.clear();
     _confirmPasswordController.clear();
     setState(() {
-      _photoUrl = null;
-      _diplomeUrl = null;
+      _photoBytes = null;
       _selectedPhoto = null;
       _selectedDiplome = null;
+      _photoUrl = null;
+      _diplomeUrl = null;
     });
   }
 
@@ -154,7 +156,7 @@ class _SearchAndAddEmployeState extends State<SearchAndAddEmploye> {
                 ElevatedButton.icon(
                   onPressed: _showAddEmployeDialog, // Add employee dialog
                   icon: Icon(Icons.add, color: Colors.white),
-                  label: Text('Add Employee', style: TextStyle(color: Colors.white)),
+                  label: Text('Ajouter Employee', style: TextStyle(color: Colors.white)),
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Color(0xFF228D6D),
                     shape: RoundedRectangleBorder(
@@ -207,12 +209,9 @@ class _SearchAndAddEmployeState extends State<SearchAndAddEmploye> {
                     SizedBox(height: 20),
                     LayoutBuilder(
                       builder: (context, constraints) {
-                        bool isWideScreen = constraints.maxWidth > 600;
-
                         return Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            // Name and Department
                             Row(
                               children: [
                                 Expanded(
@@ -356,7 +355,7 @@ class _SearchAndAddEmployeState extends State<SearchAndAddEmploye> {
                                         ],
                                       ),
                                       child: Center(
-                                        child: _photoUrl == null
+                                        child: _photoBytes == null
                                             ? Column(
                                                 mainAxisAlignment: MainAxisAlignment.center,
                                                 children: [
@@ -371,8 +370,8 @@ class _SearchAndAddEmployeState extends State<SearchAndAddEmploye> {
                                                   ),
                                                 ],
                                               )
-                                            : Image.network(
-                                                _photoUrl!,
+                                            : Image.memory(
+                                                _photoBytes!,
                                                 height: 150,
                                                 fit: BoxFit.cover,
                                               ),

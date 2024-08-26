@@ -5,7 +5,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:webpfe/Views/AppBar.dart';
 import 'package:webpfe/Views/ScreenEmploye/SearchAndAddEmploye.dart';
 import 'package:webpfe/Views/Sidebar.dart';
-import 'package:webpfe/controllers/EmployeController.dart'; 
+import 'package:webpfe/controllers/EmployeController.dart';
 
 class AdminDashboardEmploye extends StatefulWidget {
   @override
@@ -60,6 +60,7 @@ class MainContent extends StatefulWidget {
 class _MainContentState extends State<MainContent> {
   final EmployeController _employeController = Get.find();
   XFile? _selectedPhoto;
+  XFile? _selectedDiplome;
 
   @override
   Widget build(BuildContext context) {
@@ -113,13 +114,14 @@ class _MainContentState extends State<MainContent> {
                       child: SingleChildScrollView(
                         scrollDirection: Axis.horizontal,
                         child: DataTable(
-                          columnSpacing: 12,
+                          columnSpacing: 16,
                           columns: [
                             DataColumn(label: Text('Nom')),
                             DataColumn(label: Text('Email')),
                             DataColumn(label: Text('Departement')),
                             DataColumn(label: Text('Photo')),
                             DataColumn(label: Text('Diplome')),
+                            DataColumn(label: Text('Status')),
                             DataColumn(label: Text('Action')),
                           ],
                           rows: _employeController.employes.map((employe) {
@@ -129,47 +131,68 @@ class _MainContentState extends State<MainContent> {
                               DataCell(Text(employe['departement'] ?? '')),
                               DataCell(
                                 CircleAvatar(
-                                  radius: 50,
-                                  backgroundImage: employe['photo'] != null && employe['photo'].isNotEmpty
+                                  radius: 30,
+                                  backgroundImage: employe['photo'] != null &&
+                                          employe['photo'].isNotEmpty
                                       ? NetworkImage(employe['photo'])
-                                      : AssetImage('assets/default-avatar.png') as ImageProvider,
+                                      : AssetImage('assets/default-avatar.png')
+                                          as ImageProvider,
                                   backgroundColor: Colors.transparent,
                                 ),
                               ),
                               DataCell(
-                                employe['diplome'] != null && employe['diplome'].isNotEmpty
-                                    ? InkWell(
-                                        onTap: () {
-                                          String encodedUrl = Uri.encodeFull(employe['diplome']); // Encode the URL
-                                          _employeController.openDiplome(encodedUrl); // Open the encoded diplome URL
+                                employe['diplome'] != null &&
+                                        employe['diplome'].isNotEmpty
+                                    ? IconButton(
+                                        icon: Icon(Icons.picture_as_pdf_rounded,
+                                            color: Color.fromARGB(
+                                                255, 44, 71, 68)),
+                                        onPressed: () {
+                                          String encodedUrl = Uri.encodeFull(
+                                              employe['diplome']);
+                                          _employeController
+                                              .openDiplome(encodedUrl);
                                         },
-                                        child: Text(
-                                          'View Diplôme',
-                                          style: TextStyle(
-                                              color: Colors.blue,
-                                              decoration: TextDecoration.underline),
-                                        ),
                                       )
-                                    : Text('No Diplôme'),
+                                    : Icon(Icons.close, color: Colors.red),
                               ),
+                              DataCell(Switch(
+                                value: employe['active'] ?? false,
+                                onChanged: (bool newValue) {
+                                  _employeController.updateEmploye(
+                                    id: employe['id'],
+                                    email: employe['email'],
+                                    nom: employe['nom'],
+                                    departement: employe['departement'],
+                                    active: newValue,
+                                  );
+                                },
+                                activeColor: Color.fromARGB(255, 48, 112, 101),
+                              )),
                               DataCell(Row(
                                 children: [
                                   IconButton(
-                                    icon: Icon(Icons.visibility, color: Color(0xFF00352C)),
+                                    icon: Icon(Icons.visibility,
+                                        color: Color(0xFF00352C)),
                                     onPressed: () {
-                                      _showEmployeDetailsDialog(context, employe['id']);
+                                      _showEmployeDetailsDialog(
+                                          context, employe['id']);
                                     },
                                   ),
                                   IconButton(
-                                    icon: Icon(Icons.edit, color: Color(0xFF00352C)),
+                                    icon: Icon(Icons.edit,
+                                        color: Color(0xFF00352C)),
                                     onPressed: () {
-                                      _showEditEmployeDialog(context, employe['id']);
+                                      _showEditEmployeDialog(
+                                          context, employe['id']);
                                     },
                                   ),
                                   IconButton(
-                                    icon: Icon(Icons.delete, color: Color(0xFF00352C)),
+                                    icon: Icon(Icons.delete,
+                                        color: Color(0xFF00352C)),
                                     onPressed: () {
-                                      _showDeleteConfirmationDialog(context, employe['id'], employe['email']);
+                                      _showDeleteConfirmationDialog(context,
+                                          employe['id'], employe['email']);
                                     },
                                   ),
                                 ],
@@ -201,6 +224,8 @@ class _MainContentState extends State<MainContent> {
           }
 
           var details = _employeController.selectedEmploye;
+          bool isActive = details['active'] ?? false;
+
           return Dialog(
             insetPadding: EdgeInsets.all(20),
             shape: RoundedRectangleBorder(
@@ -229,21 +254,48 @@ class _MainContentState extends State<MainContent> {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               TextField(
-                                controller: TextEditingController(text: details['nom'] ?? ''),
+                                controller: TextEditingController(
+                                    text: details['nom'] ?? ''),
                                 decoration: InputDecoration(labelText: 'Nom*'),
                                 readOnly: true,
                               ),
                               SizedBox(height: 10),
                               TextField(
-                                controller: TextEditingController(text: details['email'] ?? ''),
-                                decoration: InputDecoration(labelText: 'Email*'),
+                                controller: TextEditingController(
+                                    text: details['email'] ?? ''),
+                                decoration:
+                                    InputDecoration(labelText: 'Email*'),
                                 readOnly: true,
                               ),
                               SizedBox(height: 10),
                               TextField(
-                                controller: TextEditingController(text: details['departement'] ?? ''),
-                                decoration: InputDecoration(labelText: 'Departement*'),
+                                controller: TextEditingController(
+                                    text: details['departement'] ?? ''),
+                                decoration:
+                                    InputDecoration(labelText: 'Departement*'),
                                 readOnly: true,
+                              ),
+                              SizedBox(height: 10),
+                              Row(
+                                children: [
+                                  Text('Active Status: '),
+                                  Switch(
+                                    activeColor: isActive
+                                        ? Color.fromARGB(255, 105, 156, 148)
+                                        : Colors.grey,
+                                    value: isActive,
+                                    onChanged: null,
+                                  ),
+                                  Text(
+                                    isActive ? "Active" : "Inactive",
+                                    style: TextStyle(
+                                      color: isActive
+                                          ? Color.fromARGB(255, 105, 156, 148)
+                                          : Colors.red,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                ],
                               ),
                             ],
                           ),
@@ -256,12 +308,31 @@ class _MainContentState extends State<MainContent> {
                             border: Border.all(color: Colors.grey),
                             borderRadius: BorderRadius.circular(10),
                           ),
-                          child: details['photo'] != null && details['photo'].isNotEmpty
-                              ? Image.network(details['photo'], fit: BoxFit.cover)
-                              : Icon(Icons.person, size: 100, color: Colors.grey),
+                          child: details['photo'] != null &&
+                                  details['photo'].isNotEmpty
+                              ? Image.network(details['photo'],
+                                  fit: BoxFit.cover)
+                              : Icon(Icons.person,
+                                  size: 100, color: Colors.grey),
                         ),
                       ],
                     ),
+                    SizedBox(height: 20),
+                    details['diplome'] != null && details['diplome'].isNotEmpty
+                        ? InkWell(
+                            onTap: () {
+                              String encodedUrl =
+                                  Uri.encodeFull(details['diplome']);
+                              _employeController.openDiplome(encodedUrl);
+                            },
+                            child: Text(
+                              'View Diplôme',
+                              style: TextStyle(
+                                  color: Colors.blue,
+                                  decoration: TextDecoration.underline),
+                            ),
+                          )
+                        : Text('No Diplôme'),
                     SizedBox(height: 20),
                     Align(
                       alignment: Alignment.centerRight,
@@ -297,96 +368,151 @@ class _MainContentState extends State<MainContent> {
           }
 
           var details = _employeController.selectedEmploye;
-          final TextEditingController nomController = TextEditingController(text: details['nom'] ?? '');
-          final TextEditingController emailController = TextEditingController(text: details['email'] ?? '');
-          final TextEditingController departementController = TextEditingController(text: details['departement'] ?? '');
+          final TextEditingController nomController =
+              TextEditingController(text: details['nom'] ?? '');
+          final TextEditingController emailController =
+              TextEditingController(text: details['email'] ?? '');
+          final TextEditingController departementController =
+              TextEditingController(text: details['departement'] ?? '');
+          bool isActive = details['active'] ?? false;
 
           return Dialog(
             insetPadding: EdgeInsets.all(20),
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(15),
             ),
-            child: Container(
-              width: MediaQuery.of(context).size.width * 0.8,
-              padding: EdgeInsets.all(20),
-              child: SingleChildScrollView(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      'Modifier Employé',
-                      style: TextStyle(
-                        fontSize: 24,
-                        fontWeight: FontWeight.bold,
-                        color: Color(0xFF228D6D),
-                      ),
-                    ),
-                    SizedBox(height: 20),
-                    Row(
+            child: StatefulBuilder(
+              builder: (BuildContext context, StateSetter setState) {
+                return Container(
+                  width: MediaQuery.of(context).size.width * 0.8,
+                  padding: EdgeInsets.all(20),
+                  child: SingleChildScrollView(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              TextField(
-                                controller: nomController,
-                                decoration: InputDecoration(labelText: 'Nom*'),
-                              ),
-                              SizedBox(height: 10),
-                              TextField(
-                                controller: departementController,
-                                decoration: InputDecoration(labelText: 'Departement*'),
-                              ),
-                              SizedBox(height: 10),
-                              TextField(
-                                controller: emailController,
-                                decoration: InputDecoration(labelText: 'Email*'),
-                              ),
-                            ],
+                        Text(
+                          'Modifier Employé',
+                          style: TextStyle(
+                            fontSize: 24,
+                            fontWeight: FontWeight.bold,
+                            color: Color(0xFF228D6D),
                           ),
                         ),
-                        SizedBox(width: 20),
-                        Container(
-                          width: 150,
-                          height: 150,
-                          decoration: BoxDecoration(
-                            border: Border.all(color: Colors.grey),
-                            borderRadius: BorderRadius.circular(10),
+                        SizedBox(height: 20),
+                        Row(
+                          children: [
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  TextField(
+                                    controller: nomController,
+                                    decoration:
+                                        InputDecoration(labelText: 'Nom*'),
+                                  ),
+                                  SizedBox(height: 10),
+                                  TextField(
+                                    controller: departementController,
+                                    decoration: InputDecoration(
+                                        labelText: 'Departement*'),
+                                  ),
+                                  SizedBox(height: 10),
+                                  TextField(
+                                    controller: emailController,
+                                    decoration:
+                                        InputDecoration(labelText: 'Email*'),
+                                  ),
+                                  SizedBox(height: 10),
+                                  Row(
+                                    children: [
+                                      Text('Active Status: '),
+                                      Switch(
+                                        activeColor:
+                                            Color.fromARGB(255, 48, 112, 101),
+                                        value: isActive,
+                                        onChanged: (bool newValue) {
+                                          setState(() {
+                                            isActive = newValue;
+                                          });
+                                        },
+                                      ),
+                                    ],
+                                  ),
+                                ],
+                              ),
+                            ),
+                            SizedBox(width: 20),
+                            Container(
+                              width: 150,
+                              height: 150,
+                              decoration: BoxDecoration(
+                                border: Border.all(color: Colors.grey),
+                                borderRadius: BorderRadius.circular(10),
+                              ),
+                              child: GestureDetector(
+                                onTap: () async {
+                                  _selectPhoto();
+                                },
+                                child: details['photo'] != null &&
+                                        details['photo'].isNotEmpty
+                                    ? Image.network(details['photo'],
+                                        fit: BoxFit.cover)
+                                    : Icon(Icons.person,
+                                        size: 100, color: Colors.grey),
+                              ),
+                            ),
+                          ],
+                        ),
+                        SizedBox(height: 20),
+                        GestureDetector(
+                          onTap: () async {
+                            _selectDiplome();
+                          },
+                          child: Container(
+                            width: 150,
+                            height: 50,
+                            color: Colors.blueAccent,
+                            child: Center(
+                              child: Text(
+                                _selectedDiplome != null
+                                    ? 'Diplôme Selected'
+                                    : 'Select Diplôme',
+                                style: TextStyle(color: Colors.white),
+                              ),
+                            ),
                           ),
-                          child: GestureDetector(
-                            onTap: () async {
-                              _selectPhoto();
+                        ),
+                        SizedBox(height: 20),
+                        Align(
+                          alignment: Alignment.centerRight,
+                          child: ElevatedButton(
+                            onPressed: () {
+                              _employeController.updateEmploye(
+                                id: employeId,
+                                email: emailController.text,
+                                nom: nomController.text,
+                                departement: departementController.text,
+                                active: isActive,
+                                photo: _selectedPhoto != null
+                                    ? File(_selectedPhoto!.path)
+                                    : null,
+                                diplome: _selectedDiplome != null
+                                    ? File(_selectedDiplome!.path)
+                                    : null,
+                              );
+                              Navigator.of(context).pop();
                             },
-                            child: details['photo'] != null && details['photo'].isNotEmpty
-                                ? Image.network(details['photo'], fit: BoxFit.cover)
-                                : Icon(Icons.person, size: 100, color: Colors.grey),
+                            child: Text('Enregistrer'),
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: Color(0xFF228D6D),
+                            ),
                           ),
                         ),
                       ],
                     ),
-                    SizedBox(height: 20),
-                    Align(
-                      alignment: Alignment.centerRight,
-                      child: ElevatedButton(
-                        onPressed: () {
-                          _employeController.updateEmploye(
-                            id: employeId,
-                            email: emailController.text,
-                            nom: nomController.text,
-                            departement: departementController.text,
-                            active: true, 
-                          );
-                          Navigator.of(context).pop();
-                        },
-                        child: Text('Enregistrer'),
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: Color(0xFF228D6D),
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
+                  ),
+                );
+              },
             ),
           );
         });
@@ -394,25 +520,27 @@ class _MainContentState extends State<MainContent> {
     );
   }
 
-  void _showDeleteConfirmationDialog(BuildContext context, int employeId, String employeEmail) {
+  void _showDeleteConfirmationDialog(
+      BuildContext context, int employeId, String employeEmail) {
     showDialog(
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
           title: Text('Confirm Deletion'),
-          content: Text('Are you sure you want to delete the employee with email $employeEmail?'),
+          content: Text(
+              'Are you sure you want to delete the employee with email $employeEmail?'),
           actions: [
             TextButton(
               onPressed: () {
-                Navigator.of(context).pop(); 
+                Navigator.of(context).pop();
               },
               child: Text('No'),
             ),
             ElevatedButton(
               onPressed: () {
                 _employeController.deleteEmploye(employeId);
-                _employeController.fetchAllEmployes(); 
-                Navigator.of(context).pop(); 
+                _employeController.fetchAllEmployes();
+                Navigator.of(context).pop();
               },
               child: Text('Yes'),
               style: ElevatedButton.styleFrom(
@@ -427,11 +555,24 @@ class _MainContentState extends State<MainContent> {
 
   Future<void> _selectPhoto() async {
     final ImagePicker _picker = ImagePicker();
-    final XFile? pickedFile = await _picker.pickImage(source: ImageSource.gallery);
+    final XFile? pickedFile =
+        await _picker.pickImage(source: ImageSource.gallery);
 
     if (pickedFile != null) {
       setState(() {
         _selectedPhoto = pickedFile;
+      });
+    }
+  }
+
+  Future<void> _selectDiplome() async {
+    final ImagePicker _picker = ImagePicker();
+    final XFile? pickedFile =
+        await _picker.pickImage(source: ImageSource.gallery);
+
+    if (pickedFile != null) {
+      setState(() {
+        _selectedDiplome = pickedFile;
       });
     }
   }

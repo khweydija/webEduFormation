@@ -13,11 +13,11 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                'Hello Admin',
+                'Bienvenue sur votre tableau de bord',
                 style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
               ),
               Text(
-                'Have a nice day',
+                'Bonne journée à vous',
                 style: TextStyle(fontSize: 16, color: Colors.grey),
               ),
             ],
@@ -29,7 +29,7 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
                 onPressed: () {},
               ),
               CircleAvatar(
-               // backgroundImage: AssetImage('assets/profile.jpg'),
+                backgroundImage: AssetImage('assets/images/A4.jpg'),
               ),
               SizedBox(width: 10),
               Text(

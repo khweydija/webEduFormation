@@ -66,7 +66,7 @@ class MainContent extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  'Statistics',
+                  'Rapport Statistique',
                   style: TextStyle(
                       fontSize: 24,
                       fontWeight: FontWeight.bold,

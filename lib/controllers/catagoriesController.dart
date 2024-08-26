@@ -58,6 +58,8 @@ class CategorieController extends GetxController {
       if (response.statusCode == 200) {
         fetchCategories(); // Refresh list after updating
         Get.snackbar('Success', 'Category updated successfully');
+      } else if (response.statusCode == 409) {
+        Get.snackbar('Error', 'Designation already exists');
       } else {
         Get.snackbar('Error', 'Failed to update category');
       }
@@ -86,7 +88,7 @@ class CategorieController extends GetxController {
     }
   }
 
-   // Create a new category
+  // Create a new category
   Future<void> createCategorie(String description, String designation) async {
     isLoading(true);
     try {
@@ -102,6 +104,8 @@ class CategorieController extends GetxController {
       if (response.statusCode == 201 || response.statusCode == 200) {
         fetchCategories(); // Refresh the categories list after creation
         Get.snackbar('Success', 'Category created successfully');
+      } else if (response.statusCode == 409) {
+        Get.snackbar('Error', 'Designation already exists');
       } else {
         Get.snackbar('Error', 'Failed to create category');
       }

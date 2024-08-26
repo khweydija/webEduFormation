@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:get/get_core/get_core.dart';
+import 'package:webpfe/AppRoutes.dart';
 
 class Sidebar extends StatelessWidget {
   final int selectedIndex;
@@ -18,44 +21,54 @@ class Sidebar extends StatelessWidget {
           Row(
             children: [
               Image.asset('assets/images/logo.png',
-                  height: 200, width: 210), // Placeholder for logo
+                  height: 220, width: 210), // Placeholder for logo
             ],
           ),
           _SidebarItem(
             icon: Icons.dashboard,
             text: 'Dashboard',
             isSelected: selectedIndex == 0,
-            onTap: () => onItemSelected(0),
+            onTap: () {
+              onItemSelected(0);
+              Get.offAllNamed(
+                  AppRoutes.statisticsPage); // Navigate to StatisticsPage
+            },
           ),
           _SidebarItem(
             icon: Icons.person,
             text: 'Gestion des Formateurs',
             isSelected: selectedIndex == 1,
-            onTap: () => onItemSelected(1),
+            onTap: () {
+              onItemSelected(1);
+              Get.offAllNamed(AppRoutes
+                  .adminDashboardFormateur); // Navigate to AdminDashboardFormateur
+            },
           ),
           _SidebarItem(
             icon: Icons.people,
             text: 'Gestion des Employees',
             isSelected: selectedIndex == 2,
-            onTap: () => onItemSelected(2),
+            onTap: () {
+              onItemSelected(2);
+              Get.offAllNamed(AppRoutes
+                  .adminDashboardEmploye); // Navigate to AdminDashboardEmploye
+            },
           ),
           _SidebarItem(
-            icon: Icons.analytics,
-            text: 'Gestion des Categories',
-            isSelected: selectedIndex == 3,
-            onTap: () => onItemSelected(3),
-          ),
-          _SidebarItem(
-            icon: Icons.settings,
-            text: 'Setting',
-            isSelected: selectedIndex == 4,
-            onTap: () => onItemSelected(4),
-          ),
+              icon: Icons.category_sharp,
+              text: 'Gestion des Categories',
+              isSelected: selectedIndex == 3,
+              onTap: () {
+                onItemSelected(3);
+                Get.offAllNamed(AppRoutes.dashboardCatagorie);
+              } // Add more navigation here if needed
+              ),
           _SidebarItem(
             icon: Icons.logout,
             text: 'Log out',
             isSelected: selectedIndex == 5,
-            onTap: () => onItemSelected(5),
+            onTap: () =>
+                onItemSelected(5), // Add more navigation here if needed
           ),
         ],
       ),
@@ -69,18 +82,27 @@ class _SidebarItem extends StatelessWidget {
   final bool isSelected;
   final VoidCallback onTap;
 
-  _SidebarItem({required this.icon, required this.text, required this.isSelected, required this.onTap});
+  _SidebarItem({
+    required this.icon,
+    required this.text,
+    required this.isSelected,
+    required this.onTap,
+  });
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      margin: EdgeInsets.symmetric(vertical: 4.0), // Margin to create space between items
+      margin: EdgeInsets.symmetric(
+          vertical: 4.0), // Margin to create space between items
       decoration: BoxDecoration(
-        color: isSelected ? Colors.white : Colors.transparent, // White background when selected
+        color: isSelected
+            ? Colors.white
+            : Colors.transparent, // White background when selected
         borderRadius: BorderRadius.circular(8), // Rounded corners
       ),
       child: ListTile(
-        leading: Icon(icon, color: isSelected ? Color(0xFF228D6D) : Colors.black54),
+        leading:
+            Icon(icon, color: isSelected ? Color(0xFF228D6D) : Colors.black54),
         title: Text(
           text,
           style: TextStyle(
@@ -88,10 +110,12 @@ class _SidebarItem extends StatelessWidget {
             fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
           ),
         ),
-        contentPadding: EdgeInsets.symmetric(horizontal: 16.0, vertical: 4.0), // Padding inside the tile
+        contentPadding: EdgeInsets.symmetric(
+            horizontal: 16.0, vertical: 4.0), // Padding inside the tile
         onTap: onTap,
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(8), // Ensure the shape matches the background
+          borderRadius: BorderRadius.circular(
+              8), // Ensure the shape matches the background
         ),
       ),
     );

@@ -1,13 +1,12 @@
 // services/auth_service.dart
 import 'package:get/get.dart';
-import 'package:get/get_core/src/get_main.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
-
 import 'package:webpfe/models/SignupModel.dart';
 import 'package:webpfe/models/SignupResponse.dart';
 import 'package:webpfe/models/login_request.dart';
 import 'package:webpfe/models/login_response.dart';
+import 'package:webpfe/AppRoutes.dart'; // Import your AppRoutes
 
 class AuthService {
   final String baseUrl = 'http://localhost:8080/auth';
@@ -20,6 +19,8 @@ class AuthService {
     );
 
     if (response.statusCode == 200) {
+      // Navigate to StatisticsPage after a successful login
+      Get.offNamed(AppRoutes.statisticsPage);
       return LoginResponse.fromJson(jsonDecode(response.body));
     } else {
       throw Exception('Failed to login');
@@ -34,7 +35,7 @@ class AuthService {
     );
 
     if (response.statusCode == 200) {
-       Get.snackbar('login', 'Registration successful');
+      Get.snackbar('Success', 'Registration successful');
       return SignupResponse.fromJson(jsonDecode(response.body));
     } else {
       throw Exception('Failed to signup');

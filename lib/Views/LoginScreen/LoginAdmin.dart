@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:webpfe/Views/ForgetScreen/ForgotPassAdmine.dart';
-import 'package:webpfe/Views/RegisterScreen/SignUpScreenAdmin.dart';
 import 'package:webpfe/controllers/auth_controller.dart';
 
 class LoginAdmin extends StatefulWidget {
@@ -107,9 +106,6 @@ class _LoginAdminState extends State<LoginAdmin> {
                                   mainAxisAlignment:
                                       MainAxisAlignment.spaceBetween,
                                   children: [
-                                    Row(
-                                      children: [],
-                                    ),
                                     TextButton(
                                       onPressed: () {
                                         Navigator.push(
@@ -140,30 +136,14 @@ class _LoginAdminState extends State<LoginAdmin> {
                                           style: TextStyle(color: Colors.black),
                                         ),
                                         style: ElevatedButton.styleFrom(
-                                          backgroundColor: Color.fromARGB(255, 205, 206, 205),
+                                          backgroundColor: Color.fromARGB(
+                                              255, 205, 206, 205),
                                           minimumSize:
                                               Size(double.infinity, 50),
                                           elevation: 5,
                                           shadowColor: Colors.black,
                                         ),
                                       )),
-                                // SizedBox(height: 20),
-                                // Row(
-                                //   mainAxisAlignment: MainAxisAlignment.center,
-                                //   children: [
-                                //     Text('Don\'t have an account? '),
-                                //     TextButton(
-                                //       onPressed: () {
-                                //         Navigator.push(
-                                //             context,
-                                //             MaterialPageRoute(
-                                //                 builder: (context) =>
-                                //                     SignUpScreenAdmin()));
-                                //       },
-                                //       child: Text('Sign up'),
-                                //     ),
-                                //   ],
-                                // ),
                               ],
                             ),
                           ),

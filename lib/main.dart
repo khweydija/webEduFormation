@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:get/get_navigation/src/root/get_material_app.dart';
+import 'package:get/get_navigation/src/routes/get_route.dart';
+import 'package:webpfe/AppRoutes.dart';
 import 'package:webpfe/Views/ScreenCatagories/DashboardCatagories.dart';
-
 
 import 'package:webpfe/Views/ForgetScreen/ForgotPassAdmine.dart';
 import 'package:webpfe/Views/ForgetScreen/SetPasswordAdmin.dart';
 import 'package:webpfe/Views/LoginScreen/LoginAdmin.dart';
-
 
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
@@ -30,17 +30,33 @@ void main() async {
   runApp(MyApp());
 }
 
-
-
 class MyApp extends StatelessWidget {
-  const MyApp({super.key});
-
-  
   @override
   Widget build(BuildContext context) {
     return GetMaterialApp(
       debugShowCheckedModeBanner: false,
-      home:AdminDashboard(),
+      initialRoute: AppRoutes.adminDashboardFormateur,
+      getPages: [
+        GetPage(name: AppRoutes.loginAdmin, page: () => LoginAdmin()),
+        GetPage(name: AppRoutes.statisticsPage, page: () => StatisticsPage()),
+        GetPage(name: AppRoutes.adminDashboardFormateur, page: () => AdminDashboardFormateur()),
+        GetPage(name: AppRoutes.adminDashboardEmploye, page: () => AdminDashboardEmploye()),
+        GetPage(name: AppRoutes.dashboardCatagorie, page: () => AdminDashboardCatagorie()),
+       
+      ],
     );
   }
 }
+
+// class MyApp extends StatelessWidget {
+//   const MyApp({super.key});
+
+  
+//   @override
+//   Widget build(BuildContext context) {
+//     return GetMaterialApp(
+//       debugShowCheckedModeBanner: false,
+//       home:AdminDashboardFormateur(),
+//     );
+//   }
+// }

@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
@@ -7,12 +8,12 @@ import 'package:webpfe/Views/ScreenFormateur/SearchAndAdd.dart';
 import 'package:webpfe/Views/Sidebar.dart';
 import 'package:webpfe/controllers/FormateurController.dart';
 
-class AdminDashboard extends StatefulWidget {
+class AdminDashboardFormateur extends StatefulWidget {
   @override
   _AdminDashboardState createState() => _AdminDashboardState();
 }
 
-class _AdminDashboardState extends State<AdminDashboard> {
+class _AdminDashboardState extends State<AdminDashboardFormateur> {
   final FormateurController _formateurController = Get.put(FormateurController());
   int selectedIndex = 1;
 
@@ -113,7 +114,7 @@ class _MainContentState extends State<MainContent> {
                       child: SingleChildScrollView(
                         scrollDirection: Axis.horizontal,
                         child: DataTable(
-                          columnSpacing: 12,
+                          columnSpacing: 18,
                           columns: [
                             DataColumn(label: Text('Nom')),
                             DataColumn(label: Text('Email')),
@@ -131,7 +132,7 @@ class _MainContentState extends State<MainContent> {
                               DataCell(Text(formateur['departement'] ?? '')),
                               DataCell(
                                 CircleAvatar(
-                                  radius: 50,
+                                  radius: 25,
                                   backgroundImage: formateur['photo'] != null &&
                                           formateur['photo'].isNotEmpty
                                       ? NetworkImage(formateur['photo'])
@@ -209,7 +210,7 @@ class _MainContentState extends State<MainContent> {
           }
 
           var details = _formateurController.formateurDetails;
-          bool isActive = details['active'] ?? false;  // Get active status from backend
+          bool isActive = details['active'] ?? false;
 
           return Dialog(
             insetPadding: EdgeInsets.all(20),
@@ -315,9 +316,9 @@ class _MainContentState extends State<MainContent> {
                         onPressed: () {
                           Navigator.of(context).pop();
                         },
-                        child: Text('Fermer'),
+                        child: Text('Fermer', style: TextStyle(color: Colors.white)),
                         style: ElevatedButton.styleFrom(
-                          backgroundColor: Color(0xFF228D6D),
+                          backgroundColor: const Color(0xFF228D6D),
                         ),
                       ),
                     ),
@@ -352,7 +353,7 @@ class _MainContentState extends State<MainContent> {
           final TextEditingController departementController =
               TextEditingController(text: details['departement'] ?? '');
 
-          bool isActive = details['active'] ?? false;  // Use the correct active status from backend
+          bool isActive = details['active'] ?? false;
 
           return Dialog(
             insetPadding: EdgeInsets.all(20),
@@ -432,20 +433,27 @@ class _MainContentState extends State<MainContent> {
                                 onTap: () async {
                                   final picker = ImagePicker();
                                   final pickedFile = await picker.pickImage(source: ImageSource.gallery);
+
                                   setState(() {
                                     _selectedPhotoForUpdate = pickedFile;
                                   });
                                 },
-                                child: _selectedPhotoForUpdate != null
-                                    ? Image.file(
-                                        File(_selectedPhotoForUpdate!.path),
-                                        fit: BoxFit.cover,
-                                        width: 100,
-                                        height: 100,
-                                      )
-                                    : (details['photo'] != null && details['photo'].isNotEmpty
-                                        ? Image.network(details['photo'], fit: BoxFit.cover, width: 100, height: 100)
-                                        : Icon(Icons.person, size: 100, color: Colors.grey)),
+                                child: kIsWeb
+                                    ? (_selectedPhotoForUpdate != null
+                                        ? Image.network(_selectedPhotoForUpdate!.path)
+                                        : (details['photo'] != null && details['photo'].isNotEmpty
+                                            ? Image.network(details['photo'], fit: BoxFit.cover)
+                                            : Icon(Icons.person, size: 100, color: Colors.grey)))
+                                    : (_selectedPhotoForUpdate != null
+                                        ? Image.file(
+                                            File(_selectedPhotoForUpdate!.path),
+                                            fit: BoxFit.cover,
+                                            width: 100,
+                                            height: 100,
+                                          )
+                                        : (details['photo'] != null && details['photo'].isNotEmpty
+                                            ? Image.network(details['photo'], fit: BoxFit.cover, width: 100, height: 100)
+                                            : Icon(Icons.person, size: 100, color: Colors.grey))),
                               ),
                             ),
                           ],
@@ -460,27 +468,31 @@ class _MainContentState extends State<MainContent> {
                                 onPressed: () {
                                   Navigator.of(context).pop();  // Close the dialog without saving changes
                                 },
-                                child: Text('Cancel'),
+                                child: Text('Annuler'),
                                 style: ElevatedButton.styleFrom(
-                                  backgroundColor: Colors.red,  // Color for the cancel button
+                                  backgroundColor: Color.fromARGB(255, 243, 242, 242),  // Color for the cancel button
                                 ),
                               ),
                               SizedBox(width: 10),
                               ElevatedButton(
-                                onPressed: () {
-                                  _formateurController.updateFormateur(
+                                onPressed: () async {
+                                  await _formateurController.updateFormateur(
                                     id: formateurId,
                                     nom: nomController.text,
                                     email: emailController.text,
                                     specialite: specialiteController.text,
                                     departement: departementController.text,
-                                    active: isActive,  // Pass the updated active status
+                                    active: isActive,
+                                    photo: _selectedPhotoForUpdate != null && !kIsWeb
+                                        ? File(_selectedPhotoForUpdate!.path)
+                                        : null,  // Send the new photo if selected (only for non-web platforms)
                                   );
+                                  await _formateurController.fetchAllFormateurs();
                                   Navigator.of(context).pop();
                                 },
-                                child: Text('Enregistrer'),
+                                child: const Text('Enregistrer',style: TextStyle(color: Colors.white),),
                                 style: ElevatedButton.styleFrom(
-                                  backgroundColor: Color(0xFF228D6D),
+                                  backgroundColor: const Color(0xFF228D6D),
                                 ),
                               ),
                             ],
@@ -506,7 +518,7 @@ class _MainContentState extends State<MainContent> {
         return AlertDialog(
           title: Text('Confirm Deletion'),
           content: Text(
-              'Are you sure you want to delete the formateur with email $formateurEmail?'),
+              'Êtes-vous sûr de vouloir supprimer le formateur par e-mail $formateurEmail?'),
           actions: [
             TextButton(
               onPressed: () {
