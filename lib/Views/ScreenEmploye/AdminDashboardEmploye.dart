@@ -123,7 +123,7 @@ class _MainContentState extends State<MainContent> {
                             DataColumn(label: Text('Status')),
                             DataColumn(label: Text('Action')),
                           ],
-                          rows: _employeController.employes.map((employe) {
+                          rows: _employeController.filteredEmployes.map((employe) {
                             return DataRow(cells: [
                               DataCell(Text(employe['nom'] ?? '')),
                               DataCell(Text(employe['email'] ?? '')),
@@ -212,7 +212,6 @@ class _MainContentState extends State<MainContent> {
   }
 
   // Helper methods for dialog boxes
-
   void _showDeleteConfirmationDialog(
       BuildContext context, int employeId, String employeEmail) {
     showDialog(

@@ -64,8 +64,7 @@ class EmployeController extends GetxController {
       if (response.statusCode == 200) {
         List data = json.decode(response.body);
         employes.assignAll(data);
-        filteredEmployes
-            .assignAll(data); // Initially set filtered list to all employees
+        filteredEmployes.assignAll(data); // Set filtered list to all employees
       } else {
         Get.snackbar('Error', 'Failed to load employees');
       }
@@ -158,8 +157,7 @@ class EmployeController extends GetxController {
   // Search employees by query (name, email, or department)
   void searchEmploye(String query) {
     if (query.isEmpty) {
-      filteredEmployes
-          .assignAll(employes); // Show all employees if query is empty
+      filteredEmployes.assignAll(employes); // Show all employees if query is empty
     } else {
       filteredEmployes.assignAll(employes.where((employe) {
         var name = employe['nom'].toLowerCase();
