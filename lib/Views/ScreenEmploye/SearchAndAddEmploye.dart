@@ -12,8 +12,9 @@ class SearchAndAddEmploye extends StatefulWidget {
 
 class _SearchAndAddEmployeState extends State<SearchAndAddEmploye> {
   final _formKey = GlobalKey<FormState>();
-  final EmployeController _employeController = Get.put(EmployeController()); // Put controller
+  final EmployeController _employeController = Get.put(EmployeController());
 
+  final TextEditingController _searchController = TextEditingController();
   final TextEditingController _nomController = TextEditingController();
   final TextEditingController _departementController = TextEditingController();
   final TextEditingController _emailController = TextEditingController();
@@ -22,8 +23,6 @@ class _SearchAndAddEmployeState extends State<SearchAndAddEmploye> {
 
   html.File? _selectedPhoto;
   html.File? _selectedDiplome;
-  String? _photoUrl;
-  String? _diplomeUrl;
   Uint8List? _photoBytes; // Store the selected image as Uint8List for preview
   bool _isPasswordVisible = false;
 
@@ -55,7 +54,6 @@ class _SearchAndAddEmployeState extends State<SearchAndAddEmploye> {
       PlatformFile file = result.files.first;
       setState(() {
         _selectedDiplome = html.File([file.bytes!], file.name);
-        _diplomeUrl = html.Url.createObjectUrl(_selectedDiplome!);
       });
     }
   }
@@ -91,10 +89,8 @@ class _SearchAndAddEmployeState extends State<SearchAndAddEmploye> {
         password: _passwordController.text,
         nom: _nomController.text,
         departement: _departementController.text,
-        photoBytes: photoBytes,
-        photoFilename: _selectedPhoto!.name,
-        diplomeBytes: diplomeBytes,
-        diplomeFilename: _selectedDiplome!.name,
+        photo: _selectedPhoto!,
+        diplome: _selectedDiplome!,
       );
 
       if (response?.statusCode == 200) {
@@ -119,9 +115,13 @@ class _SearchAndAddEmployeState extends State<SearchAndAddEmploye> {
       _photoBytes = null;
       _selectedPhoto = null;
       _selectedDiplome = null;
-      _photoUrl = null;
-      _diplomeUrl = null;
     });
+  }
+
+  // Search employee by query
+  void _searchEmployee() {
+    String query = _searchController.text.trim();
+    _employeController.searchEmploye(query);
   }
 
   @override
@@ -134,13 +134,18 @@ class _SearchAndAddEmployeState extends State<SearchAndAddEmploye> {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
+                // Search Bar
                 Container(
                   width: constraints.maxWidth > 800
                       ? 700
                       : constraints.maxWidth * 0.7, // Adjust width dynamically
                   child: TextField(
+                    controller: _searchController,
                     decoration: InputDecoration(
-                      suffixIcon: Icon(Icons.search, color: Colors.black54),
+                      suffixIcon: IconButton(
+                        icon: Icon(Icons.search, color: Colors.black54),
+                        onPressed: _searchEmployee,
+                      ),
                       hintText: 'Search for employees...',
                       hintStyle: TextStyle(color: Colors.black54),
                       border: OutlineInputBorder(
@@ -153,10 +158,11 @@ class _SearchAndAddEmployeState extends State<SearchAndAddEmploye> {
                     ),
                   ),
                 ),
+                // Add Employee Button
                 ElevatedButton.icon(
-                  onPressed: _showAddEmployeDialog, // Add employee dialog
+                  onPressed: _showAddEmployeDialog, // Show employee creation dialog
                   icon: Icon(Icons.add, color: Colors.white),
-                  label: Text('Ajouter Employee', style: TextStyle(color: Colors.white)),
+                  label: Text('Add Employee', style: TextStyle(color: Colors.white)),
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Color(0xFF228D6D),
                     shape: RoundedRectangleBorder(
@@ -172,6 +178,7 @@ class _SearchAndAddEmployeState extends State<SearchAndAddEmploye> {
     );
   }
 
+  // Dialog for Adding Employee
   void _showAddEmployeDialog() {
     showDialog(
       context: context,
@@ -191,6 +198,7 @@ class _SearchAndAddEmployeState extends State<SearchAndAddEmploye> {
                   mainAxisSize: MainAxisSize.min,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
+                    // Header
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
@@ -207,261 +215,261 @@ class _SearchAndAddEmployeState extends State<SearchAndAddEmploye> {
                       ],
                     ),
                     SizedBox(height: 20),
-                    LayoutBuilder(
-                      builder: (context, constraints) {
-                        return Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Row(
-                              children: [
-                                Expanded(
-                                  child: TextFormField(
-                                    controller: _nomController,
-                                    decoration: InputDecoration(
-                                      labelText: 'Nom*',
-                                      border: OutlineInputBorder(),
-                                    ),
-                                    validator: (value) {
-                                      if (value == null || value.isEmpty) {
-                                        return 'Please enter the name';
-                                      }
-                                      return null;
-                                    },
-                                  ),
-                                ),
-                                SizedBox(width: 10),
-                                Expanded(
-                                  child: TextFormField(
-                                    controller: _departementController,
-                                    decoration: InputDecoration(
-                                      labelText: 'Departement*',
-                                      border: OutlineInputBorder(),
-                                    ),
-                                    validator: (value) {
-                                      if (value == null || value.isEmpty) {
-                                        return 'Please enter the department';
-                                      }
-                                      return null;
-                                    },
-                                  ),
-                                ),
-                              ],
-                            ),
-                            SizedBox(height: 10),
-
-                            // Email Field
-                            TextFormField(
-                              controller: _emailController,
-                              decoration: InputDecoration(
-                                labelText: 'Email*',
-                                border: OutlineInputBorder(),
-                              ),
-                              validator: (value) {
-                                if (value == null || value.isEmpty) {
-                                  return 'Please enter your email';
-                                } else if (!RegExp(r'^[^@]+@[^@]+\.[^@]+').hasMatch(value)) {
-                                  return 'Please enter a valid email address';
-                                }
-                                return null;
-                              },
-                            ),
-                            SizedBox(height: 10),
-
-                            // Password and Confirm Password
-                            Row(
-                              children: [
-                                Expanded(
-                                  child: TextFormField(
-                                    controller: _passwordController,
-                                    decoration: InputDecoration(
-                                      labelText: 'Password*',
-                                      border: OutlineInputBorder(),
-                                      suffixIcon: IconButton(
-                                        icon: Icon(
-                                          _isPasswordVisible ? Icons.visibility : Icons.visibility_off,
-                                        ),
-                                        onPressed: () {
-                                          setState(() {
-                                            _isPasswordVisible = !_isPasswordVisible;
-                                          });
-                                        },
-                                      ),
-                                    ),
-                                    obscureText: !_isPasswordVisible,
-                                    validator: (value) {
-                                      if (value == null || value.isEmpty) {
-                                        return 'Please enter a password';
-                                      } else if (value.length < 6) {
-                                        return 'Password must be at least 6 characters long';
-                                      }
-                                      return null;
-                                    },
-                                  ),
-                                ),
-                                SizedBox(width: 10),
-                                Expanded(
-                                  child: TextFormField(
-                                    controller: _confirmPasswordController,
-                                    decoration: InputDecoration(
-                                      labelText: 'Confirm Password*',
-                                      border: OutlineInputBorder(),
-                                      suffixIcon: IconButton(
-                                        icon: Icon(
-                                          _isPasswordVisible ? Icons.visibility : Icons.visibility_off,
-                                        ),
-                                        onPressed: () {
-                                          setState(() {
-                                            _isPasswordVisible = !_isPasswordVisible;
-                                          });
-                                        },
-                                      ),
-                                    ),
-                                    obscureText: !_isPasswordVisible,
-                                    validator: (value) {
-                                      if (value == null || value.isEmpty) {
-                                        return 'Please confirm your password';
-                                      }
-                                      return null;
-                                    },
-                                  ),
-                                ),
-                              ],
-                            ),
-                            SizedBox(height: 10),
-
-                            // Photo and Diplome fields
-                            Row(
-                              children: [
-                                Expanded(
-                                  child: GestureDetector(
-                                    onTap: _pickPhoto,
-                                    child: Container(
-                                      width: double.infinity,
-                                      height: 150,
-                                      decoration: BoxDecoration(
-                                        color: Colors.grey.shade200,
-                                        borderRadius: BorderRadius.circular(10),
-                                        border: Border.all(
-                                          color: Colors.grey.shade400,
-                                          width: 2,
-                                        ),
-                                        boxShadow: [
-                                          BoxShadow(
-                                            color: Colors.grey.withOpacity(0.5),
-                                            spreadRadius: 2,
-                                            blurRadius: 5,
-                                            offset: Offset(0, 3),
-                                          ),
-                                        ],
-                                      ),
-                                      child: Center(
-                                        child: _photoBytes == null
-                                            ? Column(
-                                                mainAxisAlignment: MainAxisAlignment.center,
-                                                children: [
-                                                  Icon(Icons.camera_alt, color: Colors.grey.shade600, size: 40),
-                                                  SizedBox(height: 10),
-                                                  Text(
-                                                    'Tap to select photo',
-                                                    style: TextStyle(
-                                                      color: Colors.grey.shade600,
-                                                      fontSize: 16,
-                                                    ),
-                                                  ),
-                                                ],
-                                              )
-                                            : Image.memory(
-                                                _photoBytes!,
-                                                height: 150,
-                                                fit: BoxFit.cover,
-                                              ),
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                                SizedBox(width: 10),
-                                Expanded(
-                                  child: GestureDetector(
-                                    onTap: _pickDiplome,
-                                    child: Container(
-                                      width: double.infinity,
-                                      height: 150,
-                                      decoration: BoxDecoration(
-                                        color: Colors.grey.shade200,
-                                        borderRadius: BorderRadius.circular(10),
-                                        border: Border.all(
-                                          color: Colors.grey.shade400,
-                                          width: 2,
-                                        ),
-                                        boxShadow: [
-                                          BoxShadow(
-                                            color: Colors.grey.withOpacity(0.5),
-                                            spreadRadius: 2,
-                                            blurRadius: 5,
-                                            offset: Offset(0, 3),
-                                          ),
-                                        ],
-                                      ),
-                                      child: Center(
-                                        child: _diplomeUrl == null
-                                            ? Column(
-                                                mainAxisAlignment: MainAxisAlignment.center,
-                                                children: [
-                                                  Icon(Icons.file_present, color: Colors.grey.shade600, size: 40),
-                                                  SizedBox(height: 10),
-                                                  Text(
-                                                    'Tap to select a diplome (PDF)',
-                                                    style: TextStyle(
-                                                      color: Colors.grey.shade600,
-                                                      fontSize: 16,
-                                                    ),
-                                                  ),
-                                                ],
-                                              )
-                                            : Column(
-                                                children: [
-                                                  Icon(Icons.file_present, size: 50),
-                                                  Text(_selectedDiplome!.name),
-                                                ],
-                                              ),
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                              ],
-                            ),
-                            SizedBox(height: 20),
-
-                            // Add Employee Button
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.end,
-                              children: [
-                                ElevatedButton(
-                                  onPressed: _submitEmploye,
-                                  child: Text('Add Employee', style: TextStyle(color: Colors.white)),
-                                  style: ElevatedButton.styleFrom(
-                                    backgroundColor: Color(0xFF228D6D),
-                                  ),
-                                ),
-                                SizedBox(width: 10),
-                                TextButton(
-                                  onPressed: _clearFormFields,
-                                  child: Text('Clear'),
-                                  style: TextButton.styleFrom(
-                                    foregroundColor: Colors.grey,
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ],
-                        );
-                      },
+                    // Employee Form Fields
+                    _buildEmployeeFormFields(),
+                    SizedBox(height: 20),
+                    // Add Employee Button
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.end,
+                      children: [
+                        ElevatedButton(
+                          onPressed: _submitEmploye,
+                          child: Text('Add Employee', style: TextStyle(color: Colors.white)),
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: Color(0xFF228D6D),
+                          ),
+                        ),
+                        SizedBox(width: 10),
+                        TextButton(
+                          onPressed: _clearFormFields,
+                          child: Text('Clear'),
+                          style: TextButton.styleFrom(
+                            foregroundColor: Colors.grey,
+                          ),
+                        ),
+                      ],
                     ),
                   ],
                 ),
               ),
             ),
           ),
+        );
+      },
+    );
+  }
+
+  // Employee Form Fields Widget
+  Widget _buildEmployeeFormFields() {
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                Expanded(
+                  child: TextFormField(
+                    controller: _nomController,
+                    decoration: InputDecoration(
+                      labelText: 'Nom*',
+                      border: OutlineInputBorder(),
+                    ),
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return 'Please enter the name';
+                      }
+                      return null;
+                    },
+                  ),
+                ),
+                SizedBox(width: 10),
+                Expanded(
+                  child: TextFormField(
+                    controller: _departementController,
+                    decoration: InputDecoration(
+                      labelText: 'Departement*',
+                      border: OutlineInputBorder(),
+                    ),
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return 'Please enter the department';
+                      }
+                      return null;
+                    },
+                  ),
+                ),
+              ],
+            ),
+            SizedBox(height: 10),
+            TextFormField(
+              controller: _emailController,
+              decoration: InputDecoration(
+                labelText: 'Email*',
+                border: OutlineInputBorder(),
+              ),
+              validator: (value) {
+                if (value == null || value.isEmpty) {
+                  return 'Please enter your email';
+                } else if (!RegExp(r'^[^@]+@[^@]+\.[^@]+').hasMatch(value)) {
+                  return 'Please enter a valid email address';
+                }
+                return null;
+              },
+            ),
+            SizedBox(height: 10),
+            Row(
+              children: [
+                Expanded(
+                  child: TextFormField(
+                    controller: _passwordController,
+                    decoration: InputDecoration(
+                      labelText: 'Password*',
+                      border: OutlineInputBorder(),
+                      suffixIcon: IconButton(
+                        icon: Icon(
+                          _isPasswordVisible ? Icons.visibility : Icons.visibility_off,
+                        ),
+                        onPressed: () {
+                          setState(() {
+                            _isPasswordVisible = !_isPasswordVisible;
+                          });
+                        },
+                      ),
+                    ),
+                    obscureText: !_isPasswordVisible,
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return 'Please enter a password';
+                      } else if (value.length < 6) {
+                        return 'Password must be at least 6 characters long';
+                      }
+                      return null;
+                    },
+                  ),
+                ),
+                SizedBox(width: 10),
+                Expanded(
+                  child: TextFormField(
+                    controller: _confirmPasswordController,
+                    decoration: InputDecoration(
+                      labelText: 'Confirm Password*',
+                      border: OutlineInputBorder(),
+                      suffixIcon: IconButton(
+                        icon: Icon(
+                          _isPasswordVisible ? Icons.visibility : Icons.visibility_off,
+                        ),
+                        onPressed: () {
+                          setState(() {
+                            _isPasswordVisible = !_isPasswordVisible;
+                          });
+                        },
+                      ),
+                    ),
+                    obscureText: !_isPasswordVisible,
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return 'Please confirm your password';
+                      }
+                      return null;
+                    },
+                  ),
+                ),
+              ],
+            ),
+            SizedBox(height: 10),
+            // Photo and Diplome fields
+            Row(
+              children: [
+                Expanded(
+                  child: GestureDetector(
+                    onTap: _pickPhoto,
+                    child: Container(
+                      width: double.infinity,
+                      height: 150,
+                      decoration: BoxDecoration(
+                        color: Colors.grey.shade200,
+                        borderRadius: BorderRadius.circular(10),
+                        border: Border.all(
+                          color: Colors.grey.shade400,
+                          width: 2,
+                        ),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.grey.withOpacity(0.5),
+                            spreadRadius: 2,
+                            blurRadius: 5,
+                            offset: Offset(0, 3),
+                          ),
+                        ],
+                      ),
+                      child: Center(
+                        child: _photoBytes == null
+                            ? Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Icon(Icons.camera_alt, color: Colors.grey.shade600, size: 40),
+                                  SizedBox(height: 10),
+                                  Text(
+                                    'Tap to select photo',
+                                    style: TextStyle(
+                                      color: Colors.grey.shade600,
+                                      fontSize: 16,
+                                    ),
+                                  ),
+                                ],
+                              )
+                            : Image.memory(
+                                _photoBytes!,
+                                height: 150,
+                                fit: BoxFit.cover,
+                              ),
+                      ),
+                    ),
+                  ),
+                ),
+                SizedBox(width: 10),
+                Expanded(
+                  child: GestureDetector(
+                    onTap: _pickDiplome,
+                    child: Container(
+                      width: double.infinity,
+                      height: 150,
+                      decoration: BoxDecoration(
+                        color: Colors.grey.shade200,
+                        borderRadius: BorderRadius.circular(10),
+                        border: Border.all(
+                          color: Colors.grey.shade400,
+                          width: 2,
+                        ),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.grey.withOpacity(0.5),
+                            spreadRadius: 2,
+                            blurRadius: 5,
+                            offset: Offset(0, 3),
+                          ),
+                        ],
+                      ),
+                      child: Center(
+                        child: _selectedDiplome == null
+                            ? Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Icon(Icons.file_present, color: Colors.grey.shade600, size: 40),
+                                  SizedBox(height: 10),
+                                  Text(
+                                    'Tap to select a diplome (PDF)',
+                                    style: TextStyle(
+                                      color: Colors.grey.shade600,
+                                      fontSize: 16,
+                                    ),
+                                  ),
+                                ],
+                              )
+                            : Column(
+                                children: [
+                                  Icon(Icons.file_present, size: 50),
+                                  Text(_selectedDiplome!.name),
+                                ],
+                              ),
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ],
         );
       },
     );

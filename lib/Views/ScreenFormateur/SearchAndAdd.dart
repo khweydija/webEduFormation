@@ -11,7 +11,8 @@ class SearchAndAdd extends StatefulWidget {
 }
 
 class _SearchAndAddState extends State<SearchAndAdd> {
-  final FormateurController _formateurController = Get.put(FormateurController());
+  final FormateurController _formateurController =
+      Get.put(FormateurController());
 
   final _formKey = GlobalKey<FormState>();
 
@@ -20,20 +21,23 @@ class _SearchAndAddState extends State<SearchAndAdd> {
   final TextEditingController _departementController = TextEditingController();
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
-  final TextEditingController _confirmPasswordController = TextEditingController();
+  final TextEditingController _confirmPasswordController =
+      TextEditingController();
   Uint8List? _selectedPhotoBytes;
   String? _photoFilename;
   bool _isPasswordVisible = false;
 
   void _pickPhoto() async {
-    final pickedFile = await ImagePickerWeb.getImageAsBytes(); // Get image as bytes
+    final pickedFile =
+        await ImagePickerWeb.getImageAsBytes(); // Get image as bytes
 
     if (pickedFile != null) {
       setState(() {
         _selectedPhotoBytes = pickedFile;
         _photoFilename = "formateur_photo.png"; // Assign a default filename
       });
-      print("Image selected successfully"); // Debugging: Check if the image is selected
+      print(
+          "Image selected successfully"); // Debugging: Check if the image is selected
     } else {
       print("No image selected"); // Debugging: Check if no image was selected
     }
@@ -105,14 +109,16 @@ class _SearchAndAddState extends State<SearchAndAdd> {
                       ),
                       filled: true,
                       fillColor: Colors.white,
-                      contentPadding: EdgeInsets.symmetric(vertical: 0, horizontal: 20),
+                      contentPadding:
+                          EdgeInsets.symmetric(vertical: 0, horizontal: 20),
                     ),
                   ),
                 ),
                 ElevatedButton.icon(
                   onPressed: _showAddFormateurDialog,
                   icon: Icon(Icons.add, color: Colors.white),
-                  label: Text('Ajouter Formateur', style: TextStyle(color: Colors.white)),
+                  label: Text('Ajouter Formateur',
+                      style: TextStyle(color: Colors.white)),
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Color(0xFF228D6D),
                     shape: RoundedRectangleBorder(
@@ -152,7 +158,8 @@ class _SearchAndAddState extends State<SearchAndAdd> {
                       children: [
                         Text(
                           'Ajouter Formateur',
-                          style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+                          style: TextStyle(
+                              fontSize: 24, fontWeight: FontWeight.bold),
                         ),
                         IconButton(
                           icon: Icon(Icons.close),
@@ -170,7 +177,8 @@ class _SearchAndAddState extends State<SearchAndAdd> {
                       children: [
                         ElevatedButton(
                           onPressed: _submitFormateur,
-                          child: Text('Ajouter ', style: TextStyle(color: Colors.white)),
+                          child: Text('Ajouter ',
+                              style: TextStyle(color: Colors.white)),
                           style: ElevatedButton.styleFrom(
                             backgroundColor: Color(0xFF228D6D),
                           ),
@@ -182,7 +190,8 @@ class _SearchAndAddState extends State<SearchAndAdd> {
                           },
                           child: Text('Annuler'),
                           style: TextButton.styleFrom(
-                            foregroundColor: const Color.fromARGB(255, 133, 131, 131),
+                            foregroundColor:
+                                const Color.fromARGB(255, 133, 131, 131),
                           ),
                         ),
                       ],
@@ -214,7 +223,8 @@ class _SearchAndAddState extends State<SearchAndAdd> {
                               children: [
                                 Expanded(
                                   child: _buildTextField(
-                                      controller: _nomController, labelText: 'Nom*'),
+                                      controller: _nomController,
+                                      labelText: 'Nom*'),
                                 ),
                                 SizedBox(width: 10),
                                 Expanded(
@@ -227,7 +237,8 @@ class _SearchAndAddState extends State<SearchAndAdd> {
                           : Column(
                               children: [
                                 _buildTextField(
-                                    controller: _nomController, labelText: 'Nom*'),
+                                    controller: _nomController,
+                                    labelText: 'Nom*'),
                                 SizedBox(height: 10),
                                 _buildTextField(
                                     controller: _specialiteController,
@@ -258,7 +269,8 @@ class _SearchAndAddState extends State<SearchAndAdd> {
                                     labelText: 'Departement*'),
                                 SizedBox(height: 10),
                                 _buildEmailField(
-                                    controller: _emailController, labelText: 'Email*'),
+                                    controller: _emailController,
+                                    labelText: 'Email*'),
                               ],
                             ),
                       SizedBox(height: 10),
@@ -292,7 +304,8 @@ class _SearchAndAddState extends State<SearchAndAdd> {
                     ],
                   ),
                 ),
-                SizedBox(width: 20), // Space between form fields and image picker
+                SizedBox(
+                    width: 20), // Space between form fields and image picker
                 _buildImagePicker(), // Image picker on the right
               ],
             ),
@@ -394,7 +407,8 @@ class _SearchAndAddState extends State<SearchAndAdd> {
               ? Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Icon(Icons.camera_alt, color: Colors.grey.shade600, size: 40),
+                    Icon(Icons.camera_alt,
+                        color: Colors.grey.shade600, size: 40),
                     SizedBox(height: 10),
                     Text(
                       'Tap to select photo',

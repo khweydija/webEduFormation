@@ -1,9 +1,9 @@
 import 'dart:convert';
-import 'dart:io';
+import 'dart:html' as html;
 import 'dart:typed_data';
 import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
-import 'package:url_launcher/url_launcher.dart'; // For opening URLs
+import 'package:url_launcher/url_launcher.dart';
 
 class EmployeController extends GetxController {
   final String apiUrl =
@@ -16,18 +16,27 @@ class EmployeController extends GetxController {
   var isLoading = false.obs; // To manage loading state for details
   var selectedEmploye = {}.obs; // To store a selected employee's details
 
-  // Method to create a new employee
+  // Helper method to convert html.File to Uint8List
+  Future<Uint8List> _convertFileToUint8List(html.File file) async {
+    final reader = html.FileReader();
+    reader.readAsArrayBuffer(file);
+    await reader.onLoadEnd.first; // Wait for the file to finish loading
+    return reader.result as Uint8List;
+  }
+
+  // Method to create a new employee (Web compatible)
   Future<http.StreamedResponse?> createEmploye({
     required String email,
     required String password,
     required String nom,
     required String departement,
-    required Uint8List photoBytes,
-    required String photoFilename,
-    required Uint8List diplomeBytes,
-    required String diplomeFilename,
+    required html.File photo,
+    required html.File diplome,
   }) async {
     try {
+      Uint8List photoBytes = await _convertFileToUint8List(photo);
+      Uint8List diplomeBytes = await _convertFileToUint8List(diplome);
+
       var request =
           http.MultipartRequest('POST', Uri.parse('$apiUrl/create/employe'))
             ..fields['email'] = email
@@ -35,9 +44,9 @@ class EmployeController extends GetxController {
             ..fields['nom'] = nom
             ..fields['departement'] = departement
             ..files.add(http.MultipartFile.fromBytes('photo', photoBytes,
-                filename: photoFilename))
+                filename: photo.name))
             ..files.add(http.MultipartFile.fromBytes('diplome', diplomeBytes,
-                filename: diplomeFilename));
+                filename: diplome.name));
 
       var response = await request.send();
       return response;
@@ -82,7 +91,7 @@ class EmployeController extends GetxController {
     }
   }
 
-  // Method to update an existing employee with the possibility to update the image and diplome
+  // Method to update an existing employee (Web compatible)
   Future<void> updateEmploye({
     required int id,
     required String email,
@@ -90,8 +99,8 @@ class EmployeController extends GetxController {
     required String departement,
     required bool active,
     String? password, // Optional password
-    File? photo, // Optional photo file
-    File? diplome, // Optional diplome file
+    html.File? photo, // Optional photo file
+    html.File? diplome, // Optional diplome file
   }) async {
     try {
       var request =
@@ -99,18 +108,21 @@ class EmployeController extends GetxController {
             ..fields['email'] = email
             ..fields['nom'] = nom
             ..fields['departement'] = departement
-            ..fields['password'] = "hhhhhh"
+            ..fields['password'] = password ?? ''
             ..fields['active'] = active.toString();
 
-      // Send file without worrying about the filename
+      // Handle photo file upload
       if (photo != null) {
-        request.files
-            .add(await http.MultipartFile.fromPath('photo', photo.path));
+        Uint8List photoBytes = await _convertFileToUint8List(photo);
+        request.files.add(http.MultipartFile.fromBytes('photo', photoBytes,
+            filename: photo.name));
       }
 
+      // Handle diplome file upload
       if (diplome != null) {
-        request.files
-            .add(await http.MultipartFile.fromPath('diplome', diplome.path));
+        Uint8List diplomeBytes = await _convertFileToUint8List(diplome);
+        request.files.add(http.MultipartFile.fromBytes('diplome', diplomeBytes,
+            filename: diplome.name));
       }
 
       var response = await request.send();

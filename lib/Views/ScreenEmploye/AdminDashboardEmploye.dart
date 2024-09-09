@@ -1,7 +1,6 @@
-import 'dart:io';
+import 'dart:html' as html; // Import dart:html for web file handling
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:image_picker/image_picker.dart';
 import 'package:webpfe/Views/AppBar.dart';
 import 'package:webpfe/Views/ScreenEmploye/SearchAndAddEmploye.dart';
 import 'package:webpfe/Views/Sidebar.dart';
@@ -59,8 +58,8 @@ class MainContent extends StatefulWidget {
 
 class _MainContentState extends State<MainContent> {
   final EmployeController _employeController = Get.find();
-  XFile? _selectedPhoto;
-  XFile? _selectedDiplome;
+  html.File? _selectedPhoto;
+  html.File? _selectedDiplome;
 
   @override
   Widget build(BuildContext context) {
@@ -211,6 +210,8 @@ class _MainContentState extends State<MainContent> {
       ),
     );
   }
+
+  // Helper methods for dialog boxes
 
   void _showDeleteConfirmationDialog(
       BuildContext context, int employeId, String employeEmail) {
@@ -553,12 +554,8 @@ class _MainContentState extends State<MainContent> {
                                 password: password != null && password!.isEmpty
                                     ? null
                                     : password,
-                                photo: _selectedPhoto != null
-                                    ? File(_selectedPhoto!.path)
-                                    : null,
-                                diplome: _selectedDiplome != null
-                                    ? File(_selectedDiplome!.path)
-                                    : null,
+                                photo: _selectedPhoto,
+                                diplome: _selectedDiplome,
                               );
                               Navigator.of(context).pop();
                             },
@@ -581,26 +578,32 @@ class _MainContentState extends State<MainContent> {
   }
 
   Future<void> _selectPhoto() async {
-    final ImagePicker _picker = ImagePicker();
-    final XFile? pickedFile =
-        await _picker.pickImage(source: ImageSource.gallery);
+    html.FileUploadInputElement uploadInput = html.FileUploadInputElement();
+    uploadInput.accept = 'image/*'; // Accept image files only
+    uploadInput.click(); // Trigger file picker
 
-    if (pickedFile != null) {
-      setState(() {
-        _selectedPhoto = pickedFile;
-      });
-    }
+    uploadInput.onChange.listen((e) {
+      final files = uploadInput.files;
+      if (files!.isNotEmpty) {
+        setState(() {
+          _selectedPhoto = files.first; // Store the selected photo
+        });
+      }
+    });
   }
 
   Future<void> _selectDiplome() async {
-    final ImagePicker _picker = ImagePicker();
-    final XFile? pickedFile =
-        await _picker.pickImage(source: ImageSource.gallery);
+    html.FileUploadInputElement uploadInput = html.FileUploadInputElement();
+    uploadInput.accept = '.pdf'; // Accept PDF files only
+    uploadInput.click(); // Trigger file picker
 
-    if (pickedFile != null) {
-      setState(() {
-        _selectedDiplome = pickedFile;
-      });
-    }
+    uploadInput.onChange.listen((e) {
+      final files = uploadInput.files;
+      if (files!.isNotEmpty) {
+        setState(() {
+          _selectedDiplome = files.first; // Store the selected diplome
+        });
+      }
+    });
   }
 }
