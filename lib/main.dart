@@ -39,10 +39,15 @@ class MyApp extends StatelessWidget {
       getPages: [
         GetPage(name: AppRoutes.loginAdmin, page: () => LoginAdmin()),
         GetPage(name: AppRoutes.statisticsPage, page: () => StatisticsPage()),
-        GetPage(name: AppRoutes.adminDashboardFormateur, page: () => AdminDashboardFormateur()),
-        GetPage(name: AppRoutes.adminDashboardEmploye, page: () => AdminDashboardEmploye()),
-        GetPage(name: AppRoutes.dashboardCatagorie, page: () => AdminDashboardCatagorie()),
-       
+        GetPage(
+            name: AppRoutes.adminDashboardFormateur,
+            page: () => AdminDashboardFormateur()),
+        GetPage(
+            name: AppRoutes.adminDashboardEmploye,
+            page: () => AdminDashboardEmploye()),
+        GetPage(
+            name: AppRoutes.dashboardCatagorie,
+            page: () => AdminDashboardCatagorie()),
       ],
     );
   }

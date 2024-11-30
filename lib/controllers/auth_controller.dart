@@ -2,6 +2,7 @@
 
 import 'package:get/get.dart';
 import 'package:get/get_state_manager/src/simple/get_controllers.dart';
+import 'package:webpfe/AppRoutes.dart';
 import 'package:webpfe/Services/auth_service.dart';
 import 'package:webpfe/models/SignupModel.dart';
 import 'package:webpfe/models/SignupResponse.dart';
@@ -12,7 +13,6 @@ class AuthController extends GetxController {
   var isLoading = false.obs;
   final AuthService authService = Get.put(AuthService());
 
-
   Future<void> login(String email, String password) async {
     isLoading(true);
     try {
@@ -20,6 +20,7 @@ class AuthController extends GetxController {
           LoginRequest(email: email, password: password);
       LoginResponse response = await authService.login(loginRequest);
       print('Login successful: ${response.token}');
+      Get.offNamed(AppRoutes.statisticsPage);
       // Handle storing the token, userType, and userData as needed
     } catch (e) {
       // Handle error
@@ -28,7 +29,6 @@ class AuthController extends GetxController {
       isLoading(false);
     }
   }
-
 
   Future<void> signup(String email, String password, String nom) async {
     isLoading(true);

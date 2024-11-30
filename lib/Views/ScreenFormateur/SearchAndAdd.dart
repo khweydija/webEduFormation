@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'dart:html' as html;
 import 'package:image_picker_web/image_picker_web.dart';
-import 'package:webpfe/controllers/FormateurController.dart';
+import 'package:webpfe/controllers/FormateurController.dart'; // Link to FormateurController
 
 class SearchAndAdd extends StatefulWidget {
   @override
@@ -11,8 +11,7 @@ class SearchAndAdd extends StatefulWidget {
 }
 
 class _SearchAndAddState extends State<SearchAndAdd> {
-  final FormateurController _formateurController =
-      Get.put(FormateurController());
+  final FormateurController _formateurController = Get.put(FormateurController()); // Link FormateurController
 
   final _formKey = GlobalKey<FormState>();
 
@@ -21,35 +20,32 @@ class _SearchAndAddState extends State<SearchAndAdd> {
   final TextEditingController _departementController = TextEditingController();
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
-  final TextEditingController _confirmPasswordController =
-      TextEditingController();
+  final TextEditingController _confirmPasswordController = TextEditingController();
+  
   Uint8List? _selectedPhotoBytes;
   String? _photoFilename;
   bool _isPasswordVisible = false;
 
+  // Picking a photo
   void _pickPhoto() async {
-    final pickedFile =
-        await ImagePickerWeb.getImageAsBytes(); // Get image as bytes
-
+    final pickedFile = await ImagePickerWeb.getImageAsBytes(); // Get image as bytes
     if (pickedFile != null) {
       setState(() {
         _selectedPhotoBytes = pickedFile;
         _photoFilename = "formateur_photo.png"; // Assign a default filename
       });
-      print(
-          "Image selected successfully"); // Debugging: Check if the image is selected
     } else {
-      print("No image selected"); // Debugging: Check if no image was selected
+      print("No image selected");
     }
   }
 
+  // Submit formateur data to the controller
   void _submitFormateur() {
     if (_formKey.currentState?.validate() ?? false) {
       if (_selectedPhotoBytes == null) {
         Get.snackbar('Error', 'Please select a photo');
         return;
       }
-
       if (_passwordController.text != _confirmPasswordController.text) {
         Get.snackbar('Error', 'Passwords do not match');
         return;
@@ -69,7 +65,7 @@ class _SearchAndAddState extends State<SearchAndAdd> {
         // Show success message
         Get.snackbar('Success', 'Formateur has been entered');
 
-        // Clear the input fields
+        // Clear input fields
         _nomController.clear();
         _specialiteController.clear();
         _departementController.clear();
@@ -95,9 +91,7 @@ class _SearchAndAddState extends State<SearchAndAdd> {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Container(
-                  width: constraints.maxWidth > 800
-                      ? 700
-                      : constraints.maxWidth * 0.7, // Adjust width dynamically
+                  width: constraints.maxWidth > 800 ? 700 : constraints.maxWidth * 0.7, // Adjust width dynamically
                   child: TextField(
                     decoration: InputDecoration(
                       suffixIcon: Icon(Icons.search, color: Colors.black54),
@@ -109,16 +103,14 @@ class _SearchAndAddState extends State<SearchAndAdd> {
                       ),
                       filled: true,
                       fillColor: Colors.white,
-                      contentPadding:
-                          EdgeInsets.symmetric(vertical: 0, horizontal: 20),
+                      contentPadding: EdgeInsets.symmetric(vertical: 0, horizontal: 20),
                     ),
                   ),
                 ),
                 ElevatedButton.icon(
                   onPressed: _showAddFormateurDialog,
                   icon: Icon(Icons.add, color: Colors.white),
-                  label: Text('Ajouter Formateur',
-                      style: TextStyle(color: Colors.white)),
+                  label: Text('Add Formateur', style: TextStyle(color: Colors.white)),
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Color(0xFF228D6D),
                     shape: RoundedRectangleBorder(
@@ -134,6 +126,7 @@ class _SearchAndAddState extends State<SearchAndAdd> {
     );
   }
 
+  // Show dialog to add formateur
   void _showAddFormateurDialog() {
     showDialog(
       context: context,
@@ -157,9 +150,8 @@ class _SearchAndAddState extends State<SearchAndAdd> {
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         Text(
-                          'Ajouter Formateur',
-                          style: TextStyle(
-                              fontSize: 24, fontWeight: FontWeight.bold),
+                          'Add Formateur',
+                          style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
                         ),
                         IconButton(
                           icon: Icon(Icons.close),
@@ -170,15 +162,14 @@ class _SearchAndAddState extends State<SearchAndAdd> {
                       ],
                     ),
                     SizedBox(height: 20),
-                    _buildFormFields(constraints: context),
+                    _buildFormFields(),
                     SizedBox(height: 20),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.end,
                       children: [
                         ElevatedButton(
                           onPressed: _submitFormateur,
-                          child: Text('Ajouter ',
-                              style: TextStyle(color: Colors.white)),
+                          child: Text('Add', style: TextStyle(color: Colors.white)),
                           style: ElevatedButton.styleFrom(
                             backgroundColor: Color(0xFF228D6D),
                           ),
@@ -188,10 +179,9 @@ class _SearchAndAddState extends State<SearchAndAdd> {
                           onPressed: () {
                             Navigator.of(context).pop();
                           },
-                          child: Text('Annuler'),
+                          child: Text('Cancel'),
                           style: TextButton.styleFrom(
-                            foregroundColor:
-                                const Color.fromARGB(255, 133, 131, 131),
+                            foregroundColor: const Color.fromARGB(255, 133, 131, 131),
                           ),
                         ),
                       ],
@@ -206,117 +196,46 @@ class _SearchAndAddState extends State<SearchAndAdd> {
     );
   }
 
-  Widget _buildFormFields({required BuildContext constraints}) {
-    bool isWideScreen = MediaQuery.of(context).size.width > 600;
-    return LayoutBuilder(
-      builder: (context, constraints) {
-        return Column(
+  Widget _buildFormFields() {
+    return Column(
+      children: [
+        Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Expanded(
-                  child: Column(
+            Expanded(
+              child: Column(
+                children: [
+                  _buildTextField(controller: _nomController, labelText: 'Name*'),
+                  SizedBox(height: 10),
+                  _buildTextField(controller: _specialiteController, labelText: 'Specialty*'),
+                  SizedBox(height: 10),
+                  _buildTextField(controller: _departementController, labelText: 'Department*'),
+                  SizedBox(height: 10),
+                  _buildEmailField(controller: _emailController, labelText: 'Email*'),
+                  SizedBox(height: 10),
+                  Row(
                     children: [
-                      isWideScreen
-                          ? Row(
-                              children: [
-                                Expanded(
-                                  child: _buildTextField(
-                                      controller: _nomController,
-                                      labelText: 'Nom*'),
-                                ),
-                                SizedBox(width: 10),
-                                Expanded(
-                                  child: _buildTextField(
-                                      controller: _specialiteController,
-                                      labelText: 'Spécialité*'),
-                                ),
-                              ],
-                            )
-                          : Column(
-                              children: [
-                                _buildTextField(
-                                    controller: _nomController,
-                                    labelText: 'Nom*'),
-                                SizedBox(height: 10),
-                                _buildTextField(
-                                    controller: _specialiteController,
-                                    labelText: 'Spécialité*'),
-                              ],
-                            ),
-                      SizedBox(height: 10),
-                      isWideScreen
-                          ? Row(
-                              children: [
-                                Expanded(
-                                  child: _buildTextField(
-                                      controller: _departementController,
-                                      labelText: 'Departement*'),
-                                ),
-                                SizedBox(width: 10),
-                                Expanded(
-                                  child: _buildEmailField(
-                                      controller: _emailController,
-                                      labelText: 'Email*'),
-                                ),
-                              ],
-                            )
-                          : Column(
-                              children: [
-                                _buildTextField(
-                                    controller: _departementController,
-                                    labelText: 'Departement*'),
-                                SizedBox(height: 10),
-                                _buildEmailField(
-                                    controller: _emailController,
-                                    labelText: 'Email*'),
-                              ],
-                            ),
-                      SizedBox(height: 10),
-                      isWideScreen
-                          ? Row(
-                              children: [
-                                Expanded(
-                                  child: _buildPasswordField(
-                                      controller: _passwordController,
-                                      labelText: 'Password*'),
-                                ),
-                                SizedBox(width: 10),
-                                Expanded(
-                                  child: _buildPasswordField(
-                                      controller: _confirmPasswordController,
-                                      labelText: 'Confirm Password*'),
-                                ),
-                              ],
-                            )
-                          : Column(
-                              children: [
-                                _buildPasswordField(
-                                    controller: _passwordController,
-                                    labelText: 'Password*'),
-                                SizedBox(height: 10),
-                                _buildPasswordField(
-                                    controller: _confirmPasswordController,
-                                    labelText: 'Confirm Password*'),
-                              ],
-                            ),
+                      Expanded(
+                        child: _buildPasswordField(controller: _passwordController, labelText: 'Password*'),
+                      ),
+                      SizedBox(width: 10),
+                      Expanded(
+                        child: _buildPasswordField(controller: _confirmPasswordController, labelText: 'Confirm Password*'),
+                      ),
                     ],
                   ),
-                ),
-                SizedBox(
-                    width: 20), // Space between form fields and image picker
-                _buildImagePicker(), // Image picker on the right
-              ],
+                ],
+              ),
             ),
+            SizedBox(width: 20),
+            _buildImagePicker(), // Image picker widget
           ],
-        );
-      },
+        ),
+      ],
     );
   }
 
-  Widget _buildTextField(
-      {required TextEditingController controller, required String labelText}) {
+  Widget _buildTextField({required TextEditingController controller, required String labelText}) {
     return TextFormField(
       controller: controller,
       decoration: InputDecoration(
@@ -325,15 +244,14 @@ class _SearchAndAddState extends State<SearchAndAdd> {
       ),
       validator: (value) {
         if (value == null || value.isEmpty) {
-          return 'Veuillez entrer $labelText';
+          return 'Please enter $labelText';
         }
         return null;
       },
     );
   }
 
-  Widget _buildEmailField(
-      {required TextEditingController controller, required String labelText}) {
+  Widget _buildEmailField({required TextEditingController controller, required String labelText}) {
     return TextFormField(
       controller: controller,
       decoration: InputDecoration(
@@ -352,11 +270,10 @@ class _SearchAndAddState extends State<SearchAndAdd> {
     );
   }
 
-  Widget _buildPasswordField(
-      {required TextEditingController controller, required String labelText}) {
+  Widget _buildPasswordField({required TextEditingController controller, required String labelText}) {
     return TextFormField(
       controller: controller,
-      obscureText: !_isPasswordVisible, // Add the obscureText condition
+      obscureText: !_isPasswordVisible, // Toggle password visibility
       decoration: InputDecoration(
         labelText: labelText,
         border: OutlineInputBorder(),
@@ -366,7 +283,7 @@ class _SearchAndAddState extends State<SearchAndAdd> {
           ),
           onPressed: () {
             setState(() {
-              _isPasswordVisible = !_isPasswordVisible; // Toggle visibility
+              _isPasswordVisible = !_isPasswordVisible;
             });
           },
         ),
@@ -384,8 +301,8 @@ class _SearchAndAddState extends State<SearchAndAdd> {
     return GestureDetector(
       onTap: _pickPhoto,
       child: Container(
-        width: MediaQuery.of(context).size.width * 0.2, // Adjust the width
-        height: 160, // Set height for the image picker container
+        width: MediaQuery.of(context).size.width * 0.2,
+        height: 160,
         decoration: BoxDecoration(
           color: Colors.grey.shade200,
           borderRadius: BorderRadius.circular(10),
@@ -393,29 +310,17 @@ class _SearchAndAddState extends State<SearchAndAdd> {
             color: Colors.grey.shade400,
             width: 2,
           ),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.grey.withOpacity(0.5),
-              spreadRadius: 2,
-              blurRadius: 5,
-              offset: Offset(0, 3),
-            ),
-          ],
         ),
         child: Center(
           child: _selectedPhotoBytes == null
               ? Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Icon(Icons.camera_alt,
-                        color: Colors.grey.shade600, size: 40),
+                    Icon(Icons.camera_alt, color: Colors.grey.shade600, size: 40),
                     SizedBox(height: 10),
                     Text(
                       'Tap to select photo',
-                      style: TextStyle(
-                        color: Colors.grey.shade600,
-                        fontSize: 16,
-                      ),
+                      style: TextStyle(color: Colors.grey.shade600, fontSize: 16),
                     ),
                   ],
                 )
