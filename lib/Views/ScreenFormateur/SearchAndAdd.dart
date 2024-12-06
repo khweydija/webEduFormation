@@ -11,7 +11,8 @@ class SearchAndAdd extends StatefulWidget {
 }
 
 class _SearchAndAddState extends State<SearchAndAdd> {
-  final FormateurController _formateurController = Get.put(FormateurController()); // Link FormateurController
+  final FormateurController _formateurController =
+      Get.put(FormateurController()); // Link FormateurController
 
   final _formKey = GlobalKey<FormState>();
 
@@ -20,15 +21,17 @@ class _SearchAndAddState extends State<SearchAndAdd> {
   final TextEditingController _departementController = TextEditingController();
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
-  final TextEditingController _confirmPasswordController = TextEditingController();
-  
+  final TextEditingController _confirmPasswordController =
+      TextEditingController();
+
   Uint8List? _selectedPhotoBytes;
   String? _photoFilename;
   bool _isPasswordVisible = false;
 
   // Picking a photo
   void _pickPhoto() async {
-    final pickedFile = await ImagePickerWeb.getImageAsBytes(); // Get image as bytes
+    final pickedFile = await ImagePickerWeb.getImageAsBytes();
+    // Get image as bytes
     if (pickedFile != null) {
       setState(() {
         _selectedPhotoBytes = pickedFile;
@@ -91,7 +94,9 @@ class _SearchAndAddState extends State<SearchAndAdd> {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Container(
-                  width: constraints.maxWidth > 800 ? 700 : constraints.maxWidth * 0.7, // Adjust width dynamically
+                  width: constraints.maxWidth > 800
+                      ? 700
+                      : constraints.maxWidth * 0.7, // Adjust width dynamically
                   child: TextField(
                     decoration: InputDecoration(
                       suffixIcon: Icon(Icons.search, color: Colors.black54),
@@ -103,14 +108,16 @@ class _SearchAndAddState extends State<SearchAndAdd> {
                       ),
                       filled: true,
                       fillColor: Colors.white,
-                      contentPadding: EdgeInsets.symmetric(vertical: 0, horizontal: 20),
+                      contentPadding:
+                          EdgeInsets.symmetric(vertical: 0, horizontal: 20),
                     ),
                   ),
                 ),
                 ElevatedButton.icon(
                   onPressed: _showAddFormateurDialog,
                   icon: Icon(Icons.add, color: Colors.white),
-                  label: Text('Add Formateur', style: TextStyle(color: Colors.white)),
+                  label: Text('Add Formateur',
+                      style: TextStyle(color: Colors.white)),
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Color(0xFF228D6D),
                     shape: RoundedRectangleBorder(
@@ -151,7 +158,8 @@ class _SearchAndAddState extends State<SearchAndAdd> {
                       children: [
                         Text(
                           'Add Formateur',
-                          style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+                          style: TextStyle(
+                              fontSize: 24, fontWeight: FontWeight.bold),
                         ),
                         IconButton(
                           icon: Icon(Icons.close),
@@ -169,7 +177,8 @@ class _SearchAndAddState extends State<SearchAndAdd> {
                       children: [
                         ElevatedButton(
                           onPressed: _submitFormateur,
-                          child: Text('Add', style: TextStyle(color: Colors.white)),
+                          child: Text('Add',
+                              style: TextStyle(color: Colors.white)),
                           style: ElevatedButton.styleFrom(
                             backgroundColor: Color(0xFF228D6D),
                           ),
@@ -181,7 +190,8 @@ class _SearchAndAddState extends State<SearchAndAdd> {
                           },
                           child: Text('Cancel'),
                           style: TextButton.styleFrom(
-                            foregroundColor: const Color.fromARGB(255, 133, 131, 131),
+                            foregroundColor:
+                                const Color.fromARGB(255, 133, 131, 131),
                           ),
                         ),
                       ],
@@ -205,22 +215,32 @@ class _SearchAndAddState extends State<SearchAndAdd> {
             Expanded(
               child: Column(
                 children: [
-                  _buildTextField(controller: _nomController, labelText: 'Name*'),
+                  _buildTextField(
+                      controller: _nomController, labelText: 'Name*'),
                   SizedBox(height: 10),
-                  _buildTextField(controller: _specialiteController, labelText: 'Specialty*'),
+                  _buildTextField(
+                      controller: _specialiteController,
+                      labelText: 'Specialty*'),
                   SizedBox(height: 10),
-                  _buildTextField(controller: _departementController, labelText: 'Department*'),
+                  _buildTextField(
+                      controller: _departementController,
+                      labelText: 'Department*'),
                   SizedBox(height: 10),
-                  _buildEmailField(controller: _emailController, labelText: 'Email*'),
+                  _buildEmailField(
+                      controller: _emailController, labelText: 'Email*'),
                   SizedBox(height: 10),
                   Row(
                     children: [
                       Expanded(
-                        child: _buildPasswordField(controller: _passwordController, labelText: 'Password*'),
+                        child: _buildPasswordField(
+                            controller: _passwordController,
+                            labelText: 'Password*'),
                       ),
                       SizedBox(width: 10),
                       Expanded(
-                        child: _buildPasswordField(controller: _confirmPasswordController, labelText: 'Confirm Password*'),
+                        child: _buildPasswordField(
+                            controller: _confirmPasswordController,
+                            labelText: 'Confirm Password*'),
                       ),
                     ],
                   ),
@@ -235,7 +255,8 @@ class _SearchAndAddState extends State<SearchAndAdd> {
     );
   }
 
-  Widget _buildTextField({required TextEditingController controller, required String labelText}) {
+  Widget _buildTextField(
+      {required TextEditingController controller, required String labelText}) {
     return TextFormField(
       controller: controller,
       decoration: InputDecoration(
@@ -251,7 +272,8 @@ class _SearchAndAddState extends State<SearchAndAdd> {
     );
   }
 
-  Widget _buildEmailField({required TextEditingController controller, required String labelText}) {
+  Widget _buildEmailField(
+      {required TextEditingController controller, required String labelText}) {
     return TextFormField(
       controller: controller,
       decoration: InputDecoration(
@@ -270,7 +292,8 @@ class _SearchAndAddState extends State<SearchAndAdd> {
     );
   }
 
-  Widget _buildPasswordField({required TextEditingController controller, required String labelText}) {
+  Widget _buildPasswordField(
+      {required TextEditingController controller, required String labelText}) {
     return TextFormField(
       controller: controller,
       obscureText: !_isPasswordVisible, // Toggle password visibility
@@ -297,6 +320,49 @@ class _SearchAndAddState extends State<SearchAndAdd> {
     );
   }
 
+  // Widget _buildImagePicker() {
+  //   return GestureDetector(
+  //     onTap: _pickPhoto,
+  //     child: Container(
+  //       width: MediaQuery.of(context).size.width * 0.2,
+  //       height: 160,
+  //       decoration: BoxDecoration(
+  //         color: Colors.grey.shade200,
+  //         borderRadius: BorderRadius.circular(10),
+  //         border: Border.all(
+  //           color: Colors.grey.shade400,
+  //           width: 2,
+  //         ),
+  //       ),
+  //       child: Center(
+  //         child: _selectedPhotoBytes == null
+  //             ? Column(
+  //                 mainAxisAlignment: MainAxisAlignment.center,
+  //                 children: [
+  //                   Icon(Icons.camera_alt,
+  //                       color: Colors.grey.shade600, size: 40),
+  //                   SizedBox(height: 10),
+  //                   Text(
+  //                     'Tap to select photo',
+  //                     style:
+  //                         TextStyle(color: Colors.grey.shade600, fontSize: 16),
+  //                   ),
+  //                 ],
+  //               )
+  //             : ClipRRect(
+  //                 borderRadius: BorderRadius.circular(8.0),
+  //                 child: Image.memory(
+  //                   _selectedPhotoBytes!,
+  //                   width: double.infinity,
+  //                   height: double.infinity,
+  //                   fit: BoxFit.cover,
+  //                 ),
+  //               ),
+  //       ),
+  //     ),
+  //   );
+  // }
+
   Widget _buildImagePicker() {
     return GestureDetector(
       onTap: _pickPhoto,
@@ -316,11 +382,13 @@ class _SearchAndAddState extends State<SearchAndAdd> {
               ? Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Icon(Icons.camera_alt, color: Colors.grey.shade600, size: 40),
-                    SizedBox(height: 10),
+                    Icon(Icons.camera_alt,
+                        color: Colors.grey.shade600, size: 40),
+                    const SizedBox(height: 10),
                     Text(
                       'Tap to select photo',
-                      style: TextStyle(color: Colors.grey.shade600, fontSize: 16),
+                      style:
+                          TextStyle(color: Colors.grey.shade600, fontSize: 16),
                     ),
                   ],
                 )

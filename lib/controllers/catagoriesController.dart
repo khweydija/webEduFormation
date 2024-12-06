@@ -1,4 +1,5 @@
 import 'package:get/get.dart';
+import 'package:get_storage/get_storage.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 
@@ -10,9 +11,13 @@ class CategorieController extends GetxController {
 
   // Fetch all categories from the backend
   Future<void> fetchCategories() async {
+    final box = GetStorage();
+    String? token = box.read('token');
     isLoading(true);
     try {
-      var response = await http.get(Uri.parse('$apiUrl/listAll'));
+      var response = await http.get(
+          headers: {'Authorization': 'Bearer $token'},
+          Uri.parse('$apiUrl/listAll'));
       if (response.statusCode == 200) {
         categories.assignAll(json.decode(response.body));
       } else {
@@ -27,9 +32,13 @@ class CategorieController extends GetxController {
 
   // Fetch a single category by ID
   Future<void> getCategorieById(int id) async {
+    final box = GetStorage();
+    String? token = box.read('token');
     isLoading(true);
     try {
-      var response = await http.get(Uri.parse('$apiUrl/getbyId/$id'));
+      var response = await http.get(
+          headers: {'Authorization': 'Bearer $token'},
+          Uri.parse('$apiUrl/getbyId/$id'));
       if (response.statusCode == 200) {
         categorieDetails.value = json.decode(response.body); // Save details
       } else {
@@ -43,12 +52,18 @@ class CategorieController extends GetxController {
   }
 
   // Update a category
-  Future<void> updateCategorie(int id, String description, String designation) async {
+  Future<void> updateCategorie(
+      int id, String description, String designation) async {
+    final box = GetStorage();
+    String? token = box.read('token');
     isLoading(true);
     try {
       var response = await http.put(
         Uri.parse('$apiUrl/update/$id'),
-        headers: {"Content-Type": "application/json"},
+        headers: {
+          'authorization': 'Bearer $token',
+          "Content-Type": "application/json"
+        },
         body: jsonEncode({
           'description': description,
           'designation': designation,
@@ -72,9 +87,13 @@ class CategorieController extends GetxController {
 
   // Delete a category
   Future<void> deleteCategorie(int id) async {
+    final box = GetStorage();
+    String? token = box.read('token');
     isLoading(true);
     try {
-      var response = await http.delete(Uri.parse('$apiUrl/delete/$id'));
+      var response = await http.delete(
+          headers: {'Authorization': 'Bearer $token'},
+          Uri.parse('$apiUrl/delete/$id'));
       if (response.statusCode == 200) {
         fetchCategories(); // Refresh list after deletion
         Get.snackbar('Success', 'Category deleted successfully');
@@ -90,11 +109,16 @@ class CategorieController extends GetxController {
 
   // Create a new category
   Future<void> createCategorie(String description, String designation) async {
+    final box = GetStorage();
+    String? token = box.read('token');
     isLoading(true);
     try {
       var response = await http.post(
         Uri.parse('$apiUrl/create'),
-        headers: {"Content-Type": "application/json"},
+        headers: {
+          'Authorization': 'Bearer $token',
+          "Content-Type": "application/json"
+        },
         body: jsonEncode({
           'description': description,
           'designation': designation,
@@ -118,9 +142,13 @@ class CategorieController extends GetxController {
 
   // Search categories by description or designation
   Future<void> searchCategories(String query) async {
+    final box = GetStorage();
+    String? token = box.read('token');
     isLoading(true);
     try {
-      var response = await http.get(Uri.parse('$apiUrl/search?query=$query'));
+      var response = await http.get(
+          headers: {'Authorization': 'Bearer $token'},
+          Uri.parse('$apiUrl/search?query=$query'));
       if (response.statusCode == 200) {
         categories.assignAll(json.decode(response.body));
       } else {

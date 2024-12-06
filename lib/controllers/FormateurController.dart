@@ -1,11 +1,13 @@
 import 'dart:typed_data';
 import 'package:get/get.dart';
+import 'package:get_storage/get_storage.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:http_parser/http_parser.dart';
 
 class FormateurController extends GetxController {
-  final String apiUrl = 'http://localhost:8080/formateurs'; // Base URL for formateurs
+  final String apiUrl =
+      'http://localhost:8080/formateurs'; // Base URL for formateurs
 
   var formateurs = [].obs; // List to store formateurs
   var formateurDetails = {}.obs; // Store specific formateur details
@@ -21,6 +23,8 @@ class FormateurController extends GetxController {
     required Uint8List photoBytes, // Handle photo bytes for web
     required String photoFilename, // Filename for the photo
   }) async {
+    final box = GetStorage();
+    String? token = box.read('token');
     try {
       var request =
           http.MultipartRequest('POST', Uri.parse('$apiUrl/create/formateur'))
@@ -30,7 +34,9 @@ class FormateurController extends GetxController {
             ..fields['specialite'] = specialite
             ..fields['departement'] = departement
             ..files.add(http.MultipartFile.fromBytes('photo', photoBytes,
-                filename: photoFilename, contentType: MediaType('image', 'jpeg'))); // Send photo as bytes
+                filename: photoFilename,
+                contentType: MediaType('image', 'jpeg')))
+            ..headers['Authorization'] = 'Bearer $token'; // Send photo as bytes
 
       var response = await request.send();
       if (response.statusCode == 200) {
@@ -55,6 +61,8 @@ class FormateurController extends GetxController {
     Uint8List? photoBytes, // Optionally update the photo
     String? photoFilename,
   }) async {
+    final box = GetStorage();
+    String? token = box.read('token');
     try {
       var request =
           http.MultipartRequest('PUT', Uri.parse('$apiUrl/update/$id'))
@@ -62,7 +70,8 @@ class FormateurController extends GetxController {
             ..fields['email'] = email
             ..fields['specialite'] = specialite
             ..fields['departement'] = departement
-            ..fields['active'] = active.toString();
+            ..fields['active'] = active.toString()
+            ..headers['Authorization'] = 'Bearer $token';
 
       // Add photo if it's provided
       if (photoBytes != null && photoFilename != null) {
@@ -84,8 +93,11 @@ class FormateurController extends GetxController {
 
   // Method to delete a formateur by ID
   Future<void> deleteFormateur(int id) async {
+    final box = GetStorage();
+    String? token = box.read('token');
     try {
-      var response = await http.delete(Uri.parse('$apiUrl/delete/$id'));
+      var response = await http.delete(Uri.parse('$apiUrl/delete/$id'),
+          headers: {'Authorization': 'Bearer $token'});
       if (response.statusCode == 200) {
         Get.snackbar('Success', 'Formateur deleted successfully');
         fetchAllFormateurs(); // Refresh the list after deletion
@@ -99,8 +111,11 @@ class FormateurController extends GetxController {
 
   // Method to fetch all formateurs
   Future<void> fetchAllFormateurs() async {
+    final box = GetStorage();
+    String? token = box.read('token');
     try {
-      var response = await http.get(Uri.parse('$apiUrl/list'));
+      var response = await http.get(Uri.parse('$apiUrl/list'),
+          headers: {'Authorization': 'Bearer $token'});
       if (response.statusCode == 200) {
         List data = json.decode(response.body);
         formateurs.assignAll(data); // Update the list of formateurs
@@ -114,9 +129,12 @@ class FormateurController extends GetxController {
 
   // Method to fetch details of a specific formateur by ID
   Future<void> getFormateurDetails(int id) async {
+    final box = GetStorage();
+    String? token = box.read('token');
     try {
       isLoading(true);
-      var response = await http.get(Uri.parse('$apiUrl/formateur/$id'));
+      var response = await http.get(Uri.parse('$apiUrl/formateur/$id'),
+          headers: {'Authorization': 'Bearer $token'});
       if (response.statusCode == 200) {
         formateurDetails.value = json.decode(response.body);
       } else {

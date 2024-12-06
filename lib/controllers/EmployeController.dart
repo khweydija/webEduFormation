@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:html' as html;
 import 'dart:typed_data';
 import 'package:get/get.dart';
+import 'package:get_storage/get_storage.dart';
 import 'package:http/http.dart' as http;
 
 import 'package:url_launcher/url_launcher.dart';
@@ -34,6 +35,8 @@ class EmployeController extends GetxController {
     required html.File photo,
     required html.File diplome,
   }) async {
+    final box = GetStorage();
+    String? token = box.read('token');
     try {
       Uint8List photoBytes = await _convertFileToUint8List(photo);
       Uint8List diplomeBytes = await _convertFileToUint8List(diplome);
@@ -47,7 +50,8 @@ class EmployeController extends GetxController {
             ..files.add(http.MultipartFile.fromBytes('photo', photoBytes,
                 filename: photo.name))
             ..files.add(http.MultipartFile.fromBytes('diplome', diplomeBytes,
-                filename: diplome.name));
+                filename: diplome.name))
+            ..headers['Authorization'] = 'Bearer $token'; // Send photo as bytes
 
       var response = await request.send();
       return response;
@@ -60,8 +64,11 @@ class EmployeController extends GetxController {
 
   // Method to fetch all employees (useful for initial loading)
   Future<void> fetchAllEmployes() async {
+    final box = GetStorage();
+    String? token = box.read('token');
     try {
-      var response = await http.get(Uri.parse('$apiUrl/list'));
+      var response = await http.get(Uri.parse('$apiUrl/list'),
+          headers: {'Authorization': 'Bearer $token'});
       if (response.statusCode == 200) {
         List data = json.decode(response.body);
         employes.assignAll(data);
@@ -76,9 +83,12 @@ class EmployeController extends GetxController {
 
   // Method to fetch details of a specific employee by ID
   Future<void> getEmployeById(int id) async {
+    final box = GetStorage();
+    String? token = box.read('token');
     try {
       isLoading(true);
-      var response = await http.get(Uri.parse('$apiUrl/Employe/$id'));
+      var response = await http.get(Uri.parse('$apiUrl/Employe/$id'),
+          headers: {'Authorization': 'Bearer $token'});
       if (response.statusCode == 200) {
         selectedEmploye.value = json.decode(response.body);
       } else {
@@ -102,6 +112,8 @@ class EmployeController extends GetxController {
     html.File? photo, // Optional photo file
     html.File? diplome, // Optional diplome file
   }) async {
+    final box = GetStorage();
+    String? token = box.read('token');
     try {
       var request =
           http.MultipartRequest('PUT', Uri.parse('$apiUrl/update/$id'))
@@ -109,7 +121,8 @@ class EmployeController extends GetxController {
             ..fields['nom'] = nom
             ..fields['departement'] = departement
             ..fields['password'] = password ?? ''
-            ..fields['active'] = active.toString();
+            ..fields['active'] = active.toString()
+            ..headers['Authorization'] = 'Bearer $token';
 
       // Handle photo file upload
       if (photo != null) {
@@ -142,8 +155,11 @@ class EmployeController extends GetxController {
 
   // Method to delete an employee by ID
   Future<void> deleteEmploye(int id) async {
+    final box = GetStorage();
+    String? token = box.read('token');
     try {
-      var response = await http.delete(Uri.parse('$apiUrl/delete/$id'));
+      var response = await http.delete(Uri.parse('$apiUrl/delete/$id'),
+          headers: {'Authorization': 'Bearer $token'});
       if (response.statusCode == 200) {
         Get.snackbar('Success', 'Employee deleted successfully');
         fetchAllEmployes(); // Refresh list after deletion
@@ -158,7 +174,8 @@ class EmployeController extends GetxController {
   // Search employees by query (name, email, or department)
   void searchEmploye(String query) {
     if (query.isEmpty) {
-      filteredEmployes.assignAll(employes); // Show all employees if query is empty
+      filteredEmployes
+          .assignAll(employes); // Show all employees if query is empty
     } else {
       filteredEmployes.assignAll(employes.where((employe) {
         var name = employe['nom'].toLowerCase();

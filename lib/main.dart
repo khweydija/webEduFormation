@@ -4,12 +4,8 @@ import 'package:get/get_navigation/src/routes/get_route.dart';
 import 'package:webpfe/AppRoutes.dart';
 import 'package:webpfe/Views/ScreenCatagories/DashboardCatagories.dart';
 
-import 'package:webpfe/Views/ForgetScreen/ForgotPassAdmine.dart';
-import 'package:webpfe/Views/ForgetScreen/SetPasswordAdmin.dart';
 import 'package:webpfe/Views/LoginScreen/LoginAdmin.dart';
 
-import 'package:firebase_core/firebase_core.dart';
-import 'package:flutter/material.dart';
 import 'package:webpfe/Views/ScreenEmploye/AdminDashboardEmploye.dart';
 import 'package:webpfe/Views/ScreenFormateur/DashboardScreen.dart';
 import 'package:webpfe/Views/StatisticDashboard.dart';
