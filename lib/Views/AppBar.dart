@@ -28,15 +28,6 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
                 icon: Icon(Icons.notifications),
                 onPressed: () {},
               ),
-              CircleAvatar(
-                backgroundImage: AssetImage('assets/images/A4.jpg'),
-              ),
-              SizedBox(width: 10),
-              Text(
-                'M. Inam',
-                style: TextStyle(fontWeight: FontWeight.bold),
-              ),
-              Icon(Icons.arrow_drop_down),
             ],
           ),
         ],

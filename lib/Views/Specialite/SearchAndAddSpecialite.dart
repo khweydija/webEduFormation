@@ -1,33 +1,42 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:webpfe/controllers/catagoriesController.dart';
+import 'package:webpfe/controllers/SpecialiteController.dart';
+import 'package:webpfe/controllers/DepartementController.dart';
 
-
-class SearchAndAddc extends StatefulWidget {
+class SearchAndAddSpecialite extends StatefulWidget {
   @override
   _SearchAndAddState createState() => _SearchAndAddState();
 }
 
-class _SearchAndAddState extends State<SearchAndAddc> {
-  final CategoryController _categorieController = Get.find();
+class _SearchAndAddState extends State<SearchAndAddSpecialite> {
+  final SpecialiteController _specialiteController = Get.find();
+  final DepartementController _departementController = Get.put(DepartementController());
   final TextEditingController _searchController = TextEditingController();
+  final TextEditingController _nomController = TextEditingController();
   final TextEditingController _descriptionController = TextEditingController();
-  final TextEditingController _designationController = TextEditingController();
   final _formKey = GlobalKey<FormState>();
+  String? _selectedDepartement;
 
-  // Search categories
-  void _searchCategories() async {
-    if (_searchController.text.isNotEmpty) {
-      await _categorieController.searchCategories(_searchController.text);
-    } else {
-      _categorieController.fetchCategories();
-    }
+  @override
+  void initState() {
+    super.initState();
+    _departementController.fetchDepartements();
   }
 
-  // Open dialog to create a category
-  void _showCreateCategoryDialog() {
+  // Search specialities
+  // void _searchSpecialites() async {
+  //   if (_searchController.text.isNotEmpty) {
+  //     await _specialiteController.searchCategories(_searchController.text);
+  //   } else {
+  //     _specialiteController.fetchSpecialites();
+  //   }
+  // }
+
+  // Open dialog to create a specialite
+  void _showCreateSpecialiteDialog() {
+    _nomController.clear();
     _descriptionController.clear();
-    _designationController.clear();
+    _selectedDepartement = null;
 
     showDialog(
       context: context,
@@ -51,7 +60,7 @@ class _SearchAndAddState extends State<SearchAndAddc> {
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         const Text(
-                          'Create Category',
+                          'Create Specialite',
                           style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
                         ),
                         IconButton(
@@ -64,14 +73,14 @@ class _SearchAndAddState extends State<SearchAndAddc> {
                     ),
                     const SizedBox(height: 20),
                     TextFormField(
-                      controller: _designationController,
+                      controller: _nomController,
                       decoration: const InputDecoration(
-                        labelText: 'Designation*',
+                        labelText: 'Nom*',
                         border: OutlineInputBorder(),
                       ),
                       validator: (value) {
                         if (value == null || value.isEmpty) {
-                          return 'Please enter the designation';
+                          return 'Please enter the name';
                         }
                         return null;
                       },
@@ -90,12 +99,42 @@ class _SearchAndAddState extends State<SearchAndAddc> {
                         return null;
                       },
                     ),
+                    const SizedBox(height: 10),
+                    Obx(() {
+                      if (_departementController.isLoading.value) {
+                        return const Center(child: CircularProgressIndicator());
+                      }
+                      return DropdownButtonFormField<String>(
+                        value: _selectedDepartement,
+                        decoration: const InputDecoration(
+                          labelText: 'Departement*',
+                          border: OutlineInputBorder(),
+                        ),
+                        items: _departementController.departements
+                            .map((departement) => DropdownMenuItem<String>(
+                                  value: departement.nom,
+                                  child: Text(departement.nom),
+                                ))
+                            .toList(),
+                        onChanged: (value) {
+                          setState(() {
+                            _selectedDepartement = value;
+                          });
+                        },
+                        validator: (value) {
+                          if (value == null || value.isEmpty) {
+                            return 'Please select a department';
+                          }
+                          return null;
+                        },
+                      );
+                    }),
                     const SizedBox(height: 20),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.end,
                       children: [
                         ElevatedButton(
-                          onPressed: _submitCreateCategory,
+                          onPressed: _submitCreateSpecialite,
                           child: const Text('Create', style: TextStyle(color: Colors.white)),
                           style: ElevatedButton.styleFrom(
                             backgroundColor: const Color(0xFF228D6D),
@@ -123,18 +162,19 @@ class _SearchAndAddState extends State<SearchAndAddc> {
     );
   }
 
-  // Submit the create category form
-  void _submitCreateCategory() async {
+  // Submit the create specialite form
+  void _submitCreateSpecialite() async {
     if (_formKey.currentState?.validate() ?? false) {
       try {
-        await _categorieController.createCategory(
+        await _specialiteController.createSpecialite(
+          _nomController.text,
           _descriptionController.text,
-          _designationController.text,
+          _selectedDepartement!,
         );
         Navigator.of(context).pop(); // Close dialog on success
-        Get.snackbar('Success', 'Category created successfully');
+        Get.snackbar('Success', 'Specialite created successfully');
       } catch (e) {
-        Get.snackbar('Error', 'Failed to create category');
+        Get.snackbar('Error', 'Failed to create specialite');
       }
     }
   }
@@ -151,11 +191,11 @@ class _SearchAndAddState extends State<SearchAndAddc> {
               child: TextField(
                 controller: _searchController,
                 decoration: InputDecoration(
-                  suffixIcon: IconButton(
-                    icon: const Icon(Icons.search, color: Colors.black54),
-                    onPressed: _searchCategories,
-                  ),
-                  hintText: 'Search categories...',
+                  // suffixIcon: IconButton(
+                  //   icon: const Icon(Icons.search, color: Colors.black54),
+                  //   onPressed: _searchSpecialites,
+                  // ),
+                  hintText: 'Search specialites...',
                   hintStyle: const TextStyle(color: Colors.black54),
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(20),
@@ -168,9 +208,9 @@ class _SearchAndAddState extends State<SearchAndAddc> {
               ),
             ),
             ElevatedButton.icon(
-              onPressed: _showCreateCategoryDialog,
+              onPressed: _showCreateSpecialiteDialog,
               icon: const Icon(Icons.add, color: Colors.white),
-              label: const Text('Add Category', style: TextStyle(color: Colors.white)),
+              label: const Text('Add Specialite', style: TextStyle(color: Colors.white)),
               style: ElevatedButton.styleFrom(
                 backgroundColor: const Color(0xFF228D6D),
                 shape: RoundedRectangleBorder(

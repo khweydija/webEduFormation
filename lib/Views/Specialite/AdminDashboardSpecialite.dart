@@ -1,23 +1,25 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:webpfe/Views/AppBar.dart';
-import 'package:webpfe/Views/ScreenCatagories/SearchAndAddc.dart';
 import 'package:webpfe/Views/Sidebar.dart';
-import 'package:webpfe/controllers/catagoriesController.dart';
+import 'package:webpfe/Views/Specialite/SearchAndAddSpecialite.dart';
+import 'package:webpfe/controllers/DepartementController.dart';
+import 'package:webpfe/controllers/SpecialiteController.dart';
 
-class AdminDashboardCategorie extends StatefulWidget {
+class AdminDashboardSpecialite extends StatefulWidget {
   @override
   _AdminDashboardState createState() => _AdminDashboardState();
 }
 
-class _AdminDashboardState extends State<AdminDashboardCategorie> {
-  final CategoryController _categoryController = Get.put(CategoryController());
-  int selectedIndex = 5;
+class _AdminDashboardState extends State<AdminDashboardSpecialite> {
+  final SpecialiteController _specialiteController =
+      Get.put(SpecialiteController());
+  int selectedIndex = 2;
 
   @override
   void initState() {
     super.initState();
-    _categoryController.fetchCategories();
+    _specialiteController.fetchSpecialites();
   }
 
   void onItemSelected(int index) {
@@ -51,7 +53,7 @@ class _AdminDashboardState extends State<AdminDashboardCategorie> {
 }
 
 class MainContent extends StatelessWidget {
-  final CategoryController _categoryController = Get.find();
+  final SpecialiteController _specialiteController = Get.find();
 
   @override
   Widget build(BuildContext context) {
@@ -70,7 +72,7 @@ class MainContent extends StatelessWidget {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     const Text(
-                      'Gestion des Catégories',
+                      'Gestion des Spécialités',
                       style: TextStyle(
                         fontSize: 24,
                         fontWeight: FontWeight.bold,
@@ -80,13 +82,13 @@ class MainContent extends StatelessWidget {
                   ],
                 ),
                 const SizedBox(height: 20),
-                SearchAndAddc(),
+                SearchAndAddSpecialite(),
                 const SizedBox(height: 20),
                 Obx(() {
-                  if (_categoryController.isLoading.value) {
+                  if (_specialiteController.isLoading.value) {
                     return const Center(child: CircularProgressIndicator());
-                  } else if (_categoryController.categories.isEmpty) {
-                    return const Center(child: Text('No categories found'));
+                  } else if (_specialiteController.specialites.isEmpty) {
+                    return const Center(child: Text('No specialities found'));
                   } else {
                     return Container(
                       decoration: BoxDecoration(
@@ -103,32 +105,35 @@ class MainContent extends StatelessWidget {
                       child: SingleChildScrollView(
                         scrollDirection: Axis.horizontal,
                         child: DataTable(
-                          columnSpacing: 200,
+                          columnSpacing: 100,
                           columns: const [
-                            DataColumn(label: Text('Designation')),
+                            DataColumn(label: Text('Nom')),
                             DataColumn(label: Text('Description')),
+                            DataColumn(label: Text('Département')),
                             DataColumn(label: Text('Action')),
                           ],
-                          rows: _categoryController.categories.map((category) {
+                          rows: _specialiteController.specialites
+                              .map((specialite) {
                             return DataRow(cells: [
-                              DataCell(Text(category.designation)),
-                              DataCell(Text(category.description)),
+                              DataCell(Text(specialite.nom)),
+                              DataCell(Text(specialite.description)),
+                              DataCell(Text(specialite.departement.nom)),
                               DataCell(Row(
                                 children: [
                                   IconButton(
                                     icon: const Icon(Icons.visibility,
                                         color: Color(0xFF00352C)),
                                     onPressed: () {
-                                      _showCategoryDetailsDialog(
-                                          context, category.id);
+                                      _showSpecialiteDetailsDialog(
+                                          context, specialite.idSpecialite);
                                     },
                                   ),
                                   IconButton(
                                     icon: const Icon(Icons.edit,
                                         color: Color(0xFF00352C)),
                                     onPressed: () {
-                                      _showUpdateCategoryDialog(
-                                          context, category.id);
+                                      _showUpdateSpecialiteDialog(
+                                          context, specialite.idSpecialite);
                                     },
                                   ),
                                   IconButton(
@@ -136,7 +141,7 @@ class MainContent extends StatelessWidget {
                                         color: Color(0xFF00352C)),
                                     onPressed: () {
                                       _showDeleteConfirmationDialog(
-                                          context, category.id);
+                                          context, specialite.idSpecialite);
                                     },
                                   ),
                                 ],
@@ -156,17 +161,17 @@ class MainContent extends StatelessWidget {
     );
   }
 
-  void _showCategoryDetailsDialog(BuildContext context, int categoryId) {
-    _categoryController.getCategoryById(categoryId);
+  void _showSpecialiteDetailsDialog(BuildContext context, int specialiteId) {
+    _specialiteController.getSpecialiteById(specialiteId);
     showDialog(
       context: context,
       builder: (BuildContext context) {
         return Obx(() {
-          if (_categoryController.isLoading.value) {
+          if (_specialiteController.isLoading.value) {
             return const Center(child: CircularProgressIndicator());
           }
 
-          final details = _categoryController.categoryDetails.value;
+          final details = _specialiteController.specialiteDetails.value;
           if (details == null) return const SizedBox();
 
           return Dialog(
@@ -181,7 +186,7 @@ class MainContent extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   const Text(
-                    'Détails de la Catégorie',
+                    'Détails de la Spécialité',
                     style: TextStyle(
                       fontSize: 24,
                       fontWeight: FontWeight.bold,
@@ -190,9 +195,8 @@ class MainContent extends StatelessWidget {
                   ),
                   const SizedBox(height: 20),
                   TextField(
-                    controller:
-                        TextEditingController(text: details.designation),
-                    decoration: const InputDecoration(labelText: 'Designation'),
+                    controller: TextEditingController(text: details.nom),
+                    decoration: const InputDecoration(labelText: 'Nom'),
                     readOnly: true,
                   ),
                   const SizedBox(height: 10),
@@ -200,6 +204,13 @@ class MainContent extends StatelessWidget {
                     controller:
                         TextEditingController(text: details.description),
                     decoration: const InputDecoration(labelText: 'Description'),
+                    readOnly: true,
+                  ),
+                  const SizedBox(height: 10),
+                  TextField(
+                    controller:
+                        TextEditingController(text: details.departement.nom),
+                    decoration: const InputDecoration(labelText: 'Département'),
                     readOnly: true,
                   ),
                   const SizedBox(height: 20),
@@ -224,23 +235,29 @@ class MainContent extends StatelessWidget {
     );
   }
 
-  void _showUpdateCategoryDialog(BuildContext context, int categoryId) {
-    _categoryController.getCategoryById(categoryId);
+  void _showUpdateSpecialiteDialog(BuildContext context, int specialiteId) {
+    final DepartementController _departementController =
+        Get.put(DepartementController());
+    _specialiteController.getSpecialiteById(specialiteId);
+    _departementController.fetchDepartements();
+
     showDialog(
       context: context,
       builder: (BuildContext context) {
         return Obx(() {
-          if (_categoryController.isLoading.value) {
+          if (_specialiteController.isLoading.value ||
+              _departementController.isLoading.value) {
             return const Center(child: CircularProgressIndicator());
           }
 
-          final details = _categoryController.categoryDetails.value;
+          final details = _specialiteController.specialiteDetails.value;
           if (details == null) return const SizedBox();
 
-          final TextEditingController designationController =
-              TextEditingController(text: details.designation);
+          final TextEditingController nomController =
+              TextEditingController(text: details.nom);
           final TextEditingController descriptionController =
               TextEditingController(text: details.description);
+          String? selectedDepartement = details.departement.nom;
 
           return Dialog(
             insetPadding: const EdgeInsets.all(20),
@@ -254,7 +271,7 @@ class MainContent extends StatelessWidget {
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   const Text(
-                    'Modifier Catégorie',
+                    'Modifier Spécialité',
                     style: TextStyle(
                       fontSize: 24,
                       fontWeight: FontWeight.bold,
@@ -263,9 +280,8 @@ class MainContent extends StatelessWidget {
                   ),
                   const SizedBox(height: 20),
                   TextField(
-                    controller: designationController,
-                    decoration:
-                        const InputDecoration(labelText: 'Designation*'),
+                    controller: nomController,
+                    decoration: const InputDecoration(labelText: 'Nom*'),
                   ),
                   const SizedBox(height: 10),
                   TextField(
@@ -273,18 +289,44 @@ class MainContent extends StatelessWidget {
                     decoration:
                         const InputDecoration(labelText: 'Description*'),
                   ),
+                  const SizedBox(height: 10),
+                  DropdownButtonFormField<String>(
+                    value: selectedDepartement,
+                    decoration: const InputDecoration(
+                      labelText: 'Département*',
+                      border: OutlineInputBorder(),
+                    ),
+                    items: _departementController.departements
+                        .map((departement) => DropdownMenuItem<String>(
+                              value: departement.nom,
+                              child: Text(departement.nom),
+                            ))
+                        .toList(),
+                    onChanged: (value) {
+                      selectedDepartement = value;
+                    },
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return 'Please select a department';
+                      }
+                      return null;
+                    },
+                  ),
                   const SizedBox(height: 20),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.end,
                     children: [
                       ElevatedButton(
                         onPressed: () async {
-                          await _categoryController.updateCategory(
-                            categoryId,
-                            descriptionController.text,
-                            designationController.text,
-                          );
-                          Navigator.of(context).pop();
+                          if (selectedDepartement != null) {
+                            await _specialiteController.updateSpecialite(
+                              specialiteId,
+                              nomController.text,
+                              descriptionController.text,
+                              selectedDepartement!,
+                            );
+                            Navigator.of(context).pop();
+                          }
                         },
                         child: const Text('Enregistrer'),
                         style: ElevatedButton.styleFrom(
@@ -312,14 +354,14 @@ class MainContent extends StatelessWidget {
     );
   }
 
-  void _showDeleteConfirmationDialog(BuildContext context, int categoryId) {
+  void _showDeleteConfirmationDialog(BuildContext context, int specialiteId) {
     showDialog(
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
           title: const Text('Confirmer la suppression'),
           content:
-              const Text('Voulez-vous vraiment supprimer cette catégorie?'),
+              const Text('Voulez-vous vraiment supprimer cette spécialité?'),
           actions: [
             TextButton(
               onPressed: () {
@@ -329,7 +371,7 @@ class MainContent extends StatelessWidget {
             ),
             ElevatedButton(
               onPressed: () async {
-                await _categoryController.deleteCategory(categoryId);
+                await _specialiteController.deleteSpecialite(specialiteId);
                 Navigator.of(context).pop();
               },
               child: const Text('Oui'),

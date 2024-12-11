@@ -1,23 +1,24 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:webpfe/Views/AppBar.dart';
-import 'package:webpfe/Views/ScreenCatagories/SearchAndAddc.dart';
-import 'package:webpfe/Views/Sidebar.dart';
-import 'package:webpfe/controllers/catagoriesController.dart';
+import 'package:webpfe/Views/Screeendepatemnet/SearchAndAddd.dart';
 
-class AdminDashboardCategorie extends StatefulWidget {
+import 'package:webpfe/Views/Sidebar.dart';
+import 'package:webpfe/controllers/DepartementController.dart';
+
+class AdminDashboardDepartement extends StatefulWidget {
   @override
   _AdminDashboardState createState() => _AdminDashboardState();
 }
 
-class _AdminDashboardState extends State<AdminDashboardCategorie> {
-  final CategoryController _categoryController = Get.put(CategoryController());
-  int selectedIndex = 5;
+class _AdminDashboardState extends State<AdminDashboardDepartement> {
+  final DepartementController _departementController = Get.put(DepartementController());
+  int selectedIndex = 1;
 
   @override
   void initState() {
     super.initState();
-    _categoryController.fetchCategories();
+    _departementController.fetchDepartements();
   }
 
   void onItemSelected(int index) {
@@ -51,7 +52,7 @@ class _AdminDashboardState extends State<AdminDashboardCategorie> {
 }
 
 class MainContent extends StatelessWidget {
-  final CategoryController _categoryController = Get.find();
+  final DepartementController _departementController = Get.find();
 
   @override
   Widget build(BuildContext context) {
@@ -70,7 +71,7 @@ class MainContent extends StatelessWidget {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     const Text(
-                      'Gestion des Catégories',
+                      'Gestion des Départements',
                       style: TextStyle(
                         fontSize: 24,
                         fontWeight: FontWeight.bold,
@@ -80,13 +81,13 @@ class MainContent extends StatelessWidget {
                   ],
                 ),
                 const SizedBox(height: 20),
-                SearchAndAddc(),
+                SearchAndAddd(),
                 const SizedBox(height: 20),
                 Obx(() {
-                  if (_categoryController.isLoading.value) {
+                  if (_departementController.isLoading.value) {
                     return const Center(child: CircularProgressIndicator());
-                  } else if (_categoryController.categories.isEmpty) {
-                    return const Center(child: Text('No categories found'));
+                  } else if (_departementController.departements.isEmpty) {
+                    return const Center(child: Text('No departments found'));
                   } else {
                     return Container(
                       decoration: BoxDecoration(
@@ -105,38 +106,32 @@ class MainContent extends StatelessWidget {
                         child: DataTable(
                           columnSpacing: 200,
                           columns: const [
-                            DataColumn(label: Text('Designation')),
+                            DataColumn(label: Text('Nom')),
                             DataColumn(label: Text('Description')),
                             DataColumn(label: Text('Action')),
                           ],
-                          rows: _categoryController.categories.map((category) {
+                          rows: _departementController.departements.map((departement) {
                             return DataRow(cells: [
-                              DataCell(Text(category.designation)),
-                              DataCell(Text(category.description)),
+                              DataCell(Text(departement.nom)),
+                              DataCell(Text(departement.description)),
                               DataCell(Row(
                                 children: [
                                   IconButton(
-                                    icon: const Icon(Icons.visibility,
-                                        color: Color(0xFF00352C)),
+                                    icon: const Icon(Icons.visibility, color: Color(0xFF00352C)),
                                     onPressed: () {
-                                      _showCategoryDetailsDialog(
-                                          context, category.id);
+                                      _showDepartementDetailsDialog(context, departement.idDepartement);
                                     },
                                   ),
                                   IconButton(
-                                    icon: const Icon(Icons.edit,
-                                        color: Color(0xFF00352C)),
+                                    icon: const Icon(Icons.edit, color: Color(0xFF00352C)),
                                     onPressed: () {
-                                      _showUpdateCategoryDialog(
-                                          context, category.id);
+                                      _showUpdateDepartementDialog(context, departement.idDepartement);
                                     },
                                   ),
                                   IconButton(
-                                    icon: const Icon(Icons.delete,
-                                        color: Color(0xFF00352C)),
+                                    icon: const Icon(Icons.delete, color: Color(0xFF00352C)),
                                     onPressed: () {
-                                      _showDeleteConfirmationDialog(
-                                          context, category.id);
+                                      _showDeleteConfirmationDialog(context, departement.idDepartement);
                                     },
                                   ),
                                 ],
@@ -156,17 +151,17 @@ class MainContent extends StatelessWidget {
     );
   }
 
-  void _showCategoryDetailsDialog(BuildContext context, int categoryId) {
-    _categoryController.getCategoryById(categoryId);
+  void _showDepartementDetailsDialog(BuildContext context, int departementId) {
+    _departementController.getDepartementById(departementId);
     showDialog(
       context: context,
       builder: (BuildContext context) {
         return Obx(() {
-          if (_categoryController.isLoading.value) {
+          if (_departementController.isLoading.value) {
             return const Center(child: CircularProgressIndicator());
           }
 
-          final details = _categoryController.categoryDetails.value;
+          final details = _departementController.departementDetails.value;
           if (details == null) return const SizedBox();
 
           return Dialog(
@@ -181,7 +176,7 @@ class MainContent extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   const Text(
-                    'Détails de la Catégorie',
+                    'Détails du Département',
                     style: TextStyle(
                       fontSize: 24,
                       fontWeight: FontWeight.bold,
@@ -190,15 +185,13 @@ class MainContent extends StatelessWidget {
                   ),
                   const SizedBox(height: 20),
                   TextField(
-                    controller:
-                        TextEditingController(text: details.designation),
-                    decoration: const InputDecoration(labelText: 'Designation'),
+                    controller: TextEditingController(text: details.nom),
+                    decoration: const InputDecoration(labelText: 'Nom'),
                     readOnly: true,
                   ),
                   const SizedBox(height: 10),
                   TextField(
-                    controller:
-                        TextEditingController(text: details.description),
+                    controller: TextEditingController(text: details.description),
                     decoration: const InputDecoration(labelText: 'Description'),
                     readOnly: true,
                   ),
@@ -224,21 +217,21 @@ class MainContent extends StatelessWidget {
     );
   }
 
-  void _showUpdateCategoryDialog(BuildContext context, int categoryId) {
-    _categoryController.getCategoryById(categoryId);
+  void _showUpdateDepartementDialog(BuildContext context, int departementId) {
+    _departementController.getDepartementById(departementId);
     showDialog(
       context: context,
       builder: (BuildContext context) {
         return Obx(() {
-          if (_categoryController.isLoading.value) {
+          if (_departementController.isLoading.value) {
             return const Center(child: CircularProgressIndicator());
           }
 
-          final details = _categoryController.categoryDetails.value;
+          final details = _departementController.departementDetails.value;
           if (details == null) return const SizedBox();
 
-          final TextEditingController designationController =
-              TextEditingController(text: details.designation);
+          final TextEditingController nomController =
+              TextEditingController(text: details.nom);
           final TextEditingController descriptionController =
               TextEditingController(text: details.description);
 
@@ -254,7 +247,7 @@ class MainContent extends StatelessWidget {
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   const Text(
-                    'Modifier Catégorie',
+                    'Modifier Département',
                     style: TextStyle(
                       fontSize: 24,
                       fontWeight: FontWeight.bold,
@@ -263,15 +256,13 @@ class MainContent extends StatelessWidget {
                   ),
                   const SizedBox(height: 20),
                   TextField(
-                    controller: designationController,
-                    decoration:
-                        const InputDecoration(labelText: 'Designation*'),
+                    controller: nomController,
+                    decoration: const InputDecoration(labelText: 'Nom*'),
                   ),
                   const SizedBox(height: 10),
                   TextField(
                     controller: descriptionController,
-                    decoration:
-                        const InputDecoration(labelText: 'Description*'),
+                    decoration: const InputDecoration(labelText: 'Description*'),
                   ),
                   const SizedBox(height: 20),
                   Row(
@@ -279,10 +270,10 @@ class MainContent extends StatelessWidget {
                     children: [
                       ElevatedButton(
                         onPressed: () async {
-                          await _categoryController.updateCategory(
-                            categoryId,
+                          await _departementController.updateDepartement(
+                            departementId,
+                            nomController.text,
                             descriptionController.text,
-                            designationController.text,
                           );
                           Navigator.of(context).pop();
                         },
@@ -312,14 +303,13 @@ class MainContent extends StatelessWidget {
     );
   }
 
-  void _showDeleteConfirmationDialog(BuildContext context, int categoryId) {
+  void _showDeleteConfirmationDialog(BuildContext context, int departementId) {
     showDialog(
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
           title: const Text('Confirmer la suppression'),
-          content:
-              const Text('Voulez-vous vraiment supprimer cette catégorie?'),
+          content: const Text('Voulez-vous vraiment supprimer ce département?'),
           actions: [
             TextButton(
               onPressed: () {
@@ -329,7 +319,7 @@ class MainContent extends StatelessWidget {
             ),
             ElevatedButton(
               onPressed: () async {
-                await _categoryController.deleteCategory(categoryId);
+                await _departementController.deleteDepartement(departementId);
                 Navigator.of(context).pop();
               },
               child: const Text('Oui'),

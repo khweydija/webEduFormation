@@ -14,63 +14,85 @@ class Sidebar extends StatelessWidget {
     return Container(
       width: 250,
       color: Color.fromARGB(255, 245, 244, 244),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.start,
-        crossAxisAlignment: CrossAxisAlignment.end,
-        children: [
-          Row(
-            children: [
-              Image.asset('assets/images/logo.png',
-                  height: 220, width: 210), // Placeholder for logo
-            ],
-          ),
-          _SidebarItem(
-            icon: Icons.dashboard,
-            text: 'Dashboard',
-            isSelected: selectedIndex == 0,
-            onTap: () {
-              onItemSelected(0);
-              Get.offAllNamed(
-                  AppRoutes.statisticsPage); // Navigate to StatisticsPage
-            },
-          ),
-          _SidebarItem(
-            icon: Icons.person,
-            text: 'Gestion des Formateurs',
-            isSelected: selectedIndex == 1,
-            onTap: () {
-              onItemSelected(1);
-              Get.offAllNamed(AppRoutes
-                  .adminDashboardFormateur); // Navigate to AdminDashboardFormateur
-            },
-          ),
-          _SidebarItem(
-            icon: Icons.people,
-            text: 'Gestion des Employees',
-            isSelected: selectedIndex == 2,
-            onTap: () {
-              onItemSelected(2);
-              Get.offAllNamed(AppRoutes
-                  .adminDashboardEmploye); // Navigate to AdminDashboardEmploye
-            },
-          ),
-          _SidebarItem(
-              icon: Icons.category_sharp,
-              text: 'Gestion des Categories',
+      child: SingleChildScrollView(
+        // Added this
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.end,
+          children: [
+            Row(
+              children: [
+                Image.asset(
+                  'assets/images/logo.png',
+                  height: 220,
+                  width: 210,
+                ), // Placeholder for logo
+              ],
+            ),
+            _SidebarItem(
+              icon: Icons.dashboard,
+              text: 'Dashboard',
+              isSelected: selectedIndex == 0,
+              onTap: () {
+                onItemSelected(0);
+                Get.offAllNamed(AppRoutes.statisticsPage);
+              },
+            ),
+            _SidebarItem(
+              icon: Icons.apartment,
+              text: 'Départements',
+              isSelected: selectedIndex == 1,
+              onTap: () {
+                onItemSelected(1);
+                Get.offAllNamed(AppRoutes.adminDashboardDepartement);
+              },
+            ),
+            _SidebarItem(
+              icon: Icons.star,
+              text: 'Specialités',
+              isSelected: selectedIndex == 2,
+              onTap: () {
+                onItemSelected(2);
+                Get.offAllNamed(AppRoutes.adminDashboardSpecialite);
+              },
+            ),
+            _SidebarItem(
+              icon: Icons.person,
+              text: 'Liste des Formateurs',
               isSelected: selectedIndex == 3,
               onTap: () {
                 onItemSelected(3);
+                Get.offAllNamed(AppRoutes.adminDashboardFormateur);
+              },
+            ),
+            _SidebarItem(
+              icon: Icons.people,
+              text: 'Liste des Employees',
+              isSelected: selectedIndex == 4,
+              onTap: () {
+                onItemSelected(4);
+                Get.offAllNamed(AppRoutes.adminDashboardEmploye);
+              },
+            ),
+            _SidebarItem(
+              icon: Icons.category_sharp,
+              text: 'Liste  des Categories',
+              isSelected: selectedIndex == 5,
+              onTap: () {
+                onItemSelected(5);
                 Get.offAllNamed(AppRoutes.dashboardCatagorie);
-              } // Add more navigation here if needed
-              ),
-          _SidebarItem(
-            icon: Icons.logout,
-            text: 'Log out',
-            isSelected: selectedIndex == 5,
-            onTap: () =>
-                onItemSelected(5), // Add more navigation here if needed
-          ),
-        ],
+              },
+            ),
+            _SidebarItem(
+              icon: Icons.logout,
+              text: 'Log out',
+              isSelected: selectedIndex == 6,
+              onTap: () { onItemSelected(6);
+             // Get.offAllNamed(AppRoutes.login);
+             },
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -92,17 +114,16 @@ class _SidebarItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      margin: EdgeInsets.symmetric(
-          vertical: 4.0), // Margin to create space between items
+      margin: EdgeInsets.symmetric(vertical: 4.0),
       decoration: BoxDecoration(
-        color: isSelected
-            ? Colors.white
-            : Colors.transparent, // White background when selected
-        borderRadius: BorderRadius.circular(8), // Rounded corners
+        color: isSelected ? Colors.white : Colors.transparent,
+        borderRadius: BorderRadius.circular(8),
       ),
       child: ListTile(
-        leading:
-            Icon(icon, color: isSelected ? Color(0xFF228D6D) : Colors.black54),
+        leading: Icon(
+          icon,
+          color: isSelected ? Color(0xFF228D6D) : Colors.black54,
+        ),
         title: Text(
           text,
           style: TextStyle(
@@ -110,12 +131,10 @@ class _SidebarItem extends StatelessWidget {
             fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
           ),
         ),
-        contentPadding: EdgeInsets.symmetric(
-            horizontal: 16.0, vertical: 4.0), // Padding inside the tile
+        contentPadding: EdgeInsets.symmetric(horizontal: 16.0, vertical: 4.0),
         onTap: onTap,
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(
-              8), // Ensure the shape matches the background
+          borderRadius: BorderRadius.circular(8),
         ),
       ),
     );

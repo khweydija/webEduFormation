@@ -1,39 +1,39 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:webpfe/controllers/catagoriesController.dart';
+import 'package:webpfe/controllers/DepartementController.dart';
 
-
-class SearchAndAddc extends StatefulWidget {
+class SearchAndAddd extends StatefulWidget {
   @override
   _SearchAndAddState createState() => _SearchAndAddState();
 }
 
-class _SearchAndAddState extends State<SearchAndAddc> {
-  final CategoryController _categorieController = Get.find();
+class _SearchAndAddState extends State<SearchAndAddd> {
+  final DepartementController _departementController = Get.find();
   final TextEditingController _searchController = TextEditingController();
   final TextEditingController _descriptionController = TextEditingController();
-  final TextEditingController _designationController = TextEditingController();
+  final TextEditingController _nomController = TextEditingController();
   final _formKey = GlobalKey<FormState>();
 
-  // Search categories
-  void _searchCategories() async {
-    if (_searchController.text.isNotEmpty) {
-      await _categorieController.searchCategories(_searchController.text);
-    } else {
-      _categorieController.fetchCategories();
-    }
-  }
+  // Search departments
+  // void _searchDepartments() async {
+  //   if (_searchController.text.isNotEmpty) {
+  //     await _departementController.searchCategories(_searchController.text);
+  //   } else {
+  //     _departementController.fetchDepartements();
+  //   }
+  // }
 
-  // Open dialog to create a category
-  void _showCreateCategoryDialog() {
+  // Open dialog to create a department
+  void _showCreateDepartementDialog() {
     _descriptionController.clear();
-    _designationController.clear();
+    _nomController.clear();
 
     showDialog(
       context: context,
       builder: (BuildContext context) {
         return Dialog(
-          insetPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
+          insetPadding:
+              const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(10),
           ),
@@ -51,8 +51,9 @@ class _SearchAndAddState extends State<SearchAndAddc> {
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         const Text(
-                          'Create Category',
-                          style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+                          'Create Department',
+                          style: TextStyle(
+                              fontSize: 24, fontWeight: FontWeight.bold),
                         ),
                         IconButton(
                           icon: const Icon(Icons.close),
@@ -64,14 +65,14 @@ class _SearchAndAddState extends State<SearchAndAddc> {
                     ),
                     const SizedBox(height: 20),
                     TextFormField(
-                      controller: _designationController,
+                      controller: _nomController,
                       decoration: const InputDecoration(
-                        labelText: 'Designation*',
+                        labelText: 'Nom*',
                         border: OutlineInputBorder(),
                       ),
                       validator: (value) {
                         if (value == null || value.isEmpty) {
-                          return 'Please enter the designation';
+                          return 'Please enter the name';
                         }
                         return null;
                       },
@@ -95,8 +96,9 @@ class _SearchAndAddState extends State<SearchAndAddc> {
                       mainAxisAlignment: MainAxisAlignment.end,
                       children: [
                         ElevatedButton(
-                          onPressed: _submitCreateCategory,
-                          child: const Text('Create', style: TextStyle(color: Colors.white)),
+                          onPressed: _submitCreateDepartement,
+                          child: const Text('Create',
+                              style: TextStyle(color: Colors.white)),
                           style: ElevatedButton.styleFrom(
                             backgroundColor: const Color(0xFF228D6D),
                           ),
@@ -123,18 +125,18 @@ class _SearchAndAddState extends State<SearchAndAddc> {
     );
   }
 
-  // Submit the create category form
-  void _submitCreateCategory() async {
+  // Submit the create department form
+  void _submitCreateDepartement() async {
     if (_formKey.currentState?.validate() ?? false) {
       try {
-        await _categorieController.createCategory(
+        await _departementController.createDepartement(
+          _nomController.text,
           _descriptionController.text,
-          _designationController.text,
         );
         Navigator.of(context).pop(); // Close dialog on success
-        Get.snackbar('Success', 'Category created successfully');
+        Get.snackbar('Success', 'Department created successfully');
       } catch (e) {
-        Get.snackbar('Error', 'Failed to create category');
+        Get.snackbar('Error', 'Failed to create department');
       }
     }
   }
@@ -147,15 +149,16 @@ class _SearchAndAddState extends State<SearchAndAddc> {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             SizedBox(
-              width: constraints.maxWidth > 800 ? 700 : constraints.maxWidth * 0.7,
+              width:
+                  constraints.maxWidth > 800 ? 700 : constraints.maxWidth * 0.7,
               child: TextField(
                 controller: _searchController,
                 decoration: InputDecoration(
-                  suffixIcon: IconButton(
-                    icon: const Icon(Icons.search, color: Colors.black54),
-                    onPressed: _searchCategories,
-                  ),
-                  hintText: 'Search categories...',
+                  // suffixIcon: IconButton(
+                  //   icon: const Icon(Icons.search, color: Colors.black54),
+                  //  // onPressed: _searchDepartments,
+                  // ),
+                  hintText: 'Search departments...',
                   hintStyle: const TextStyle(color: Colors.black54),
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(20),
@@ -163,14 +166,16 @@ class _SearchAndAddState extends State<SearchAndAddc> {
                   ),
                   filled: true,
                   fillColor: Colors.white,
-                  contentPadding: const EdgeInsets.symmetric(vertical: 0, horizontal: 20),
+                  contentPadding:
+                      const EdgeInsets.symmetric(vertical: 0, horizontal: 20),
                 ),
               ),
             ),
             ElevatedButton.icon(
-              onPressed: _showCreateCategoryDialog,
+              onPressed: _showCreateDepartementDialog,
               icon: const Icon(Icons.add, color: Colors.white),
-              label: const Text('Add Category', style: TextStyle(color: Colors.white)),
+              label: const Text('Add Department',
+                  style: TextStyle(color: Colors.white)),
               style: ElevatedButton.styleFrom(
                 backgroundColor: const Color(0xFF228D6D),
                 shape: RoundedRectangleBorder(

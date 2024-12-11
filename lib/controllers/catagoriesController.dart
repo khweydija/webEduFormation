@@ -1,161 +1,84 @@
 import 'package:get/get.dart';
-import 'package:get_storage/get_storage.dart';
-import 'package:http/http.dart' as http;
-import 'dart:convert';
+import 'package:webpfe/Services/CategoryService.dart';
+import 'package:webpfe/models/Category.dart';
 
-class CategorieController extends GetxController {
-  final String apiUrl = 'http://localhost:8080/api/categories';
-  var categories = [].obs;
-  var categorieDetails = {}.obs;
+class CategoryController extends GetxController {
+  final CategoryService _service = CategoryService();
+
+  var categories = <Category>[].obs;
+  var categoryDetails = Rxn<Category>();
   var isLoading = false.obs;
 
-  // Fetch all categories from the backend
   Future<void> fetchCategories() async {
-    final box = GetStorage();
-    String? token = box.read('token');
     isLoading(true);
     try {
-      var response = await http.get(
-          headers: {'Authorization': 'Bearer $token'},
-          Uri.parse('$apiUrl/listAll'));
-      if (response.statusCode == 200) {
-        categories.assignAll(json.decode(response.body));
-      } else {
-        Get.snackbar('Error', 'Failed to load categories');
-      }
+      final fetchedCategories = await _service.fetchCategories();
+      categories.assignAll(fetchedCategories);
     } catch (e) {
-      Get.snackbar('Error', 'An error occurred: $e');
+      Get.snackbar('Error', 'Failed to load categories: $e');
     } finally {
       isLoading(false);
     }
   }
 
-  // Fetch a single category by ID
-  Future<void> getCategorieById(int id) async {
-    final box = GetStorage();
-    String? token = box.read('token');
+  Future<void> getCategoryById(int id) async {
     isLoading(true);
     try {
-      var response = await http.get(
-          headers: {'Authorization': 'Bearer $token'},
-          Uri.parse('$apiUrl/getbyId/$id'));
-      if (response.statusCode == 200) {
-        categorieDetails.value = json.decode(response.body); // Save details
-      } else {
-        Get.snackbar('Error', 'Category not found');
-      }
+      final fetchedCategory = await _service.getCategoryById(id);
+      categoryDetails.value = fetchedCategory;
     } catch (e) {
-      Get.snackbar('Error', 'An error occurred: $e');
+      Get.snackbar('Error', 'Failed to load category: $e');
     } finally {
       isLoading(false);
     }
   }
 
-  // Update a category
-  Future<void> updateCategorie(
-      int id, String description, String designation) async {
-    final box = GetStorage();
-    String? token = box.read('token');
+  Future<void> createCategory(String description, String designation) async {
     isLoading(true);
     try {
-      var response = await http.put(
-        Uri.parse('$apiUrl/update/$id'),
-        headers: {
-          'authorization': 'Bearer $token',
-          "Content-Type": "application/json"
-        },
-        body: jsonEncode({
-          'description': description,
-          'designation': designation,
-        }),
-      );
-
-      if (response.statusCode == 200) {
-        fetchCategories(); // Refresh list after updating
-        Get.snackbar('Success', 'Category updated successfully');
-      } else if (response.statusCode == 409) {
-        Get.snackbar('Error', 'Designation already exists');
-      } else {
-        Get.snackbar('Error', 'Failed to update category');
-      }
+      await _service.createCategory(description, designation);
+      fetchCategories();
+      Get.snackbar('Success', 'Category created successfully');
     } catch (e) {
-      Get.snackbar('Error', 'An error occurred: $e');
+      Get.snackbar('Error', 'Failed to create category: $e');
     } finally {
       isLoading(false);
     }
   }
 
-  // Delete a category
-  Future<void> deleteCategorie(int id) async {
-    final box = GetStorage();
-    String? token = box.read('token');
+  Future<void> updateCategory(int id, String description, String designation) async {
     isLoading(true);
     try {
-      var response = await http.delete(
-          headers: {'Authorization': 'Bearer $token'},
-          Uri.parse('$apiUrl/delete/$id'));
-      if (response.statusCode == 200) {
-        fetchCategories(); // Refresh list after deletion
-        Get.snackbar('Success', 'Category deleted successfully');
-      } else {
-        Get.snackbar('Error', 'Failed to delete category');
-      }
+      await _service.updateCategory(id, description, designation);
+      fetchCategories();
+      Get.snackbar('Success', 'Category updated successfully');
     } catch (e) {
-      Get.snackbar('Error', 'An error occurred: $e');
+      Get.snackbar('Error', 'Failed to update category: $e');
     } finally {
       isLoading(false);
     }
   }
 
-  // Create a new category
-  Future<void> createCategorie(String description, String designation) async {
-    final box = GetStorage();
-    String? token = box.read('token');
+  Future<void> deleteCategory(int id) async {
     isLoading(true);
     try {
-      var response = await http.post(
-        Uri.parse('$apiUrl/create'),
-        headers: {
-          'Authorization': 'Bearer $token',
-          "Content-Type": "application/json"
-        },
-        body: jsonEncode({
-          'description': description,
-          'designation': designation,
-        }),
-      );
-
-      if (response.statusCode == 201 || response.statusCode == 200) {
-        fetchCategories(); // Refresh the categories list after creation
-        Get.snackbar('Success', 'Category created successfully');
-      } else if (response.statusCode == 409) {
-        Get.snackbar('Error', 'Designation already exists');
-      } else {
-        Get.snackbar('Error', 'Failed to create category');
-      }
+      await _service.deleteCategory(id);
+      fetchCategories();
+      Get.snackbar('Success', 'Category deleted successfully');
     } catch (e) {
-      Get.snackbar('Error', 'An error occurred: $e');
+      Get.snackbar('Error', 'Failed to delete category: $e');
     } finally {
       isLoading(false);
     }
   }
 
-  // Search categories by description or designation
   Future<void> searchCategories(String query) async {
-    final box = GetStorage();
-    String? token = box.read('token');
     isLoading(true);
     try {
-      var response = await http.get(
-          headers: {'Authorization': 'Bearer $token'},
-          Uri.parse('$apiUrl/search?query=$query'));
-      if (response.statusCode == 200) {
-        categories.assignAll(json.decode(response.body));
-      } else {
-        Get.snackbar('Error', 'No categories found');
-      }
+      final searchedCategories = await _service.searchCategories(query);
+      categories.assignAll(searchedCategories);
     } catch (e) {
-      Get.snackbar('Error', 'An error occurred: $e');
+      Get.snackbar('Error', 'Failed to search categories: $e');
     } finally {
       isLoading(false);
     }

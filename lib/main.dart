@@ -2,12 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:get/get_navigation/src/root/get_material_app.dart';
 import 'package:get/get_navigation/src/routes/get_route.dart';
 import 'package:webpfe/AppRoutes.dart';
+import 'package:webpfe/Views/Screeendepatemnet/AdminDashboardDepartement.dart';
 import 'package:webpfe/Views/ScreenCatagories/DashboardCatagories.dart';
 
 import 'package:webpfe/Views/LoginScreen/LoginAdmin.dart';
 
 import 'package:webpfe/Views/ScreenEmploye/AdminDashboardEmploye.dart';
 import 'package:webpfe/Views/ScreenFormateur/DashboardScreen.dart';
+import 'package:webpfe/Views/Specialite/AdminDashboardSpecialite.dart';
 import 'package:webpfe/Views/StatisticDashboard.dart';
 
 void main() async {
@@ -43,7 +45,22 @@ class MyApp extends StatelessWidget {
             page: () => AdminDashboardEmploye()),
         GetPage(
             name: AppRoutes.dashboardCatagorie,
-            page: () => AdminDashboardCatagorie()),
+            page: () => AdminDashboardCategorie()),
+
+            GetPage(
+            name: AppRoutes.adminDashboardDepartement,
+            page: () =>  AdminDashboardDepartement()),
+
+            GetPage(
+            name: AppRoutes.adminDashboardSpecialite
+            ,
+            page: () =>  AdminDashboardSpecialite()),
+
+
+            
+
+
+           
       ],
     );
   }

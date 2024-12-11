@@ -15,7 +15,7 @@ class AdminDashboardFormateur extends StatefulWidget {
 class _AdminDashboardFormateurState extends State<AdminDashboardFormateur> {
   final FormateurController _formateurController =
       Get.put(FormateurController());
-  int selectedIndex = 1;
+  int selectedIndex = 3;
 
   @override
   void initState() {

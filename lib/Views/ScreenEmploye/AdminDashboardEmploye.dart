@@ -13,7 +13,7 @@ class AdminDashboardEmploye extends StatefulWidget {
 
 class _AdminDashboardEmployeState extends State<AdminDashboardEmploye> {
   final EmployeController _employeController = Get.put(EmployeController());
-  int selectedIndex = 2;
+  int selectedIndex = 4;
 
   @override
   void initState() {
