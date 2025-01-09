@@ -72,7 +72,7 @@ class _SearchAndAddState extends State<SearchAndAddd> {
                       ),
                       validator: (value) {
                         if (value == null || value.isEmpty) {
-                          return 'Please enter the name';
+                          return 'Veuillez entrer le nom';
                         }
                         return null;
                       },
@@ -86,7 +86,7 @@ class _SearchAndAddState extends State<SearchAndAddd> {
                       ),
                       validator: (value) {
                         if (value == null || value.isEmpty) {
-                          return 'Please enter the description';
+                          return 'Veuillez entrer la description';
                         }
                         return null;
                       },
@@ -97,7 +97,7 @@ class _SearchAndAddState extends State<SearchAndAddd> {
                       children: [
                         ElevatedButton(
                           onPressed: _submitCreateDepartement,
-                          child: const Text('Create',
+                          child: const Text('Ajouter',
                               style: TextStyle(color: Colors.white)),
                           style: ElevatedButton.styleFrom(
                             backgroundColor: const Color(0xFF228D6D),
@@ -108,7 +108,7 @@ class _SearchAndAddState extends State<SearchAndAddd> {
                           onPressed: () {
                             Navigator.of(context).pop();
                           },
-                          child: const Text('Cancel'),
+                          child: const Text('Annuler'),
                           style: TextButton.styleFrom(
                             foregroundColor: Colors.grey,
                           ),
@@ -134,9 +134,9 @@ class _SearchAndAddState extends State<SearchAndAddd> {
           _descriptionController.text,
         );
         Navigator.of(context).pop(); // Close dialog on success
-        Get.snackbar('Success', 'Department created successfully');
+        Get.snackbar('Succès', 'Département créé avec succès');
       } catch (e) {
-        Get.snackbar('Error', 'Failed to create department');
+        Get.snackbar('Erreur', 'Échec de la création du département');
       }
     }
   }
@@ -158,7 +158,7 @@ class _SearchAndAddState extends State<SearchAndAddd> {
                   //   icon: const Icon(Icons.search, color: Colors.black54),
                   //  // onPressed: _searchDepartments,
                   // ),
-                  hintText: 'Search departments...',
+                  hintText: 'Rechercher des départements...',
                   hintStyle: const TextStyle(color: Colors.black54),
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(20),
@@ -174,7 +174,7 @@ class _SearchAndAddState extends State<SearchAndAddd> {
             ElevatedButton.icon(
               onPressed: _showCreateDepartementDialog,
               icon: const Icon(Icons.add, color: Colors.white),
-              label: const Text('Add Department',
+              label: const Text('Ajouter un département',
                   style: TextStyle(color: Colors.white)),
               style: ElevatedButton.styleFrom(
                 backgroundColor: const Color(0xFF228D6D),

@@ -1,7 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:get/get_navigation/src/root/get_material_app.dart';
 import 'package:get/get_navigation/src/routes/get_route.dart';
 import 'package:webpfe/AppRoutes.dart';
+import 'package:webpfe/Views/ForgetScreen/ForgotPassAdmine.dart';
+import 'package:webpfe/Views/ForgetScreen/SetPasswordAdmin.dart';
+import 'package:webpfe/Views/ForgetScreen/VerifyCodeScreenAdmin.dart';
 import 'package:webpfe/Views/Screeendepatemnet/AdminDashboardDepartement.dart';
 import 'package:webpfe/Views/ScreenCatagories/DashboardCatagories.dart';
 
@@ -46,21 +50,25 @@ class MyApp extends StatelessWidget {
         GetPage(
             name: AppRoutes.dashboardCatagorie,
             page: () => AdminDashboardCategorie()),
-
-            GetPage(
+        GetPage(
             name: AppRoutes.adminDashboardDepartement,
-            page: () =>  AdminDashboardDepartement()),
+            page: () => AdminDashboardDepartement()),
+        GetPage(
+            name: AppRoutes.adminDashboardSpecialite,
+            page: () => AdminDashboardSpecialite()),
+        GetPage(
+            name: AppRoutes.forgotPassAdmine, page: () => ForgotPassAdmine()),
+        GetPage(
+            name: AppRoutes.verifyCodeScreenAdmin,
+            page: () => VerifyCodeScreenAdmin()),
+       GetPage(
+  name: AppRoutes.setPasswordAdminn,
+  page: () => SetPasswordAdmin(
+    email: Get.arguments['email'] ?? '',
+    code: Get.arguments['code'] ?? '',
+  ),
+),
 
-            GetPage(
-            name: AppRoutes.adminDashboardSpecialite
-            ,
-            page: () =>  AdminDashboardSpecialite()),
-
-
-            
-
-
-           
       ],
     );
   }

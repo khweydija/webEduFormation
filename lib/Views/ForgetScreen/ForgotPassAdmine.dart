@@ -1,25 +1,16 @@
 import 'package:flutter/material.dart';
-import 'package:webpfe/Views/LoginScreen/LoginAdmin.dart';
+import 'package:get/get.dart';
+import 'package:webpfe/controllers/auth_controller.dart';
+import 'package:webpfe/AppRoutes.dart';
 
 class ForgotPassAdmine extends StatelessWidget {
   final TextEditingController emailController = TextEditingController();
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+  final AuthController authController = Get.put(AuthController());
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        backgroundColor: Colors.white,
-        leading: IconButton(
-          icon: Icon(Icons.arrow_back, color: Colors.black),
-          onPressed: () {
-            Navigator.push(
-              context,
-              MaterialPageRoute(builder: (context) => LoginAdmin()),
-            );
-          },
-        ),
-      ),
       body: Container(
         color: Colors.white,
         child: Center(
@@ -35,7 +26,7 @@ class ForgotPassAdmine extends StatelessWidget {
                       children: [
                         SizedBox(height: 50),
                         Text(
-                          'Forgot your password?',
+                          'Mot de passe oublié ?',
                           style: TextStyle(
                             fontSize: 24,
                             fontWeight: FontWeight.bold,
@@ -43,7 +34,7 @@ class ForgotPassAdmine extends StatelessWidget {
                         ),
                         SizedBox(height: 10),
                         Text(
-                          'Don\'t worry, happens to all of us. Enter your email below to recover your password',
+                          ' Entrez votre email ci-dessous pour récupérer votre mot de passe.',
                           style: TextStyle(fontSize: 16),
                         ),
                         SizedBox(height: 20),
@@ -57,10 +48,10 @@ class ForgotPassAdmine extends StatelessWidget {
                             ),
                             validator: (value) {
                               if (value == null || value.isEmpty) {
-                                return 'Please enter your email';
+                                return 'Veuillez entrer votre email';
                               } else if (!RegExp(r'^[^@]+@[^@]+\.[^@]+')
                                   .hasMatch(value)) {
-                                return 'Please enter a valid email address';
+                                return 'Veuillez entrer une adresse email valide';
                               }
                               return null;
                             },
@@ -68,18 +59,23 @@ class ForgotPassAdmine extends StatelessWidget {
                         ),
                         SizedBox(height: 20),
                         ElevatedButton(
-                          onPressed: () {
+                          onPressed: () async {
                             if (_formKey.currentState?.validate() ?? false) {
-                              // Perform forgot password logic
+                              String email = emailController.text.trim();
+                              await authController.forgotPassword(email);
+                              Get.toNamed(AppRoutes.verifyCodeScreenAdmin);
                             }
                           },
-                          child: Text('Submit',style: TextStyle(color: Colors.black),),
+                          child: Text(
+                            'Soumettre',
+                            style: TextStyle(color: Colors.black),
+                          ),
                           style: ElevatedButton.styleFrom(
-                            backgroundColor: Color.fromARGB(255, 205, 206, 205),
+                            backgroundColor: Color.fromARGB(255, 225, 226, 225),
                             padding: EdgeInsets.symmetric(
                                 vertical: 15, horizontal: 30),
-                                 elevation: 5,
-                                          shadowColor: Colors.black,
+                            elevation: 5,
+                            shadowColor: Colors.black,
                           ),
                         ),
                       ],
@@ -88,7 +84,7 @@ class ForgotPassAdmine extends StatelessWidget {
                   SizedBox(width: 50),
                   Expanded(
                     child: Image.asset(
-                      'assets/images/d2.jpeg', // Replace with your image asset
+                      'assets/images/d2.jpeg',
                       height: 400,
                       width: 400,
                     ),

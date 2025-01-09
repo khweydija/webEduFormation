@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:webpfe/AppRoutes.dart';
 import 'package:webpfe/Views/ForgetScreen/ForgotPassAdmine.dart';
 import 'package:webpfe/controllers/auth_controller.dart';
 
@@ -48,7 +49,7 @@ class _LoginAdminState extends State<LoginAdmin> {
                                 ),
                                 SizedBox(height: 10),
                                 Text(
-                                  'Login to access your admin account',
+                                  'Connectez-vous pour accéder à votre compte administrateur',
                                   style: TextStyle(
                                     fontSize: 16,
                                     color: Colors.grey,
@@ -63,10 +64,10 @@ class _LoginAdminState extends State<LoginAdmin> {
                                   ),
                                   validator: (value) {
                                     if (value!.isEmpty) {
-                                      return 'Please enter your email';
+                                      return 'Veuillez entrer votre email';
                                     }
                                     if (!value.contains('@')) {
-                                      return 'Please enter a valid email';
+                                      return 'Veuillez entrer un email valide';
                                     }
                                     return null;
                                   },
@@ -76,7 +77,7 @@ class _LoginAdminState extends State<LoginAdmin> {
                                   controller: _passwordController,
                                   obscureText: _obscureText,
                                   decoration: InputDecoration(
-                                    labelText: 'Password',
+                                    labelText: 'Mot de passe',
                                     border: OutlineInputBorder(),
                                     suffixIcon: IconButton(
                                       icon: Icon(
@@ -93,10 +94,10 @@ class _LoginAdminState extends State<LoginAdmin> {
                                   ),
                                   validator: (value) {
                                     if (value!.isEmpty) {
-                                      return 'Please enter your password';
+                                      return 'Veuillez entrer votre mot de passe';
                                     }
                                     if (value.length < 6) {
-                                      return 'Password must be at least 6 characters long';
+                                      return 'Le mot de passe doit comporter au moins 6 caractères';
                                     }
                                     return null;
                                   },
@@ -108,19 +109,22 @@ class _LoginAdminState extends State<LoginAdmin> {
                                   children: [
                                     TextButton(
                                       onPressed: () {
-                                        Navigator.push(
-                                            context,
-                                            MaterialPageRoute(
-                                                builder: (context) =>
-                                                    ForgotPassAdmine()));
+                                        Get.offAllNamed(AppRoutes.forgotPassAdmine);
                                       },
-                                      child: Text('Forgot Password'),
+                                      child: Text('Mot de passe oublié'),
                                     ),
                                   ],
                                 ),
                                 SizedBox(height: 20),
                                 Obx(() => authController.isLoading.value
-                                    ? CircularProgressIndicator()
+                                    ? Center(
+                                        child: CircularProgressIndicator(
+                                          color: Colors.black,
+
+                                          strokeWidth: 2,
+                                          // strokeAlign: StrokeAlign.outside,
+                                        ),
+                                      )
                                     : ElevatedButton(
                                         onPressed: () {
                                           if (_formKey.currentState!
@@ -132,7 +136,7 @@ class _LoginAdminState extends State<LoginAdmin> {
                                           }
                                         },
                                         child: Text(
-                                          'Login',
+                                          'Connexion',
                                           style: TextStyle(color: Colors.black),
                                         ),
                                         style: ElevatedButton.styleFrom(

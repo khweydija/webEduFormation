@@ -13,7 +13,8 @@ class Sidebar extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       width: 250,
-      color: Color.fromARGB(255, 245, 244, 244),
+      color: Colors.white,
+      //color: Color.fromARGB(255, 245, 244, 244),
       child: SingleChildScrollView(
         // Added this
         child: Column(
@@ -31,7 +32,7 @@ class Sidebar extends StatelessWidget {
             ),
             _SidebarItem(
               icon: Icons.dashboard,
-              text: 'Dashboard',
+              text: 'Tableau de bord',
               isSelected: selectedIndex == 0,
               onTap: () {
                 onItemSelected(0);
@@ -58,7 +59,7 @@ class Sidebar extends StatelessWidget {
             ),
             _SidebarItem(
               icon: Icons.person,
-              text: 'Liste des Formateurs',
+              text: ' Formateurs',
               isSelected: selectedIndex == 3,
               onTap: () {
                 onItemSelected(3);
@@ -67,7 +68,7 @@ class Sidebar extends StatelessWidget {
             ),
             _SidebarItem(
               icon: Icons.people,
-              text: 'Liste des Employees',
+              text: 'Employées',
               isSelected: selectedIndex == 4,
               onTap: () {
                 onItemSelected(4);
@@ -76,20 +77,30 @@ class Sidebar extends StatelessWidget {
             ),
             _SidebarItem(
               icon: Icons.category_sharp,
-              text: 'Liste  des Categories',
+              text: ' Categories',
               isSelected: selectedIndex == 5,
               onTap: () {
                 onItemSelected(5);
                 Get.offAllNamed(AppRoutes.dashboardCatagorie);
               },
             ),
+             _SidebarItem(
+              icon: Icons.workspace_premium,
+              text: ' Certifications',
+              isSelected: selectedIndex == 6,
+              onTap: () {
+                onItemSelected(6);
+               // Get.offAllNamed(AppRoutes.dashboardCatagorie);
+              },
+            ),
             _SidebarItem(
               icon: Icons.logout,
               text: 'Log out',
               isSelected: selectedIndex == 6,
-              onTap: () { onItemSelected(6);
-             // Get.offAllNamed(AppRoutes.login);
-             },
+              onTap: () {
+                onItemSelected(6);
+                Get.offAllNamed(AppRoutes.loginAdmin);
+              },
             ),
           ],
         ),
@@ -116,7 +127,7 @@ class _SidebarItem extends StatelessWidget {
     return Container(
       margin: EdgeInsets.symmetric(vertical: 4.0),
       decoration: BoxDecoration(
-        color: isSelected ? Colors.white : Colors.transparent,
+        color: isSelected ?Color.fromARGB(255, 248, 247, 247) : Colors.transparent,
         borderRadius: BorderRadius.circular(8),
       ),
       child: ListTile(

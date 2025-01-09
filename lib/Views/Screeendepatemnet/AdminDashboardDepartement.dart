@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:shimmer/shimmer.dart';
 import 'package:webpfe/Views/AppBar.dart';
 import 'package:webpfe/Views/Screeendepatemnet/SearchAndAddd.dart';
-
 import 'package:webpfe/Views/Sidebar.dart';
 import 'package:webpfe/controllers/DepartementController.dart';
 
@@ -12,7 +12,8 @@ class AdminDashboardDepartement extends StatefulWidget {
 }
 
 class _AdminDashboardState extends State<AdminDashboardDepartement> {
-  final DepartementController _departementController = Get.put(DepartementController());
+  final DepartementController _departementController =
+      Get.put(DepartementController());
   int selectedIndex = 1;
 
   @override
@@ -30,7 +31,8 @@ class _AdminDashboardState extends State<AdminDashboardDepartement> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color.fromARGB(255, 245, 244, 244),
+      backgroundColor: Colors.white,
+     // backgroundColor: const Color.fromARGB(255, 245, 244, 244),
       body: LayoutBuilder(
         builder: (context, constraints) {
           return Row(
@@ -57,10 +59,12 @@ class MainContent extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color.fromARGB(255, 245, 244, 244),
+      backgroundColor: Colors.white,
+     // backgroundColor: const Color.fromARGB(255, 245, 244, 244),
       appBar: CustomAppBar(),
       body: Container(
-        color: const Color.fromARGB(255, 245, 244, 244),
+        color: Colors.white,
+        //color: const Color.fromARGB(255, 245, 244, 244),
         child: SingleChildScrollView(
           child: Padding(
             padding: const EdgeInsets.all(20),
@@ -71,7 +75,7 @@ class MainContent extends StatelessWidget {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     const Text(
-                      'Gestion des Départements',
+                      ' Départements',
                       style: TextStyle(
                         fontSize: 24,
                         fontWeight: FontWeight.bold,
@@ -85,9 +89,9 @@ class MainContent extends StatelessWidget {
                 const SizedBox(height: 20),
                 Obx(() {
                   if (_departementController.isLoading.value) {
-                    return const Center(child: CircularProgressIndicator());
+                    return shimmerTable();
                   } else if (_departementController.departements.isEmpty) {
-                    return const Center(child: Text('No departments found'));
+                    return const Center(child: Text('Aucun département trouvé'));
                   } else {
                     return Container(
                       decoration: BoxDecoration(
@@ -110,28 +114,35 @@ class MainContent extends StatelessWidget {
                             DataColumn(label: Text('Description')),
                             DataColumn(label: Text('Action')),
                           ],
-                          rows: _departementController.departements.map((departement) {
+                          rows: _departementController.departements
+                              .map((departement) {
                             return DataRow(cells: [
                               DataCell(Text(departement.nom)),
                               DataCell(Text(departement.description)),
                               DataCell(Row(
                                 children: [
                                   IconButton(
-                                    icon: const Icon(Icons.visibility, color: Color(0xFF00352C)),
+                                    icon: const Icon(Icons.visibility,
+                                        color: Color(0xFF00352C)),
                                     onPressed: () {
-                                      _showDepartementDetailsDialog(context, departement.idDepartement);
+                                      _showDepartementDetailsDialog(
+                                          context, departement.idDepartement);
                                     },
                                   ),
                                   IconButton(
-                                    icon: const Icon(Icons.edit, color: Color(0xFF00352C)),
+                                    icon: const Icon(Icons.edit,
+                                        color: Color(0xFF00352C)),
                                     onPressed: () {
-                                      _showUpdateDepartementDialog(context, departement.idDepartement);
+                                      _showUpdateDepartementDialog(
+                                          context, departement.idDepartement);
                                     },
                                   ),
                                   IconButton(
-                                    icon: const Icon(Icons.delete, color: Color(0xFF00352C)),
+                                    icon: const Icon(Icons.delete,
+                                        color: Color(0xFF00352C)),
                                     onPressed: () {
-                                      _showDeleteConfirmationDialog(context, departement.idDepartement);
+                                      _showDeleteConfirmationDialog(
+                                          context, departement.idDepartement);
                                     },
                                   ),
                                 ],
@@ -147,6 +158,53 @@ class MainContent extends StatelessWidget {
             ),
           ),
         ),
+      ),
+    );
+  }
+
+  Widget shimmerTable() {
+    return Container(
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(10),
+        color: Colors.white,
+        boxShadow: [
+          BoxShadow(
+            color: Colors.grey.withOpacity(0.5),
+            spreadRadius: 2,
+            blurRadius: 5,
+          ),
+        ],
+      ),
+      child: Column(
+        children: List.generate(5, (index) {
+          return Shimmer.fromColors(
+            baseColor: Colors.grey[300]!,
+            highlightColor: Colors.grey[100]!,
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Container(
+                    width: 100,
+                    height: 16,
+                    color: Colors.grey[300],
+                  ),
+                  Container(
+                    width: 200,
+                    height: 16,
+                    color: Colors.grey[300],
+                  ),
+                  Container(
+                    width: 80,
+                    height: 16,
+                    color: Colors.grey[300],
+                  ),
+                ],
+              ),
+            ),
+          );
+        }),
       ),
     );
   }
@@ -191,7 +249,8 @@ class MainContent extends StatelessWidget {
                   ),
                   const SizedBox(height: 10),
                   TextField(
-                    controller: TextEditingController(text: details.description),
+                    controller:
+                        TextEditingController(text: details.description),
                     decoration: const InputDecoration(labelText: 'Description'),
                     readOnly: true,
                   ),
@@ -202,7 +261,7 @@ class MainContent extends StatelessWidget {
                       onPressed: () {
                         Navigator.of(context).pop();
                       },
-                      child: const Text('Fermer'),
+                      child: const Text('Fermer',style: TextStyle(color: Colors.white),),
                       style: ElevatedButton.styleFrom(
                         backgroundColor: const Color(0xFF228D6D),
                       ),
@@ -262,7 +321,8 @@ class MainContent extends StatelessWidget {
                   const SizedBox(height: 10),
                   TextField(
                     controller: descriptionController,
-                    decoration: const InputDecoration(labelText: 'Description*'),
+                    decoration:
+                        const InputDecoration(labelText: 'Description*'),
                   ),
                   const SizedBox(height: 20),
                   Row(

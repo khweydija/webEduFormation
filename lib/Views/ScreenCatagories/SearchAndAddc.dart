@@ -71,7 +71,7 @@ class _SearchAndAddState extends State<SearchAndAddc> {
                       ),
                       validator: (value) {
                         if (value == null || value.isEmpty) {
-                          return 'Please enter the designation';
+                          return 'Veuillez entrer la désignation';
                         }
                         return null;
                       },
@@ -85,7 +85,7 @@ class _SearchAndAddState extends State<SearchAndAddc> {
                       ),
                       validator: (value) {
                         if (value == null || value.isEmpty) {
-                          return 'Please enter the description';
+                          return 'Veuillez entrer la description';
                         }
                         return null;
                       },
@@ -96,7 +96,7 @@ class _SearchAndAddState extends State<SearchAndAddc> {
                       children: [
                         ElevatedButton(
                           onPressed: _submitCreateCategory,
-                          child: const Text('Create', style: TextStyle(color: Colors.white)),
+                          child: const Text('Ajouter', style: TextStyle(color: Colors.white)),
                           style: ElevatedButton.styleFrom(
                             backgroundColor: const Color(0xFF228D6D),
                           ),
@@ -106,7 +106,7 @@ class _SearchAndAddState extends State<SearchAndAddc> {
                           onPressed: () {
                             Navigator.of(context).pop();
                           },
-                          child: const Text('Cancel'),
+                          child: const Text('Annuler'),
                           style: TextButton.styleFrom(
                             foregroundColor: Colors.grey,
                           ),
@@ -132,9 +132,9 @@ class _SearchAndAddState extends State<SearchAndAddc> {
           _designationController.text,
         );
         Navigator.of(context).pop(); // Close dialog on success
-        Get.snackbar('Success', 'Category created successfully');
+        Get.snackbar('Succès', 'Catégorie créée avec succès');
       } catch (e) {
-        Get.snackbar('Error', 'Failed to create category');
+        Get.snackbar('Erreur', 'Échec de la création de la catégorie');
       }
     }
   }
@@ -155,7 +155,7 @@ class _SearchAndAddState extends State<SearchAndAddc> {
                     icon: const Icon(Icons.search, color: Colors.black54),
                     onPressed: _searchCategories,
                   ),
-                  hintText: 'Search categories...',
+                  hintText: 'Rechercher des catégories...',
                   hintStyle: const TextStyle(color: Colors.black54),
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(20),
@@ -170,7 +170,7 @@ class _SearchAndAddState extends State<SearchAndAddc> {
             ElevatedButton.icon(
               onPressed: _showCreateCategoryDialog,
               icon: const Icon(Icons.add, color: Colors.white),
-              label: const Text('Add Category', style: TextStyle(color: Colors.white)),
+              label: const Text('Ajouter une catégorie', style: TextStyle(color: Colors.white)),
               style: ElevatedButton.styleFrom(
                 backgroundColor: const Color(0xFF228D6D),
                 shape: RoundedRectangleBorder(

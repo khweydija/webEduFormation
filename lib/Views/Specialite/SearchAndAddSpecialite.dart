@@ -47,6 +47,7 @@ class _SearchAndAddState extends State<SearchAndAddSpecialite> {
             borderRadius: BorderRadius.circular(10),
           ),
           child: Container(
+            
             width: MediaQuery.of(context).size.width * 0.8,
             padding: const EdgeInsets.all(20),
             child: SingleChildScrollView(
@@ -60,7 +61,7 @@ class _SearchAndAddState extends State<SearchAndAddSpecialite> {
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         const Text(
-                          'Create Specialite',
+                          'Ajouter une spécialité',
                           style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
                         ),
                         IconButton(
@@ -80,7 +81,7 @@ class _SearchAndAddState extends State<SearchAndAddSpecialite> {
                       ),
                       validator: (value) {
                         if (value == null || value.isEmpty) {
-                          return 'Please enter the name';
+                          return 'Veuillez saisir le nom';
                         }
                         return null;
                       },
@@ -94,7 +95,7 @@ class _SearchAndAddState extends State<SearchAndAddSpecialite> {
                       ),
                       validator: (value) {
                         if (value == null || value.isEmpty) {
-                          return 'Please enter the description';
+                          return 'Veuillez saisir la description';
                         }
                         return null;
                       },
@@ -107,7 +108,7 @@ class _SearchAndAddState extends State<SearchAndAddSpecialite> {
                       return DropdownButtonFormField<String>(
                         value: _selectedDepartement,
                         decoration: const InputDecoration(
-                          labelText: 'Departement*',
+                          labelText: 'Département*',
                           border: OutlineInputBorder(),
                         ),
                         items: _departementController.departements
@@ -123,7 +124,7 @@ class _SearchAndAddState extends State<SearchAndAddSpecialite> {
                         },
                         validator: (value) {
                           if (value == null || value.isEmpty) {
-                            return 'Please select a department';
+                            return 'Veuillez sélectionner un département';
                           }
                           return null;
                         },
@@ -135,7 +136,7 @@ class _SearchAndAddState extends State<SearchAndAddSpecialite> {
                       children: [
                         ElevatedButton(
                           onPressed: _submitCreateSpecialite,
-                          child: const Text('Create', style: TextStyle(color: Colors.white)),
+                          child: const Text('Ajouter', style: TextStyle(color: Colors.white)),
                           style: ElevatedButton.styleFrom(
                             backgroundColor: const Color(0xFF228D6D),
                           ),
@@ -145,7 +146,7 @@ class _SearchAndAddState extends State<SearchAndAddSpecialite> {
                           onPressed: () {
                             Navigator.of(context).pop();
                           },
-                          child: const Text('Cancel'),
+                          child: const Text('Annuler', style: TextStyle(color: Colors.white)),
                           style: TextButton.styleFrom(
                             foregroundColor: Colors.grey,
                           ),
@@ -195,7 +196,7 @@ class _SearchAndAddState extends State<SearchAndAddSpecialite> {
                   //   icon: const Icon(Icons.search, color: Colors.black54),
                   //   onPressed: _searchSpecialites,
                   // ),
-                  hintText: 'Search specialites...',
+                  hintText: 'Rechercher des spécialités...',
                   hintStyle: const TextStyle(color: Colors.black54),
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(20),
@@ -210,7 +211,7 @@ class _SearchAndAddState extends State<SearchAndAddSpecialite> {
             ElevatedButton.icon(
               onPressed: _showCreateSpecialiteDialog,
               icon: const Icon(Icons.add, color: Colors.white),
-              label: const Text('Add Specialite', style: TextStyle(color: Colors.white)),
+              label: const Text('Ajouter une spécialité', style: TextStyle(color: Colors.white)),
               style: ElevatedButton.styleFrom(
                 backgroundColor: const Color(0xFF228D6D),
                 shape: RoundedRectangleBorder(

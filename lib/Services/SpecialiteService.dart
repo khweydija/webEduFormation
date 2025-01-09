@@ -94,4 +94,21 @@ class SpecialiteService {
       throw Exception('Failed to delete speciality');
     }
   }
+
+
+  // Fetch specialties by department ID
+  Future<List<Specialite>> fetchSpecialitesByDepartement(int departementId) async {
+    String? token = box.read('token');
+    final response = await http.get(
+      Uri.parse('$apiUrl/departement/$departementId'),
+      headers: {'Authorization': 'Bearer $token'},
+    );
+
+    if (response.statusCode == 200) {
+      final List<dynamic> data = json.decode(response.body);
+      return data.map((item) => Specialite.fromJson(item)).toList();
+    } else {
+      throw Exception('Failed to fetch specialties by department');
+    }
+  }
 }

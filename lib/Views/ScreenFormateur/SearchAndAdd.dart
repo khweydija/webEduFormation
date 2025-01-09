@@ -3,7 +3,9 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'dart:html' as html;
 import 'package:image_picker_web/image_picker_web.dart';
-import 'package:webpfe/controllers/FormateurController.dart'; // Link to FormateurController
+import 'package:webpfe/controllers/DepartementController.dart';
+import 'package:webpfe/controllers/FormateurController.dart';
+import 'package:webpfe/controllers/SpecialiteController.dart';
 
 class SearchAndAdd extends StatefulWidget {
   @override
@@ -11,14 +13,26 @@ class SearchAndAdd extends StatefulWidget {
 }
 
 class _SearchAndAddState extends State<SearchAndAdd> {
-  final FormateurController _formateurController =
-      Get.put(FormateurController()); // Link FormateurController
+  @override
+  void initState() {
+    super.initState();
+    final SpecialiteController specialiteController =
+        Get.put(SpecialiteController());
+    specialiteController.fetchSpecialites();
 
+    final DepartementController departementController =
+        Get.put(DepartementController());
+    departementController.fetchDepartements();
+  }
+
+  final FormateurController _formateurController =
+      Get.put(FormateurController());
   final _formKey = GlobalKey<FormState>();
 
   final TextEditingController _nomController = TextEditingController();
-  final TextEditingController _specialiteController = TextEditingController();
-  final TextEditingController _departementController = TextEditingController();
+   final TextEditingController _prenomController = TextEditingController();
+  String? _specialiteController;
+  String? _departementController;
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
   final TextEditingController _confirmPasswordController =
@@ -28,29 +42,27 @@ class _SearchAndAddState extends State<SearchAndAdd> {
   String? _photoFilename;
   bool _isPasswordVisible = false;
 
-  // Picking a photo
   void _pickPhoto() async {
     final pickedFile = await ImagePickerWeb.getImageAsBytes();
-    // Get image as bytes
     if (pickedFile != null) {
       setState(() {
         _selectedPhotoBytes = pickedFile;
-        _photoFilename = "formateur_photo.png"; // Assign a default filename
+        _photoFilename = "formateur_photo.png";
       });
+      debugPrint(" ${_photoFilename}");
     } else {
       print("No image selected");
     }
   }
 
-  // Submit formateur data to the controller
   void _submitFormateur() {
     if (_formKey.currentState?.validate() ?? false) {
       if (_selectedPhotoBytes == null) {
-        Get.snackbar('Error', 'Please select a photo');
+        Get.snackbar('Error', 'Veuillez sélectionner une photo');
         return;
       }
       if (_passwordController.text != _confirmPasswordController.text) {
-        Get.snackbar('Error', 'Passwords do not match');
+        Get.snackbar('Error', 'Les mots de passe ne correspondent pas');
         return;
       }
 
@@ -59,24 +71,23 @@ class _SearchAndAddState extends State<SearchAndAdd> {
         email: _emailController.text,
         password: _passwordController.text,
         nom: _nomController.text,
-        departement: _departementController.text,
-        specialite: _specialiteController.text,
+        prenom: _nomController.text,
+        specialite: _specialiteController!,
         photoBytes: _selectedPhotoBytes!,
         photoFilename: _photoFilename!,
       )
           .then((_) {
-        // Show success message
-        Get.snackbar('Success', 'Formateur has been entered');
+        Get.snackbar('Succès', 'le formateur a été ajouté');
 
-        // Clear input fields
         _nomController.clear();
-        _specialiteController.clear();
-        _departementController.clear();
+        _prenomController.clear();
+        _specialiteController = null;
+        _departementController = null;
         _emailController.clear();
         _passwordController.clear();
         _confirmPasswordController.clear();
         setState(() {
-          _selectedPhotoBytes = null; // Clear the selected photo
+          _selectedPhotoBytes = null;
           _photoFilename = null;
         });
       });
@@ -96,11 +107,11 @@ class _SearchAndAddState extends State<SearchAndAdd> {
                 Container(
                   width: constraints.maxWidth > 800
                       ? 700
-                      : constraints.maxWidth * 0.7, // Adjust width dynamically
+                      : constraints.maxWidth * 0.7,
                   child: TextField(
                     decoration: InputDecoration(
                       suffixIcon: Icon(Icons.search, color: Colors.black54),
-                      hintText: 'Search for anything...',
+                      hintText: 'Rechercher des formateurs...',
                       hintStyle: TextStyle(color: Colors.black54),
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(20),
@@ -116,7 +127,7 @@ class _SearchAndAddState extends State<SearchAndAdd> {
                 ElevatedButton.icon(
                   onPressed: _showAddFormateurDialog,
                   icon: Icon(Icons.add, color: Colors.white),
-                  label: Text('Add Formateur',
+                  label: Text('Ajouter un formateur',
                       style: TextStyle(color: Colors.white)),
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Color(0xFF228D6D),
@@ -133,7 +144,6 @@ class _SearchAndAddState extends State<SearchAndAdd> {
     );
   }
 
-  // Show dialog to add formateur
   void _showAddFormateurDialog() {
     showDialog(
       context: context,
@@ -143,64 +153,69 @@ class _SearchAndAddState extends State<SearchAndAdd> {
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(10),
           ),
-          child: Container(
-            width: MediaQuery.of(context).size.width * 0.7,
-            padding: EdgeInsets.all(20),
-            child: SingleChildScrollView(
-              child: Form(
-                key: _formKey,
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Text(
-                          'Add Formateur',
-                          style: TextStyle(
-                              fontSize: 24, fontWeight: FontWeight.bold),
-                        ),
-                        IconButton(
-                          icon: Icon(Icons.close),
-                          onPressed: () {
-                            Navigator.of(context).pop();
-                          },
-                        ),
-                      ],
-                    ),
-                    SizedBox(height: 20),
-                    _buildFormFields(),
-                    SizedBox(height: 20),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.end,
-                      children: [
-                        ElevatedButton(
-                          onPressed: _submitFormateur,
-                          child: Text('Add',
-                              style: TextStyle(color: Colors.white)),
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: Color(0xFF228D6D),
+          child: StatefulBuilder(builder: (context, setState) {
+            return Container(
+              width: MediaQuery.of(context).size.width * 0.7,
+              padding: EdgeInsets.all(20),
+              child: SingleChildScrollView(
+                child: Form(
+                  key: _formKey,
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text(
+                            'Ajouter un formateur',
+                            style: TextStyle(
+                                fontSize: 24, fontWeight: FontWeight.bold),
                           ),
-                        ),
-                        SizedBox(width: 10),
-                        TextButton(
-                          onPressed: () {
-                            Navigator.of(context).pop();
-                          },
-                          child: Text('Cancel'),
-                          style: TextButton.styleFrom(
-                            foregroundColor:
-                                const Color.fromARGB(255, 133, 131, 131),
+                          IconButton(
+                            icon: Icon(Icons.close),
+                            onPressed: () {
+                              setState(() {
+                                _selectedPhotoBytes = null;
+                              });
+                              Navigator.of(context).pop();
+                            },
                           ),
-                        ),
-                      ],
-                    ),
-                  ],
+                        ],
+                      ),
+                      SizedBox(height: 20),
+                      _buildFormFields(),
+                      SizedBox(height: 20),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.end,
+                        children: [
+                          ElevatedButton(
+                            onPressed: _submitFormateur,
+                            child: Text('Ajouter',
+                                style: TextStyle(color: Colors.white)),
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: Color(0xFF228D6D),
+                            ),
+                          ),
+                          SizedBox(width: 10),
+                          TextButton(
+                            onPressed: () {
+                              Navigator.of(context).pop();
+                            },
+                            child: Text('Annuler'),
+                            style: TextButton.styleFrom(
+                              foregroundColor:
+                                  const Color.fromARGB(255, 133, 131, 131),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
                 ),
               ),
-            ),
-          ),
+            );
+          }),
         );
       },
     );
@@ -217,14 +232,12 @@ class _SearchAndAddState extends State<SearchAndAdd> {
                 children: [
                   _buildTextField(
                       controller: _nomController, labelText: 'Name*'),
+                       _buildTextField(
+                      controller: _prenomController, labelText: 'Prenom*'),
                   SizedBox(height: 10),
-                  _buildTextField(
-                      controller: _specialiteController,
-                      labelText: 'Specialty*'),
+                  _buildDepartementDropdown(),
                   SizedBox(height: 10),
-                  _buildTextField(
-                      controller: _departementController,
-                      labelText: 'Department*'),
+                  _buildSpecialiteDropdown(),
                   SizedBox(height: 10),
                   _buildEmailField(
                       controller: _emailController, labelText: 'Email*'),
@@ -248,11 +261,127 @@ class _SearchAndAddState extends State<SearchAndAdd> {
               ),
             ),
             SizedBox(width: 20),
-            _buildImagePicker(), // Image picker widget
+            _buildImagePicker(),
           ],
         ),
       ],
     );
+  }
+
+  Widget _buildDepartementDropdown() {
+    final DepartementController departementController =
+        Get.put(DepartementController());
+    final SpecialiteController specialiteController =
+        Get.put(SpecialiteController());
+
+    return Obx(() {
+      final departements = departementController.departements;
+
+      print("Département: ${departements.map((d) => d.nom).toList()}");
+      print("Département sélectionné: ${_departementController}");
+
+      return StatefulBuilder(
+        builder: (context, setState) {
+          return DropdownButtonFormField<String>(
+            decoration: InputDecoration(
+              labelText: 'Département*',
+              border: OutlineInputBorder(),
+            ),
+            value:
+                // _departementController != null &&
+                //         departements.any((departement) =>
+                //             departement.nom == _departementController)
+                //     ?
+                _departementController,
+            // : null,
+            onChanged: (String? newValue) async {
+              if (newValue != null) {
+                setState(() {
+                  _specialiteController = null;
+                  // Clear the selected specialty
+                  _departementController = newValue; // Update selected department
+                });
+          
+                // Find the department object based on its name
+                final selectedDepartement = departements
+                    .firstWhere((departement) => departement.nom == newValue);
+          
+                // Fetch specialties by the selected department ID
+                await specialiteController.fetchSpecialitesByDepartement(
+                    selectedDepartement.idDepartement);
+              }
+            },
+            items: departements.isNotEmpty
+                ? departements
+                    .map((departement) => DropdownMenuItem<String>(
+                          value: departement.nom,
+                          child: Text(departement.nom),
+                        ))
+                    .toList()
+                : [DropdownMenuItem(value: null, child: Text('No Departments'))],
+            validator: (value) {
+              if (value == null) {
+                return 'Veuillez sélectionner un département';
+              }
+              return null;
+            },
+          );
+        }
+      );
+    });
+  }
+
+  ///
+  ///
+  Widget _buildSpecialiteDropdown() {
+    final SpecialiteController specialiteController =
+        Get.put(SpecialiteController());
+
+    return Obx(() {
+      final specialites = specialiteController.specialitesByDepartement;
+
+      print("Specialites: ${specialites.map((s) => s.nom).toList()}");
+      print("Selected Specialty: ${_specialiteController}");
+
+      return StatefulBuilder(
+        builder: (context, setState) {
+          return DropdownButtonFormField<String>(
+            decoration: InputDecoration(
+              labelText: 'Spécialité*',
+              border: OutlineInputBorder(),
+            ),
+            value:
+            //  _specialiteController != null &&
+            //         specialites.any(
+            //             (specialite) => specialite.nom == _specialiteController)
+            //     ?
+                _specialiteController,
+                // : null,
+            onChanged: (String? newValue) {
+              if (newValue != null) {
+                setState(() {
+                  _specialiteController = newValue;
+                }); // Update selected specialty
+              }
+            },
+            items: specialites.isNotEmpty
+                ? specialites
+                    .map((specialite) => DropdownMenuItem<String>(
+                          value: specialite.nom,
+                          child: Text(specialite.nom),
+                        ))
+                    .toList()
+                : [DropdownMenuItem(value: null, child: Text('No Specialties'))],
+            validator: (value) {
+              if (value == null) {
+                return 'Veuillez sélectionner une spécialité';
+              }
+              return null;
+            },
+          );
+        }
+      );
+    });
   }
 
   Widget _buildTextField(
@@ -265,7 +394,7 @@ class _SearchAndAddState extends State<SearchAndAdd> {
       ),
       validator: (value) {
         if (value == null || value.isEmpty) {
-          return 'Please enter $labelText';
+          return 'Veuillez saisir $labelText';
         }
         return null;
       },
@@ -282,10 +411,10 @@ class _SearchAndAddState extends State<SearchAndAdd> {
       ),
       validator: (value) {
         if (value!.isEmpty) {
-          return 'Please enter your email';
+          return 'Veuillez saisir votre e-mail';
         }
         if (!value.contains('@')) {
-          return 'Please enter a valid email';
+          return 'Veuillez saisir une adresse e-mail valide';
         }
         return null;
       },
@@ -296,7 +425,7 @@ class _SearchAndAddState extends State<SearchAndAdd> {
       {required TextEditingController controller, required String labelText}) {
     return TextFormField(
       controller: controller,
-      obscureText: !_isPasswordVisible, // Toggle password visibility
+      obscureText: !_isPasswordVisible,
       decoration: InputDecoration(
         labelText: labelText,
         border: OutlineInputBorder(),
@@ -313,96 +442,67 @@ class _SearchAndAddState extends State<SearchAndAdd> {
       ),
       validator: (value) {
         if (value == null || value.isEmpty) {
-          return 'Please enter $labelText';
+          return 'Veuillez saisir $labelText';
         }
         return null;
       },
     );
   }
 
-  // Widget _buildImagePicker() {
-  //   return GestureDetector(
-  //     onTap: _pickPhoto,
-  //     child: Container(
-  //       width: MediaQuery.of(context).size.width * 0.2,
-  //       height: 160,
-  //       decoration: BoxDecoration(
-  //         color: Colors.grey.shade200,
-  //         borderRadius: BorderRadius.circular(10),
-  //         border: Border.all(
-  //           color: Colors.grey.shade400,
-  //           width: 2,
-  //         ),
-  //       ),
-  //       child: Center(
-  //         child: _selectedPhotoBytes == null
-  //             ? Column(
-  //                 mainAxisAlignment: MainAxisAlignment.center,
-  //                 children: [
-  //                   Icon(Icons.camera_alt,
-  //                       color: Colors.grey.shade600, size: 40),
-  //                   SizedBox(height: 10),
-  //                   Text(
-  //                     'Tap to select photo',
-  //                     style:
-  //                         TextStyle(color: Colors.grey.shade600, fontSize: 16),
-  //                   ),
-  //                 ],
-  //               )
-  //             : ClipRRect(
-  //                 borderRadius: BorderRadius.circular(8.0),
-  //                 child: Image.memory(
-  //                   _selectedPhotoBytes!,
-  //                   width: double.infinity,
-  //                   height: double.infinity,
-  //                   fit: BoxFit.cover,
-  //                 ),
-  //               ),
-  //       ),
-  //     ),
-  //   );
-  // }
-
   Widget _buildImagePicker() {
-    return GestureDetector(
-      onTap: _pickPhoto,
-      child: Container(
-        width: MediaQuery.of(context).size.width * 0.2,
-        height: 160,
-        decoration: BoxDecoration(
-          color: Colors.grey.shade200,
-          borderRadius: BorderRadius.circular(10),
-          border: Border.all(
-            color: Colors.grey.shade400,
-            width: 2,
+    return StatefulBuilder(builder: (context, setState) {
+      return GestureDetector(
+        onTap: () async {
+          final pickedFile = await ImagePickerWeb.getImageAsBytes();
+          if (pickedFile != null) {
+            setState(() {
+              _selectedPhotoBytes = pickedFile;
+              _photoFilename = "formateur_photo.png";
+            });
+            debugPrint(" hhhhhhhhhh ${_photoFilename}");
+          } else {
+            print("Aucune image sélectionnée");
+          }
+        },
+        child: Container(
+          width: MediaQuery.of(context).size.width * 0.2,
+          height: 160,
+          decoration: BoxDecoration(
+            color: Colors.grey.shade200,
+            borderRadius: BorderRadius.circular(10),
+            border: Border.all(
+              color: Colors.grey.shade400,
+              width: 2,
+            ),
+          ),
+          child: Center(
+            child: _selectedPhotoBytes == null
+                ? Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Icon(Icons.camera_alt,
+                          color: Colors.grey.shade600, size: 40),
+                      const SizedBox(height: 10),
+                      Text(
+                        'Appuyez pour sélectionner une photo',
+                        style: TextStyle(
+                            color: Colors.grey.shade600, fontSize: 16),
+                      ),
+                    ],
+                  )
+                : ClipRRect(
+                    borderRadius: BorderRadius.circular(8.0),
+                    child: Image.memory(
+                      _selectedPhotoBytes!,
+                      width: double.infinity,
+                      height: double.infinity,
+                      fit: BoxFit.cover,
+                    ),
+                  ),
           ),
         ),
-        child: Center(
-          child: _selectedPhotoBytes == null
-              ? Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Icon(Icons.camera_alt,
-                        color: Colors.grey.shade600, size: 40),
-                    const SizedBox(height: 10),
-                    Text(
-                      'Tap to select photo',
-                      style:
-                          TextStyle(color: Colors.grey.shade600, fontSize: 16),
-                    ),
-                  ],
-                )
-              : ClipRRect(
-                  borderRadius: BorderRadius.circular(8.0),
-                  child: Image.memory(
-                    _selectedPhotoBytes!,
-                    width: double.infinity,
-                    height: double.infinity,
-                    fit: BoxFit.cover,
-                  ),
-                ),
-        ),
-      ),
-    );
+      );
+    });
   }
 }
+// Link to FormateurController

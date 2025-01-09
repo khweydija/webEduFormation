@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:file_picker/file_picker.dart';
+import 'package:webpfe/controllers/DepartementController.dart';
 import 'dart:html' as html;
 import 'dart:typed_data';
 import 'package:webpfe/controllers/EmployeController.dart';
+import 'package:webpfe/controllers/SpecialiteController.dart';
 
 class SearchAndAddEmploye extends StatefulWidget {
   @override
@@ -16,10 +18,15 @@ class _SearchAndAddEmployeState extends State<SearchAndAddEmploye> {
 
   final TextEditingController _searchController = TextEditingController();
   final TextEditingController _nomController = TextEditingController();
-  final TextEditingController _departementController = TextEditingController();
+  final TextEditingController _prenomController = TextEditingController();
+
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
-  final TextEditingController _confirmPasswordController = TextEditingController();
+  String? _specialiteController;
+  String? _departementController;
+
+  final TextEditingController _confirmPasswordController =
+      TextEditingController();
 
   html.File? _selectedPhoto;
   html.File? _selectedDiplome;
@@ -88,7 +95,8 @@ class _SearchAndAddEmployeState extends State<SearchAndAddEmploye> {
         email: _emailController.text,
         password: _passwordController.text,
         nom: _nomController.text,
-        departement: _departementController.text,
+        prenom: _prenomController.text,
+        specialite: _specialiteController!,
         photo: _selectedPhoto!,
         diplome: _selectedDiplome!,
       );
@@ -107,7 +115,8 @@ class _SearchAndAddEmployeState extends State<SearchAndAddEmploye> {
 
   void _clearFormFields() {
     _nomController.clear();
-    _departementController.clear();
+    _prenomController.clear();
+    _specialiteController = null;
     _emailController.clear();
     _passwordController.clear();
     _confirmPasswordController.clear();
@@ -118,13 +127,24 @@ class _SearchAndAddEmployeState extends State<SearchAndAddEmploye> {
     });
   }
 
-  // Search employee by query
-  void _searchEmployee() {
-    String query = _searchController.text.trim();
-    _employeController.searchEmploye(query);
-  }
+  // // Search employee by query
+  // void _searchEmployee() {
+  //   String query = _searchController.text.trim();
+  //   _employeController.searchEmploye(query);
+  // }
 
   @override
+  void initState() {
+    super.initState();
+    final SpecialiteController specialiteController =
+        Get.put(SpecialiteController());
+    specialiteController.fetchSpecialites();
+
+    final DepartementController departementController =
+        Get.put(DepartementController());
+    departementController.fetchDepartements();
+  }
+
   Widget build(BuildContext context) {
     return LayoutBuilder(
       builder: (context, constraints) {
@@ -142,11 +162,11 @@ class _SearchAndAddEmployeState extends State<SearchAndAddEmploye> {
                   child: TextField(
                     controller: _searchController,
                     decoration: InputDecoration(
-                      suffixIcon: IconButton(
-                        icon: Icon(Icons.search, color: Colors.black54),
-                        onPressed: _searchEmployee,
-                      ),
-                      hintText: 'Search for employees...',
+                      // suffixIcon: IconButton(
+                      //   icon: Icon(Icons.search, color: Colors.black54),
+                      //   onPressed: _searchEmployee,
+                      // ),
+                      hintText: 'Rechercher des employés...',
                       hintStyle: TextStyle(color: Colors.black54),
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(20),
@@ -154,15 +174,18 @@ class _SearchAndAddEmployeState extends State<SearchAndAddEmploye> {
                       ),
                       filled: true,
                       fillColor: Colors.white,
-                      contentPadding: EdgeInsets.symmetric(vertical: 0, horizontal: 20),
+                      contentPadding:
+                          EdgeInsets.symmetric(vertical: 0, horizontal: 20),
                     ),
                   ),
                 ),
                 // Add Employee Button
                 ElevatedButton.icon(
-                  onPressed: _showAddEmployeDialog, // Show employee creation dialog
+                  onPressed:
+                      _showAddEmployeDialog, // Show employee creation dialog
                   icon: Icon(Icons.add, color: Colors.white),
-                  label: Text('Add Employee', style: TextStyle(color: Colors.white)),
+                  label: Text('Add Employee',
+                      style: TextStyle(color: Colors.white)),
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Color(0xFF228D6D),
                     shape: RoundedRectangleBorder(
@@ -204,11 +227,17 @@ class _SearchAndAddEmployeState extends State<SearchAndAddEmploye> {
                       children: [
                         Text(
                           'Add Employee',
-                          style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+                          style: TextStyle(
+                              fontSize: 24, fontWeight: FontWeight.bold),
                         ),
                         IconButton(
                           icon: Icon(Icons.close),
                           onPressed: () {
+                            setState(() {
+                              _photoBytes = null;
+                              _selectedPhoto = null;
+                              _selectedDiplome = null;
+                            });
                             Navigator.of(context).pop();
                           },
                         ),
@@ -224,7 +253,8 @@ class _SearchAndAddEmployeState extends State<SearchAndAddEmploye> {
                       children: [
                         ElevatedButton(
                           onPressed: _submitEmploye,
-                          child: Text('Add Employee', style: TextStyle(color: Colors.white)),
+                          child: Text('Add Employee',
+                              style: TextStyle(color: Colors.white)),
                           style: ElevatedButton.styleFrom(
                             backgroundColor: Color(0xFF228D6D),
                           ),
@@ -251,8 +281,8 @@ class _SearchAndAddEmployeState extends State<SearchAndAddEmploye> {
 
   // Employee Form Fields Widget
   Widget _buildEmployeeFormFields() {
-    return LayoutBuilder(
-      builder: (context, constraints) {
+    return StatefulBuilder(
+      builder: (context, setState) {
         return Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -272,25 +302,31 @@ class _SearchAndAddEmployeState extends State<SearchAndAddEmploye> {
                       return null;
                     },
                   ),
+                  
                 ),
                 SizedBox(width: 10),
-                Expanded(
+                 Expanded(
                   child: TextFormField(
-                    controller: _departementController,
+                    controller: _prenomController,
                     decoration: InputDecoration(
-                      labelText: 'Departement*',
+                      labelText: 'Prenom*',
                       border: OutlineInputBorder(),
                     ),
                     validator: (value) {
                       if (value == null || value.isEmpty) {
-                        return 'Please enter the department';
+                        return 'Please enter the name';
                       }
                       return null;
                     },
                   ),
+                  
                 ),
               ],
             ),
+            SizedBox(height: 10),
+            _buildDepartementDropdown(), // Department Dropdown
+            SizedBox(height: 10),
+            _buildSpecialiteDropdown(), // Specialty Dropdown
             SizedBox(height: 10),
             TextFormField(
               controller: _emailController,
@@ -318,7 +354,9 @@ class _SearchAndAddEmployeState extends State<SearchAndAddEmploye> {
                       border: OutlineInputBorder(),
                       suffixIcon: IconButton(
                         icon: Icon(
-                          _isPasswordVisible ? Icons.visibility : Icons.visibility_off,
+                          _isPasswordVisible
+                              ? Icons.visibility
+                              : Icons.visibility_off,
                         ),
                         onPressed: () {
                           setState(() {
@@ -347,7 +385,9 @@ class _SearchAndAddEmployeState extends State<SearchAndAddEmploye> {
                       border: OutlineInputBorder(),
                       suffixIcon: IconButton(
                         icon: Icon(
-                          _isPasswordVisible ? Icons.visibility : Icons.visibility_off,
+                          _isPasswordVisible
+                              ? Icons.visibility
+                              : Icons.visibility_off,
                         ),
                         onPressed: () {
                           setState(() {
@@ -373,7 +413,22 @@ class _SearchAndAddEmployeState extends State<SearchAndAddEmploye> {
               children: [
                 Expanded(
                   child: GestureDetector(
-                    onTap: _pickPhoto,
+                    onTap: () async {
+                      FilePickerResult? result =
+                          await FilePicker.platform.pickFiles(
+                        type: FileType.image,
+                        allowMultiple: false,
+                      );
+
+                      if (result != null) {
+                        PlatformFile file = result.files.first;
+                        setState(() {
+                          _selectedPhoto = html.File([file.bytes!], file.name);
+                          _photoBytes =
+                              file.bytes; // Save the photo bytes for preview
+                        });
+                      }
+                    },
                     child: Container(
                       width: double.infinity,
                       height: 150,
@@ -398,7 +453,8 @@ class _SearchAndAddEmployeState extends State<SearchAndAddEmploye> {
                             ? Column(
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 children: [
-                                  Icon(Icons.camera_alt, color: Colors.grey.shade600, size: 40),
+                                  Icon(Icons.camera_alt,
+                                      color: Colors.grey.shade600, size: 40),
                                   SizedBox(height: 10),
                                   Text(
                                     'Tap to select photo',
@@ -421,7 +477,22 @@ class _SearchAndAddEmployeState extends State<SearchAndAddEmploye> {
                 SizedBox(width: 10),
                 Expanded(
                   child: GestureDetector(
-                    onTap: _pickDiplome,
+                    onTap: () async {
+                      FilePickerResult? result =
+                          await FilePicker.platform.pickFiles(
+                        type: FileType.custom,
+                        allowedExtensions: ['pdf'],
+                        allowMultiple: false,
+                      );
+
+                      if (result != null) {
+                        PlatformFile file = result.files.first;
+                        setState(() {
+                          _selectedDiplome =
+                              html.File([file.bytes!], file.name);
+                        });
+                      }
+                    },
                     child: Container(
                       width: double.infinity,
                       height: 150,
@@ -446,7 +517,8 @@ class _SearchAndAddEmployeState extends State<SearchAndAddEmploye> {
                             ? Column(
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 children: [
-                                  Icon(Icons.file_present, color: Colors.grey.shade600, size: 40),
+                                  Icon(Icons.file_present,
+                                      color: Colors.grey.shade600, size: 40),
                                   SizedBox(height: 10),
                                   Text(
                                     'Tap to select a diplome (PDF)',
@@ -473,5 +545,117 @@ class _SearchAndAddEmployeState extends State<SearchAndAddEmploye> {
         );
       },
     );
+  }
+
+  Widget _buildDepartementDropdown() {
+    final DepartementController departementController =
+        Get.put(DepartementController());
+    final SpecialiteController specialiteController =
+        Get.put(SpecialiteController());
+
+    return Obx(() {
+      final departements = departementController.departements;
+
+      print("Departements: ${departements.map((d) => d.nom).toList()}");
+      print("Selected Department: ${_departementController}");
+
+      return StatefulBuilder(builder: (context, setState) {
+        return DropdownButtonFormField<String>(
+          decoration: InputDecoration(
+            labelText: 'Department*',
+            border: OutlineInputBorder(),
+          ),
+          value:
+              // _departementController != null &&
+              //         departements.any((departement) =>
+              //             departement.nom == _departementController)
+              //     ?
+              _departementController,
+          // : null,
+          onChanged: (String? newValue) async {
+            if (newValue != null) {
+              setState(() {
+                _specialiteController = null;
+                // Clear the selected specialty
+                _departementController = newValue; // Update selected department
+              });
+
+              // Find the department object based on its name
+              final selectedDepartement = departements
+                  .firstWhere((departement) => departement.nom == newValue);
+
+              // Fetch specialties by the selected department ID
+              await specialiteController.fetchSpecialitesByDepartement(
+                  selectedDepartement.idDepartement);
+            }
+          },
+          items: departements.isNotEmpty
+              ? departements
+                  .map((departement) => DropdownMenuItem<String>(
+                        value: departement.nom,
+                        child: Text(departement.nom),
+                      ))
+                  .toList()
+              : [DropdownMenuItem(value: null, child: Text('No Departments'))],
+          validator: (value) {
+            if (value == null) {
+              return 'Please select a department';
+            }
+            return null;
+          },
+        );
+      });
+    });
+  }
+
+  ///
+  ///
+  Widget _buildSpecialiteDropdown() {
+    final SpecialiteController specialiteController =
+        Get.put(SpecialiteController());
+
+    return Obx(() {
+      final specialites = specialiteController.specialitesByDepartement;
+
+      print("Specialites: ${specialites.map((s) => s.nom).toList()}");
+      print("Selected Specialty: ${_specialiteController}");
+
+      return StatefulBuilder(builder: (context, setState) {
+        return DropdownButtonFormField<String>(
+          decoration: InputDecoration(
+            labelText: 'Specialty*',
+            border: OutlineInputBorder(),
+          ),
+          value:
+              //  _specialiteController != null &&
+              //         specialites.any(
+              //             (specialite) => specialite.nom == _specialiteController)
+              //     ?
+              _specialiteController,
+          // : null,
+          onChanged: (String? newValue) {
+            if (newValue != null) {
+              setState(() {
+                _specialiteController = newValue;
+              }); // Update selected specialty
+            }
+          },
+          items: specialites.isNotEmpty
+              ? specialites
+                  .map((specialite) => DropdownMenuItem<String>(
+                        value: specialite.nom,
+                        child: Text(specialite.nom),
+                      ))
+                  .toList()
+              : [DropdownMenuItem(value: null, child: Text('No Specialties'))],
+          validator: (value) {
+            if (value == null) {
+              return 'Please select a specialty';
+            }
+            return null;
+          },
+        );
+      });
+    });
   }
 }

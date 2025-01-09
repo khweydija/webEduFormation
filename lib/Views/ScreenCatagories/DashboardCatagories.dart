@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:shimmer/shimmer.dart';
 import 'package:webpfe/Views/AppBar.dart';
 import 'package:webpfe/Views/ScreenCatagories/SearchAndAddc.dart';
 import 'package:webpfe/Views/Sidebar.dart';
@@ -17,7 +18,7 @@ class _AdminDashboardState extends State<AdminDashboardCategorie> {
   @override
   void initState() {
     super.initState();
-    _categoryController.fetchCategories();
+    _categoryController.fetchCategories(); // Fetch categories on page load
   }
 
   void onItemSelected(int index) {
@@ -29,7 +30,8 @@ class _AdminDashboardState extends State<AdminDashboardCategorie> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color.fromARGB(255, 245, 244, 244),
+      backgroundColor: Colors.white,
+      //backgroundColor: const Color.fromARGB(255, 245, 244, 244),
       body: LayoutBuilder(
         builder: (context, constraints) {
           return Row(
@@ -56,10 +58,12 @@ class MainContent extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color.fromARGB(255, 245, 244, 244),
+      backgroundColor: Colors.white,
+      //backgroundColor: const Color.fromARGB(255, 245, 244, 244),
       appBar: CustomAppBar(),
       body: Container(
-        color: const Color.fromARGB(255, 245, 244, 244),
+        color: Colors.white,
+        //color: const Color.fromARGB(255, 245, 244, 244),
         child: SingleChildScrollView(
           child: Padding(
             padding: const EdgeInsets.all(20),
@@ -68,9 +72,9 @@ class MainContent extends StatelessWidget {
               children: [
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    const Text(
-                      'Gestion des Catégories',
+                  children: const [
+                    Text(
+                      ' Catégories',
                       style: TextStyle(
                         fontSize: 24,
                         fontWeight: FontWeight.bold,
@@ -84,9 +88,9 @@ class MainContent extends StatelessWidget {
                 const SizedBox(height: 20),
                 Obx(() {
                   if (_categoryController.isLoading.value) {
-                    return const Center(child: CircularProgressIndicator());
+                    return shimmerTable(); // Shimmer effect for loading state
                   } else if (_categoryController.categories.isEmpty) {
-                    return const Center(child: Text('No categories found'));
+                    return const SizedBox.shrink(); // No fallback text
                   } else {
                     return Container(
                       decoration: BoxDecoration(
@@ -156,6 +160,44 @@ class MainContent extends StatelessWidget {
     );
   }
 
+  Widget shimmerTable() {
+    return Container(
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(10),
+        color: Colors.white,
+        boxShadow: [
+          BoxShadow(
+            color: Colors.grey.withOpacity(0.5),
+            spreadRadius: 2,
+            blurRadius: 5,
+          ),
+        ],
+      ),
+      child: Column(
+        children: List.generate(5, (index) {
+          return Shimmer.fromColors(
+            baseColor: Colors.grey[300]!,
+            highlightColor: Colors.grey[100]!,
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Container(width: 200, height: 16, color: Colors.grey[300]),
+                  Container(width: 200, height: 16, color: Colors.grey[300]),
+                  Container(width: 100, height: 16, color: Colors.grey[300]),
+                ],
+              ),
+            ),
+          );
+        }),
+      ),
+    );
+  }
+
+  // Other helper methods (_showCategoryDetailsDialog, etc.) remain unchanged
+
+
   void _showCategoryDetailsDialog(BuildContext context, int categoryId) {
     _categoryController.getCategoryById(categoryId);
     showDialog(
@@ -209,7 +251,7 @@ class MainContent extends StatelessWidget {
                       onPressed: () {
                         Navigator.of(context).pop();
                       },
-                      child: const Text('Fermer'),
+                      child: const Text('Fermer',style: TextStyle(color: Colors.white),),
                       style: ElevatedButton.styleFrom(
                         backgroundColor: const Color(0xFF228D6D),
                       ),
@@ -286,7 +328,7 @@ class MainContent extends StatelessWidget {
                           );
                           Navigator.of(context).pop();
                         },
-                        child: const Text('Enregistrer'),
+                        child: const Text('Enregistrer',style:TextStyle(color: Colors.white),),
                         style: ElevatedButton.styleFrom(
                           backgroundColor: const Color(0xFF228D6D),
                         ),
@@ -296,7 +338,7 @@ class MainContent extends StatelessWidget {
                         onPressed: () {
                           Navigator.of(context).pop();
                         },
-                        child: const Text('Cancel'),
+                        child: const Text('Annuler'),
                         style: TextButton.styleFrom(
                           foregroundColor: Colors.grey,
                         ),

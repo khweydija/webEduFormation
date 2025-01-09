@@ -1,17 +1,19 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:webpfe/controllers/auth_controller.dart';
+import 'package:webpfe/AppRoutes.dart';
 
-
-
-
-class  VerifyCodeScreenAdmin extends StatelessWidget {
+class VerifyCodeScreenAdmin extends StatelessWidget {
   final TextEditingController codeController = TextEditingController();
+  final TextEditingController emailController = TextEditingController();
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+  final AuthController authController = Get.put(AuthController());
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: Container(
-        color: Color.fromARGB(255, 240, 239, 239),
+        color: Colors.white,
         child: Center(
           child: SingleChildScrollView(
             child: Padding(
@@ -23,19 +25,9 @@ class  VerifyCodeScreenAdmin extends StatelessWidget {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Align(
-                          alignment: Alignment.topLeft,
-                          child: TextButton.icon(
-                            onPressed: () {
-                              // Navigate back to login screen
-                            },
-                            icon: Icon(Icons.arrow_back),
-                            label: Text('Back to login'),
-                          ),
-                        ),
                         SizedBox(height: 50),
                         Text(
-                          'Verify code',
+                          'Vérifiez le code',
                           style: TextStyle(
                             fontSize: 24,
                             fontWeight: FontWeight.bold,
@@ -43,24 +35,42 @@ class  VerifyCodeScreenAdmin extends StatelessWidget {
                         ),
                         SizedBox(height: 10),
                         Text(
-                          'An authentication code has been sent to your email.',
+                          'Un code d\'authentification a été envoyé à votre adresse e-mail.',
                           style: TextStyle(fontSize: 16),
                         ),
                         SizedBox(height: 20),
                         Form(
                           key: _formKey,
-                          child: TextFormField(
-                            controller: codeController,
-                            decoration: InputDecoration(
-                              labelText: 'Enter Code',
-                              border: OutlineInputBorder(),
-                            ),
-                            validator: (value) {
-                              if (value == null || value.isEmpty) {
-                                return 'Please enter the code';
-                              }
-                              return null;
-                            },
+                          child: Column(
+                            children: [
+                              TextFormField(
+                                controller: emailController,
+                                decoration: InputDecoration(
+                                  labelText: 'Email',
+                                  border: OutlineInputBorder(),
+                                ),
+                                validator: (value) {
+                                  if (value == null || value.isEmpty) {
+                                    return 'Veuillez entrer votre email';
+                                  }
+                                  return null;
+                                },
+                              ),
+                              SizedBox(height: 20),
+                              TextFormField(
+                                controller: codeController,
+                                decoration: InputDecoration(
+                                  labelText: 'Enter Code',
+                                  border: OutlineInputBorder(),
+                                ),
+                                validator: (value) {
+                                  if (value == null || value.isEmpty) {
+                                    return 'Veuillez entrer le code';
+                                  }
+                                  return null;
+                                },
+                              ),
+                            ],
                           ),
                         ),
                         SizedBox(height: 10),
@@ -68,23 +78,33 @@ class  VerifyCodeScreenAdmin extends StatelessWidget {
                           alignment: Alignment.centerLeft,
                           child: TextButton(
                             onPressed: () {
-                              // Resend code logic
+                              print('Renvoi du code déclenché');
                             },
-                            child: Text('Didn\'t receive a code? Resend'),
+                            child: Text(
+                                'Vous n\'avez pas reçu de code ? Renvoyer.'),
                           ),
                         ),
                         SizedBox(height: 20),
                         Center(
                           child: ElevatedButton(
-                            onPressed: () {
+                            onPressed: () async {
                               if (_formKey.currentState?.validate() ?? false) {
-                                // Perform verify code logic
+                                String email = emailController.text.trim();
+                                String code = codeController.text.trim();
+                                await authController.verifyResetCode(
+                                    email, code);
+                              
                               }
                             },
-                            child: Text('Verify'),
+                            child: Text(
+                              'Vérifier.',
+                              style: TextStyle(color: Colors.black),
+                            ),
                             style: ElevatedButton.styleFrom(
-                              backgroundColor: Color.fromARGB(255, 65, 153, 141),
-                              padding: EdgeInsets.symmetric(vertical: 15, horizontal: 30),
+                              backgroundColor:
+                                  Color.fromARGB(255, 225, 226, 225),
+                              padding: EdgeInsets.symmetric(
+                                  vertical: 15, horizontal: 30),
                             ),
                           ),
                         ),
@@ -96,7 +116,7 @@ class  VerifyCodeScreenAdmin extends StatelessWidget {
                     child: Column(
                       children: [
                         Image.asset(
-                          'assets/images/verify_code.png', // Replace with your image asset
+                          'assets/images/d1.jpeg',
                           height: 400,
                           width: 400,
                         ),
@@ -112,5 +132,3 @@ class  VerifyCodeScreenAdmin extends StatelessWidget {
     );
   }
 }
-
-  

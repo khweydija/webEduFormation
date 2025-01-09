@@ -1,5 +1,6 @@
 // controllers/auth_controller.dart
 
+import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:get/get_state_manager/src/simple/get_controllers.dart';
 import 'package:webpfe/AppRoutes.dart';
@@ -47,6 +48,57 @@ class AuthController extends GetxController {
       // Handle error
       print('Signup failed: $e');
       Get.snackbar('Error', 'Signup failed');
+    } finally {
+      isLoading(false);
+    }
+  }
+
+  // Forgot Password
+  Future<void> forgotPassword(String email) async {
+    isLoading(true);
+    try {
+      await authService.forgotPassword(email);
+       Get.snackbar('Success', 'Password reset email sent to $email');
+    } catch (e) {
+      Get.snackbar('Error', 'Failed to send password reset email');
+      print('Forgot password failed: $e');
+    } finally {
+      isLoading(false);
+    }
+  }
+
+  // Verify Reset Code
+  Future<void> verifyResetCode(String email, String code) async {
+  isLoading(true);
+  try {
+    bool isVerified = await authService.verifyResetCode(email, code);
+    if (isVerified) {
+      // Get.snackbar('Success', 'Reset code verified successfully');
+      print("go to set password");
+      Get.toNamed(AppRoutes.setPasswordAdminn, arguments: {'email': email, 'code': code});
+    } else {
+      Get.snackbar('Error', 'Invalid reset code');
+    }
+  } catch (e) {
+    Get.snackbar('Error', 'Failed to verify reset code');
+    print('Verify reset code failed: $e');
+  } finally {
+    isLoading(false);
+  }
+}
+
+
+  // Reset Password
+  Future<void> resetPassword(
+      String email, String code, String newPassword) async {
+    isLoading(true);
+    try {
+      await authService.resetPassword(email, code, newPassword);
+      // Get.snackbar('Success', 'Password reset successfully');
+      Get.toNamed(AppRoutes.loginAdmin);
+    } catch (e) {
+      Get.snackbar('Error', 'Failed to reset password');
+      print('Reset password failed: $e');
     } finally {
       isLoading(false);
     }

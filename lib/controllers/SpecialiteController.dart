@@ -10,6 +10,8 @@ class SpecialiteController extends GetxController {
   var specialiteDetails = Rxn<Specialite>();
   var isLoading = false.obs;
 
+   var specialitesByDepartement = <Specialite>[].obs;
+
   // Fetch all specialities
   Future<void> fetchSpecialites() async {
     isLoading(true);
@@ -74,6 +76,19 @@ class SpecialiteController extends GetxController {
       Get.snackbar('Success', 'Speciality deleted successfully');
     } catch (e) {
       Get.snackbar('Error', 'Failed to delete speciality: $e');
+    } finally {
+      isLoading(false);
+    }
+  }
+
+   // Fetch specialties by department ID
+  Future<void> fetchSpecialitesByDepartement(int departementId) async {
+    isLoading(true);
+    try {
+      final fetchedSpecialites = await _service.fetchSpecialitesByDepartement(departementId);
+      specialitesByDepartement.assignAll(fetchedSpecialites);
+    } catch (e) {
+      Get.snackbar('Error', 'Failed to load specialties by department: $e');
     } finally {
       isLoading(false);
     }

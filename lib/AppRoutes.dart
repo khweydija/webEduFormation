@@ -8,6 +8,14 @@ class AppRoutes {
 
   static const String adminDashboardSpecialite = '/adminDashboardSpecialite';
 
+  static const String forgotPassAdmine = '/forgotPassAdmine';
+  
+  static const String verifyCodeScreenAdmin = '/verifyCodeScreenAdmin';
+
+  static const String  setPasswordAdminn  = '/setPasswordAdminn';
+
+
+ 
   
 
   // Add other routes here if necessary
