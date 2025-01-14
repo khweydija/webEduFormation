@@ -3,7 +3,6 @@ import 'package:http/http.dart' as http;
 import 'package:get_storage/get_storage.dart';
 import 'package:webpfe/models/Specialite.dart';
 
-
 class SpecialiteService {
   final String apiUrl = 'http://localhost:8080/api/specialites';
   final box = GetStorage();
@@ -13,11 +12,16 @@ class SpecialiteService {
     String? token = box.read('token');
     final response = await http.get(
       Uri.parse('$apiUrl/all'),
-      headers: {'Authorization': 'Bearer $token'},
+      headers: {
+        'Authorization': 'Bearer $token',
+      },
     );
 
     if (response.statusCode == 200) {
-      final List<dynamic> data = json.decode(response.body);
+      final String decodedBody = utf8.decode(response.bodyBytes);
+
+      final List<dynamic> data = json.decode(decodedBody);
+
       return data.map((item) => Specialite.fromJson(item)).toList();
     } else {
       throw Exception('Failed to fetch specialities');
@@ -40,7 +44,8 @@ class SpecialiteService {
   }
 
   // Create a speciality
-  Future<void> createSpecialite(String nom, String description, String nomDepartement) async {
+  Future<void> createSpecialite(
+      String nom, String description, String nomDepartement) async {
     String? token = box.read('token');
     final response = await http.post(
       Uri.parse('$apiUrl/create'),
@@ -95,9 +100,9 @@ class SpecialiteService {
     }
   }
 
-
   // Fetch specialties by department ID
-  Future<List<Specialite>> fetchSpecialitesByDepartement(int departementId) async {
+  Future<List<Specialite>> fetchSpecialitesByDepartement(
+      int departementId) async {
     String? token = box.read('token');
     final response = await http.get(
       Uri.parse('$apiUrl/departement/$departementId'),
