@@ -3,6 +3,8 @@ import 'package:get/get.dart';
 import 'package:get/get_navigation/src/root/get_material_app.dart';
 import 'package:get/get_navigation/src/routes/get_route.dart';
 import 'package:webpfe/AppRoutes.dart';
+import 'package:webpfe/Views/Certification/AdminDashboardCertification.dart';
+import 'package:webpfe/Views/Certification/CertificateScreen.dart';
 import 'package:webpfe/Views/ForgetScreen/ForgotPassAdmine.dart';
 import 'package:webpfe/Views/ForgetScreen/SetPasswordAdmin.dart';
 import 'package:webpfe/Views/ForgetScreen/VerifyCodeScreenAdmin.dart';
@@ -61,14 +63,18 @@ class MyApp extends StatelessWidget {
         GetPage(
             name: AppRoutes.verifyCodeScreenAdmin,
             page: () => VerifyCodeScreenAdmin()),
-       GetPage(
-  name: AppRoutes.setPasswordAdminn,
-  page: () => SetPasswordAdmin(
-    email: Get.arguments['email'] ?? '',
-    code: Get.arguments['code'] ?? '',
-  ),
-),
-
+        GetPage(
+          name: AppRoutes.setPasswordAdminn,
+          page: () => SetPasswordAdmin(
+            email: Get.arguments['email'] ?? '',
+            code: Get.arguments['code'] ?? '',
+          ),
+        ),
+        GetPage(
+            name: AppRoutes.adminDashboardCertification,
+            page: () => AdminDashboardCertification()),
+        GetPage(
+            name: AppRoutes.certificateScreen, page: () => CertificateScreen()),
       ],
     );
   }

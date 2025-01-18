@@ -30,7 +30,7 @@ class _SearchAndAddState extends State<SearchAndAdd> {
   final _formKey = GlobalKey<FormState>();
 
   final TextEditingController _nomController = TextEditingController();
-   final TextEditingController _prenomController = TextEditingController();
+  final TextEditingController _prenomController = TextEditingController();
   String? _specialiteController;
   String? _departementController;
   final TextEditingController _emailController = TextEditingController();
@@ -118,7 +118,7 @@ class _SearchAndAddState extends State<SearchAndAdd> {
                         borderSide: BorderSide.none,
                       ),
                       filled: true,
-                      fillColor: Colors.white,
+                      fillColor: Color.fromARGB(255, 241, 240, 240),
                       contentPadding:
                           EdgeInsets.symmetric(vertical: 0, horizontal: 20),
                     ),
@@ -198,16 +198,6 @@ class _SearchAndAddState extends State<SearchAndAdd> {
                             ),
                           ),
                           SizedBox(width: 10),
-                          TextButton(
-                            onPressed: () {
-                              Navigator.of(context).pop();
-                            },
-                            child: Text('Annuler'),
-                            style: TextButton.styleFrom(
-                              foregroundColor:
-                                  const Color.fromARGB(255, 133, 131, 131),
-                            ),
-                          ),
                         ],
                       ),
                     ],
@@ -232,7 +222,8 @@ class _SearchAndAddState extends State<SearchAndAdd> {
                 children: [
                   _buildTextField(
                       controller: _nomController, labelText: 'Name*'),
-                       _buildTextField(
+                  SizedBox(height: 10),
+                  _buildTextField(
                       controller: _prenomController, labelText: 'Prenom*'),
                   SizedBox(height: 10),
                   _buildDepartementDropdown(),
@@ -247,13 +238,13 @@ class _SearchAndAddState extends State<SearchAndAdd> {
                       Expanded(
                         child: _buildPasswordField(
                             controller: _passwordController,
-                            labelText: 'Password*'),
+                            labelText: 'Mot de passe*'),
                       ),
                       SizedBox(width: 10),
                       Expanded(
                         child: _buildPasswordField(
                             controller: _confirmPasswordController,
-                            labelText: 'Confirm Password*'),
+                            labelText: 'Confirmer mot de passe*'),
                       ),
                     ],
                   ),
@@ -280,54 +271,52 @@ class _SearchAndAddState extends State<SearchAndAdd> {
       print("Département: ${departements.map((d) => d.nom).toList()}");
       print("Département sélectionné: ${_departementController}");
 
-      return StatefulBuilder(
-        builder: (context, setState) {
-          return DropdownButtonFormField<String>(
-            decoration: InputDecoration(
-              labelText: 'Département*',
-              border: OutlineInputBorder(),
-            ),
-            value:
-                // _departementController != null &&
-                //         departements.any((departement) =>
-                //             departement.nom == _departementController)
-                //     ?
-                _departementController,
-            // : null,
-            onChanged: (String? newValue) async {
-              if (newValue != null) {
-                setState(() {
-                  _specialiteController = null;
-                  // Clear the selected specialty
-                  _departementController = newValue; // Update selected department
-                });
-          
-                // Find the department object based on its name
-                final selectedDepartement = departements
-                    .firstWhere((departement) => departement.nom == newValue);
-          
-                // Fetch specialties by the selected department ID
-                await specialiteController.fetchSpecialitesByDepartement(
-                    selectedDepartement.idDepartement);
-              }
-            },
-            items: departements.isNotEmpty
-                ? departements
-                    .map((departement) => DropdownMenuItem<String>(
-                          value: departement.nom,
-                          child: Text(departement.nom),
-                        ))
-                    .toList()
-                : [DropdownMenuItem(value: null, child: Text('No Departments'))],
-            validator: (value) {
-              if (value == null) {
-                return 'Veuillez sélectionner un département';
-              }
-              return null;
-            },
-          );
-        }
-      );
+      return StatefulBuilder(builder: (context, setState) {
+        return DropdownButtonFormField<String>(
+          decoration: InputDecoration(
+            labelText: 'Département*',
+            border: OutlineInputBorder(),
+          ),
+          value:
+              // _departementController != null &&
+              //         departements.any((departement) =>
+              //             departement.nom == _departementController)
+              //     ?
+              _departementController,
+          // : null,
+          onChanged: (String? newValue) async {
+            if (newValue != null) {
+              setState(() {
+                _specialiteController = null;
+                // Clear the selected specialty
+                _departementController = newValue; // Update selected department
+              });
+
+              // Find the department object based on its name
+              final selectedDepartement = departements
+                  .firstWhere((departement) => departement.nom == newValue);
+
+              // Fetch specialties by the selected department ID
+              await specialiteController.fetchSpecialitesByDepartement(
+                  selectedDepartement.idDepartement);
+            }
+          },
+          items: departements.isNotEmpty
+              ? departements
+                  .map((departement) => DropdownMenuItem<String>(
+                        value: departement.nom,
+                        child: Text(departement.nom),
+                      ))
+                  .toList()
+              : [DropdownMenuItem(value: null, child: Text('No Departments'))],
+          validator: (value) {
+            if (value == null) {
+              return 'Veuillez sélectionner un département';
+            }
+            return null;
+          },
+        );
+      });
     });
   }
 
@@ -343,44 +332,42 @@ class _SearchAndAddState extends State<SearchAndAdd> {
       print("Specialites: ${specialites.map((s) => s.nom).toList()}");
       print("Selected Specialty: ${_specialiteController}");
 
-      return StatefulBuilder(
-        builder: (context, setState) {
-          return DropdownButtonFormField<String>(
-            decoration: InputDecoration(
-              labelText: 'Spécialité*',
-              border: OutlineInputBorder(),
-            ),
-            value:
-            //  _specialiteController != null &&
-            //         specialites.any(
-            //             (specialite) => specialite.nom == _specialiteController)
-            //     ?
-                _specialiteController,
-                // : null,
-            onChanged: (String? newValue) {
-              if (newValue != null) {
-                setState(() {
-                  _specialiteController = newValue;
-                }); // Update selected specialty
-              }
-            },
-            items: specialites.isNotEmpty
-                ? specialites
-                    .map((specialite) => DropdownMenuItem<String>(
-                          value: specialite.nom,
-                          child: Text(specialite.nom),
-                        ))
-                    .toList()
-                : [DropdownMenuItem(value: null, child: Text('No Specialties'))],
-            validator: (value) {
-              if (value == null) {
-                return 'Veuillez sélectionner une spécialité';
-              }
-              return null;
-            },
-          );
-        }
-      );
+      return StatefulBuilder(builder: (context, setState) {
+        return DropdownButtonFormField<String>(
+          decoration: InputDecoration(
+            labelText: 'Spécialité*',
+            border: OutlineInputBorder(),
+          ),
+          value:
+              //  _specialiteController != null &&
+              //         specialites.any(
+              //             (specialite) => specialite.nom == _specialiteController)
+              //     ?
+              _specialiteController,
+          // : null,
+          onChanged: (String? newValue) {
+            if (newValue != null) {
+              setState(() {
+                _specialiteController = newValue;
+              }); // Update selected specialty
+            }
+          },
+          items: specialites.isNotEmpty
+              ? specialites
+                  .map((specialite) => DropdownMenuItem<String>(
+                        value: specialite.nom,
+                        child: Text(specialite.nom),
+                      ))
+                  .toList()
+              : [DropdownMenuItem(value: null, child: Text(' Specialité')),],
+          validator: (value) {
+            if (value == null) {
+              return 'Veuillez sélectionner une spécialité';
+            }
+            return null;
+          },
+        );
+      });
     });
   }
 
@@ -459,7 +446,7 @@ class _SearchAndAddState extends State<SearchAndAdd> {
               _selectedPhotoBytes = pickedFile;
               _photoFilename = "formateur_photo.png";
             });
-            debugPrint(" hhhhhhhhhh ${_photoFilename}");
+            debugPrint(" ${_photoFilename}");
           } else {
             print("Aucune image sélectionnée");
           }
@@ -484,7 +471,7 @@ class _SearchAndAddState extends State<SearchAndAdd> {
                           color: Colors.grey.shade600, size: 40),
                       const SizedBox(height: 10),
                       Text(
-                        'Appuyez pour sélectionner une photo',
+                        ' sélectionner une photo',
                         style: TextStyle(
                             color: Colors.grey.shade600, fontSize: 16),
                       ),

@@ -13,8 +13,8 @@ class AppRoutes {
   static const String verifyCodeScreenAdmin = '/verifyCodeScreenAdmin';
 
   static const String  setPasswordAdminn  = '/setPasswordAdminn';
-
-
+  static const String  adminDashboardCertification = '/adminDashboardCertification';
+ static const String  certificateScreen  = '/certificateScreen';
  
   
 

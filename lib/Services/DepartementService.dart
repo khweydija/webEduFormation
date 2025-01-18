@@ -15,26 +15,31 @@ class DepartementService {
     );
 
     if (response.statusCode == 200) {
-      final List<dynamic> data = json.decode(response.body);
+      final String decodedBody = utf8.decode(response.bodyBytes);
+
+      final List<dynamic> data = json.decode(decodedBody);
+
       return data.map((item) => Departement.fromJson(item)).toList();
     } else {
       throw Exception('Failed to fetch departements');
     }
   }
 
-  Future<Departement> getDepartementById(int id) async {
-    String? token = box.read('token');
-    final response = await http.get(
-      Uri.parse('$apiUrl/get/$id'),
-      headers: {'Authorization': 'Bearer $token'},
-    );
+Future<Departement> getDepartementById(int id) async {
+  String? token = box.read('token');
+  final response = await http.get(
+    Uri.parse('$apiUrl/get/$id'),
+    headers: {'Authorization': 'Bearer $token'},
+  );
 
-    if (response.statusCode == 200) {
-      return Departement.fromJson(json.decode(response.body));
-    } else {
-      throw Exception('Departement not found');
-    }
+  if (response.statusCode == 200) {
+    final String decodedBody = utf8.decode(response.bodyBytes); // Decode the response body
+    return Departement.fromJson(json.decode(decodedBody)); // Parse the JSON
+  } else {
+    throw Exception('Departement not found');
   }
+}
+
 
   Future<void> createDepartement(String nom, String description) async {
     String? token = box.read('token');

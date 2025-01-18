@@ -10,7 +10,8 @@ class SearchAndAddSpecialite extends StatefulWidget {
 
 class _SearchAndAddState extends State<SearchAndAddSpecialite> {
   final SpecialiteController _specialiteController = Get.find();
-  final DepartementController _departementController = Get.put(DepartementController());
+  final DepartementController _departementController =
+      Get.put(DepartementController());
   final TextEditingController _searchController = TextEditingController();
   final TextEditingController _nomController = TextEditingController();
   final TextEditingController _descriptionController = TextEditingController();
@@ -42,12 +43,12 @@ class _SearchAndAddState extends State<SearchAndAddSpecialite> {
       context: context,
       builder: (BuildContext context) {
         return Dialog(
-          insetPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
+          insetPadding:
+              const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(10),
           ),
           child: Container(
-            
             width: MediaQuery.of(context).size.width * 0.8,
             padding: const EdgeInsets.all(20),
             child: SingleChildScrollView(
@@ -62,7 +63,8 @@ class _SearchAndAddState extends State<SearchAndAddSpecialite> {
                       children: [
                         const Text(
                           'Ajouter une spécialité',
-                          style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+                          style: TextStyle(
+                              fontSize: 24, fontWeight: FontWeight.bold),
                         ),
                         IconButton(
                           icon: const Icon(Icons.close),
@@ -136,7 +138,8 @@ class _SearchAndAddState extends State<SearchAndAddSpecialite> {
                       children: [
                         ElevatedButton(
                           onPressed: _submitCreateSpecialite,
-                          child: const Text('Ajouter', style: TextStyle(color: Colors.white)),
+                          child: const Text('Ajouter',
+                              style: TextStyle(color: Colors.white)),
                           style: ElevatedButton.styleFrom(
                             backgroundColor: const Color(0xFF228D6D),
                           ),
@@ -146,7 +149,8 @@ class _SearchAndAddState extends State<SearchAndAddSpecialite> {
                           onPressed: () {
                             Navigator.of(context).pop();
                           },
-                          child: const Text('Annuler', style: TextStyle(color: Colors.white)),
+                          child: const Text('Annuler',
+                              style: TextStyle(color: Colors.white)),
                           style: TextButton.styleFrom(
                             foregroundColor: Colors.grey,
                           ),
@@ -188,7 +192,8 @@ class _SearchAndAddState extends State<SearchAndAddSpecialite> {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             SizedBox(
-              width: constraints.maxWidth > 800 ? 700 : constraints.maxWidth * 0.7,
+              width:
+                  constraints.maxWidth > 800 ? 700 : constraints.maxWidth * 0.7,
               child: TextField(
                 controller: _searchController,
                 decoration: InputDecoration(
@@ -203,15 +208,17 @@ class _SearchAndAddState extends State<SearchAndAddSpecialite> {
                     borderSide: BorderSide.none,
                   ),
                   filled: true,
-                  fillColor: Colors.white,
-                  contentPadding: const EdgeInsets.symmetric(vertical: 0, horizontal: 20),
+                  fillColor: Color.fromARGB(255, 241, 240, 240),
+                  contentPadding:
+                      const EdgeInsets.symmetric(vertical: 0, horizontal: 20),
                 ),
               ),
             ),
             ElevatedButton.icon(
               onPressed: _showCreateSpecialiteDialog,
               icon: const Icon(Icons.add, color: Colors.white),
-              label: const Text('Ajouter une spécialité', style: TextStyle(color: Colors.white)),
+              label: const Text('Ajouter une spécialité',
+                  style: TextStyle(color: Colors.white)),
               style: ElevatedButton.styleFrom(
                 backgroundColor: const Color(0xFF228D6D),
                 shape: RoundedRectangleBorder(

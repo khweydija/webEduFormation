@@ -14,16 +14,7 @@ class _SearchAndAddState extends State<SearchAndAddd> {
   final TextEditingController _nomController = TextEditingController();
   final _formKey = GlobalKey<FormState>();
 
-  // Search departments
-  // void _searchDepartments() async {
-  //   if (_searchController.text.isNotEmpty) {
-  //     await _departementController.searchCategories(_searchController.text);
-  //   } else {
-  //     _departementController.fetchDepartements();
-  //   }
-  // }
-
-  // Open dialog to create a department
+  // Ouvrir la boîte de dialogue pour créer un département
   void _showCreateDepartementDialog() {
     _descriptionController.clear();
     _nomController.clear();
@@ -51,7 +42,7 @@ class _SearchAndAddState extends State<SearchAndAddd> {
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         const Text(
-                          'Create Department',
+                          'Ajouter un département',
                           style: TextStyle(
                               fontSize: 24, fontWeight: FontWeight.bold),
                         ),
@@ -104,15 +95,15 @@ class _SearchAndAddState extends State<SearchAndAddd> {
                           ),
                         ),
                         const SizedBox(width: 10),
-                        TextButton(
-                          onPressed: () {
-                            Navigator.of(context).pop();
-                          },
-                          child: const Text('Annuler'),
-                          style: TextButton.styleFrom(
-                            foregroundColor: Colors.grey,
-                          ),
-                        ),
+                        // TextButton(
+                        //   onPressed: () {
+                        //     Navigator.of(context).pop();
+                        //   },
+                        //   child: const Text('Annuler'),
+                        //   style: TextButton.styleFrom(
+                        //     foregroundColor: Colors.grey,
+                        //   ),
+                        // ),
                       ],
                     ),
                   ],
@@ -125,7 +116,7 @@ class _SearchAndAddState extends State<SearchAndAddd> {
     );
   }
 
-  // Submit the create department form
+  // Soumettre le formulaire pour créer un département
   void _submitCreateDepartement() async {
     if (_formKey.currentState?.validate() ?? false) {
       try {
@@ -133,7 +124,8 @@ class _SearchAndAddState extends State<SearchAndAddd> {
           _nomController.text,
           _descriptionController.text,
         );
-        Navigator.of(context).pop(); // Close dialog on success
+        Navigator.of(context)
+            .pop(); // Fermer la boîte de dialogue en cas de succès
         Get.snackbar('Succès', 'Département créé avec succès');
       } catch (e) {
         Get.snackbar('Erreur', 'Échec de la création du département');
@@ -154,10 +146,6 @@ class _SearchAndAddState extends State<SearchAndAddd> {
               child: TextField(
                 controller: _searchController,
                 decoration: InputDecoration(
-                  // suffixIcon: IconButton(
-                  //   icon: const Icon(Icons.search, color: Colors.black54),
-                  //  // onPressed: _searchDepartments,
-                  // ),
                   hintText: 'Rechercher des départements...',
                   hintStyle: const TextStyle(color: Colors.black54),
                   border: OutlineInputBorder(
@@ -165,7 +153,7 @@ class _SearchAndAddState extends State<SearchAndAddd> {
                     borderSide: BorderSide.none,
                   ),
                   filled: true,
-                  fillColor: Colors.white,
+                  fillColor: Color.fromARGB(255, 241, 240, 240),
                   contentPadding:
                       const EdgeInsets.symmetric(vertical: 0, horizontal: 20),
                 ),

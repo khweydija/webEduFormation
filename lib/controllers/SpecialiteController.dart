@@ -44,7 +44,7 @@ class SpecialiteController extends GetxController {
     try {
       await _service.createSpecialite(nom, description, nomDepartement);
       fetchSpecialites();
-      Get.snackbar('Success', 'Speciality created successfully');
+      // Get.snackbar('Success', 'Speciality created successfully');
     } catch (e) {
       Get.snackbar('Error', 'Failed to create speciality: $e');
     } finally {
@@ -59,7 +59,7 @@ class SpecialiteController extends GetxController {
     try {
       await _service.updateSpecialite(id, nom, description, nomDepartement);
       fetchSpecialites();
-      Get.snackbar('Success', 'Speciality updated successfully');
+      // Get.snackbar('Success', 'Speciality updated successfully');
     } catch (e) {
       Get.snackbar('Error', 'Failed to update speciality: $e');
     } finally {
@@ -73,7 +73,7 @@ class SpecialiteController extends GetxController {
     try {
       await _service.deleteSpecialite(id);
       fetchSpecialites();
-      Get.snackbar('Success', 'Speciality deleted successfully');
+      // Get.snackbar('Success', 'Speciality deleted successfully');
     } catch (e) {
       Get.snackbar('Error', 'Failed to delete speciality: $e');
     } finally {

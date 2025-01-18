@@ -34,9 +34,9 @@ class _AdminDashboardFormateurState extends State<AdminDashboardFormateur> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-     backgroundColor: Colors.white,
-     
-     // backgroundColor: const Color.fromARGB(255, 245, 244, 244),
+      backgroundColor: Colors.white,
+
+      // backgroundColor: const Color.fromARGB(255, 245, 244, 244),
       body: LayoutBuilder(
         builder: (context, constraints) {
           return Row(
@@ -70,10 +70,10 @@ class _MainContentState extends State<MainContent> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
-     // backgroundColor: const Color.fromARGB(255, 245, 244, 244),
+      // backgroundColor: const Color.fromARGB(255, 245, 244, 244),
       appBar: CustomAppBar(),
       body: Container(
-         color: Colors.white,
+        color: Colors.white,
         //color: const Color.fromARGB(255, 245, 244, 244),
         child: SingleChildScrollView(
           child: Padding(
@@ -333,27 +333,27 @@ class _MainContentState extends State<MainContent> {
                                 readOnly: true,
                               ),
                               SizedBox(height: 10),
-                              Row(
-                                children: [
-                                  Text('Active Status: '),
-                                  Switch(
-                                    activeColor: isActive
-                                        ? Color.fromARGB(255, 105, 156, 148)
-                                        : Colors.grey, // Active status color
-                                    value: isActive, // Display active status
-                                    onChanged: null, // Read-only in details
-                                  ),
-                                  Text(
-                                    isActive ? "Active" : "Inactive",
-                                    style: TextStyle(
-                                      color: isActive
-                                          ? Color.fromARGB(255, 105, 156, 148)
-                                          : Colors.red,
-                                      fontWeight: FontWeight.bold,
-                                    ),
-                                  ),
-                                ],
-                              ),
+                              // Row(
+                              //   children: [
+                              //     Text('Active Status: '),
+                              //     Switch(
+                              //       activeColor: isActive
+                              //           ? Color.fromARGB(255, 105, 156, 148)
+                              //           : Colors.grey, // Active status color
+                              //       value: isActive, // Display active status
+                              //       onChanged: null, // Read-only in details
+                              //     ),
+                              //     Text(
+                              //       isActive ? "Active" : "Inactive",
+                              //       style: TextStyle(
+                              //         color: isActive
+                              //             ? Color.fromARGB(255, 105, 156, 148)
+                              //             : Colors.red,
+                              //         fontWeight: FontWeight.bold,
+                              //       ),
+                              //     ),
+                              //   ],
+                              // ),
                             ],
                           ),
                         ),

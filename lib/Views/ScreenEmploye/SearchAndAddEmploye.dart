@@ -77,12 +77,12 @@ class _SearchAndAddEmployeState extends State<SearchAndAddEmploye> {
   void _submitEmploye() async {
     if (_formKey.currentState?.validate() ?? false) {
       if (_selectedPhoto == null) {
-        Get.snackbar('Error', 'Please select a photo');
+        Get.snackbar('Error', 'Veuillez sélectionner une photo');
         return;
       }
 
       if (_passwordController.text != _confirmPasswordController.text) {
-        Get.snackbar('Error', 'Passwords do not match');
+        Get.snackbar('Error', 'Les mots de passe ne correspondent pas');
         return;
       }
 
@@ -102,7 +102,7 @@ class _SearchAndAddEmployeState extends State<SearchAndAddEmploye> {
       );
 
       if (response?.statusCode == 200) {
-        Get.snackbar('Success', 'Employee created successfully');
+        Get.snackbar('Succès', 'Employé créé avec succès');
         _clearFormFields(); // Clear the fields after success
 
         // Fetch all employees again to update the list in the UI
@@ -173,7 +173,7 @@ class _SearchAndAddEmployeState extends State<SearchAndAddEmploye> {
                         borderSide: BorderSide.none,
                       ),
                       filled: true,
-                      fillColor: Colors.white,
+                      fillColor: Color.fromARGB(255, 241, 240, 240),
                       contentPadding:
                           EdgeInsets.symmetric(vertical: 0, horizontal: 20),
                     ),
@@ -184,7 +184,7 @@ class _SearchAndAddEmployeState extends State<SearchAndAddEmploye> {
                   onPressed:
                       _showAddEmployeDialog, // Show employee creation dialog
                   icon: Icon(Icons.add, color: Colors.white),
-                  label: Text('Add Employee',
+                  label: Text('Ajouter un employé',
                       style: TextStyle(color: Colors.white)),
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Color(0xFF228D6D),
@@ -226,7 +226,7 @@ class _SearchAndAddEmployeState extends State<SearchAndAddEmploye> {
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         Text(
-                          'Add Employee',
+                          'Ajouter un employé',
                           style: TextStyle(
                               fontSize: 24, fontWeight: FontWeight.bold),
                         ),
@@ -253,20 +253,20 @@ class _SearchAndAddEmployeState extends State<SearchAndAddEmploye> {
                       children: [
                         ElevatedButton(
                           onPressed: _submitEmploye,
-                          child: Text('Add Employee',
+                          child: Text('Ajouter un employé',
                               style: TextStyle(color: Colors.white)),
                           style: ElevatedButton.styleFrom(
                             backgroundColor: Color(0xFF228D6D),
                           ),
                         ),
                         SizedBox(width: 10),
-                        TextButton(
-                          onPressed: _clearFormFields,
-                          child: Text('Clear'),
-                          style: TextButton.styleFrom(
-                            foregroundColor: Colors.grey,
-                          ),
-                        ),
+                        // TextButton(
+                        //   onPressed: _clearFormFields,
+                        //   child: Text('Clear'),
+                        //   style: TextButton.styleFrom(
+                        //     foregroundColor: Colors.grey,
+                        //   ),
+                        // ),
                       ],
                     ),
                   ],
@@ -297,29 +297,27 @@ class _SearchAndAddEmployeState extends State<SearchAndAddEmploye> {
                     ),
                     validator: (value) {
                       if (value == null || value.isEmpty) {
-                        return 'Please enter the name';
+                        return 'Veuillez entrer le nom';
                       }
                       return null;
                     },
                   ),
-                  
                 ),
                 SizedBox(width: 10),
-                 Expanded(
+                Expanded(
                   child: TextFormField(
                     controller: _prenomController,
                     decoration: InputDecoration(
-                      labelText: 'Prenom*',
+                      labelText: 'Prénom*',
                       border: OutlineInputBorder(),
                     ),
                     validator: (value) {
                       if (value == null || value.isEmpty) {
-                        return 'Please enter the name';
+                        return 'Veuillez entrer le nom';
                       }
                       return null;
                     },
                   ),
-                  
                 ),
               ],
             ),
@@ -350,7 +348,7 @@ class _SearchAndAddEmployeState extends State<SearchAndAddEmploye> {
                   child: TextFormField(
                     controller: _passwordController,
                     decoration: InputDecoration(
-                      labelText: 'Password*',
+                      labelText: 'Mot de passe*',
                       border: OutlineInputBorder(),
                       suffixIcon: IconButton(
                         icon: Icon(
@@ -381,7 +379,7 @@ class _SearchAndAddEmployeState extends State<SearchAndAddEmploye> {
                   child: TextFormField(
                     controller: _confirmPasswordController,
                     decoration: InputDecoration(
-                      labelText: 'Confirm Password*',
+                      labelText: 'Confirmez le mot de passe*',
                       border: OutlineInputBorder(),
                       suffixIcon: IconButton(
                         icon: Icon(
@@ -457,7 +455,7 @@ class _SearchAndAddEmployeState extends State<SearchAndAddEmploye> {
                                       color: Colors.grey.shade600, size: 40),
                                   SizedBox(height: 10),
                                   Text(
-                                    'Tap to select photo',
+                                    'Sélectionner une photo',
                                     style: TextStyle(
                                       color: Colors.grey.shade600,
                                       fontSize: 16,
@@ -521,7 +519,7 @@ class _SearchAndAddEmployeState extends State<SearchAndAddEmploye> {
                                       color: Colors.grey.shade600, size: 40),
                                   SizedBox(height: 10),
                                   Text(
-                                    'Tap to select a diplome (PDF)',
+                                    'Sélectionner un diplôme ',
                                     style: TextStyle(
                                       color: Colors.grey.shade600,
                                       fontSize: 16,
@@ -562,7 +560,7 @@ class _SearchAndAddEmployeState extends State<SearchAndAddEmploye> {
       return StatefulBuilder(builder: (context, setState) {
         return DropdownButtonFormField<String>(
           decoration: InputDecoration(
-            labelText: 'Department*',
+            labelText: 'Département*',
             border: OutlineInputBorder(),
           ),
           value:
@@ -623,7 +621,7 @@ class _SearchAndAddEmployeState extends State<SearchAndAddEmploye> {
       return StatefulBuilder(builder: (context, setState) {
         return DropdownButtonFormField<String>(
           decoration: InputDecoration(
-            labelText: 'Specialty*',
+            labelText: 'Spécialité*',
             border: OutlineInputBorder(),
           ),
           value:
@@ -647,7 +645,7 @@ class _SearchAndAddEmployeState extends State<SearchAndAddEmploye> {
                         child: Text(specialite.nom),
                       ))
                   .toList()
-              : [DropdownMenuItem(value: null, child: Text('No Specialties'))],
+              : [DropdownMenuItem(value: null, child: Text('Spécialité'))],
           validator: (value) {
             if (value == null) {
               return 'Please select a specialty';

@@ -47,6 +47,7 @@ dependencies:
   get_storage: ^2.1.1
   shimmer: ^3.0.0
   fl_chart: ^0.69.2
+  printing: ^5.13.2
   
 
 
@@ -81,6 +82,7 @@ flutter:
      - assets/images/d2.jpeg
      - assets/images/logo.png
      - assets/images/A4.jpg
+     - assets/images/logoSMART.png
   
 
   # An image asset can refer to one or more resolution-specific "variants", see

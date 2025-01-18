@@ -38,7 +38,7 @@ class CategoryController extends GetxController {
     try {
       await _service.createCategory(description, designation);
       fetchCategories();
-      Get.snackbar('Success', 'Category created successfully');
+      // Get.snackbar('Success', 'Category created successfully');
     } catch (e) {
       Get.snackbar('Error', 'Failed to create category: $e');
     } finally {
@@ -51,7 +51,7 @@ class CategoryController extends GetxController {
     try {
       await _service.updateCategory(id, description, designation);
       fetchCategories();
-      Get.snackbar('Success', 'Category updated successfully');
+      // Get.snackbar('Success', 'Category updated successfully');
     } catch (e) {
       Get.snackbar('Error', 'Failed to update category: $e');
     } finally {
@@ -64,7 +64,7 @@ class CategoryController extends GetxController {
     try {
       await _service.deleteCategory(id);
       fetchCategories();
-      Get.snackbar('Success', 'Category deleted successfully');
+      // Get.snackbar('Success', 'Category deleted successfully');
     } catch (e) {
       Get.snackbar('Error', 'Failed to delete category: $e');
     } finally {

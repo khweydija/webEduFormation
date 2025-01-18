@@ -70,7 +70,7 @@ class _MainContentState extends State<MainContent> {
       //backgroundColor: const Color.fromARGB(255, 245, 244, 244),
       appBar: CustomAppBar(),
       body: Container(
-         color: Colors.white,
+        color: Colors.white,
         //color: const Color.fromARGB(255, 245, 244, 244),
         child: SingleChildScrollView(
           child: Padding(
@@ -354,33 +354,43 @@ class _MainContentState extends State<MainContent> {
                               SizedBox(height: 10),
                               TextField(
                                 controller: TextEditingController(
-                                    text: details.value!.specialite.nom ?? ''),
+                                    text: details.value!.specialite.departement
+                                            .nom ??
+                                        ''),
                                 decoration:
                                     InputDecoration(labelText: 'Département*'),
                                 readOnly: true,
                               ),
                               SizedBox(height: 10),
-                              Row(
-                                children: [
-                                  Text('Statut Actif: '),
-                                  Switch(
-                                    activeColor: isActive
-                                        ? Color.fromARGB(255, 105, 156, 148)
-                                        : Colors.grey,
-                                    value: isActive,
-                                    onChanged: null,
-                                  ),
-                                  Text(
-                                    isActive ? "Active" : "Inactive",
-                                    style: TextStyle(
-                                      color: isActive
-                                          ? Color.fromARGB(255, 105, 156, 148)
-                                          : Colors.red,
-                                      fontWeight: FontWeight.bold,
-                                    ),
-                                  ),
-                                ],
+                              TextField(
+                                controller: TextEditingController(
+                                    text: details.value!.specialite.nom ?? ''),
+                                decoration:
+                                    InputDecoration(labelText: 'Spécialité*'),
+                                readOnly: true,
                               ),
+                              SizedBox(height: 10),
+                              // Row(
+                              //   children: [
+                              //     Text('Statut Actif: '),
+                              //     Switch(
+                              //       activeColor: isActive
+                              //           ? Color.fromARGB(255, 105, 156, 148)
+                              //           : Colors.grey,
+                              //       value: isActive,
+                              //       onChanged: null,
+                              //     ),
+                              //     Text(
+                              //       isActive ? "Active" : "Inactive",
+                              //       style: TextStyle(
+                              //         color: isActive
+                              //             ? Color.fromARGB(255, 105, 156, 148)
+                              //             : Colors.red,
+                              //         fontWeight: FontWeight.bold,
+                              //       ),
+                              //     ),
+                              //   ],
+                              // ),
                             ],
                           ),
                         ),
@@ -401,23 +411,23 @@ class _MainContentState extends State<MainContent> {
                         ),
                       ],
                     ),
-                    SizedBox(height: 20),
-                    details.value!.diplome != null &&
-                            details.value!.diplome.isNotEmpty
-                        ? InkWell(
-                            onTap: () {
-                              String encodedUrl =
-                                  Uri.encodeFull(details.value!.diplome);
-                              _employeController.openDiplome(encodedUrl);
-                            },
-                            child: Text(
-                              'Voir le Diplôme',
-                              style: TextStyle(
-                                  color: Color.fromARGB(255, 51, 95, 91),
-                                  decoration: TextDecoration.underline),
-                            ),
-                          )
-                        : Text('No Diplôme'),
+                    // SizedBox(height: 20),
+                    // details.value!.diplome != null &&
+                    //         details.value!.diplome.isNotEmpty
+                    //     ? InkWell(
+                    //         onTap: () {
+                    //           String encodedUrl =
+                    //               Uri.encodeFull(details.value!.diplome);
+                    //           _employeController.openDiplome(encodedUrl);
+                    //         },
+                    //         child: Text(
+                    //           'Voir le Diplôme',
+                    //           style: TextStyle(
+                    //               color: Color.fromARGB(255, 51, 95, 91),
+                    //               decoration: TextDecoration.underline),
+                    //         ),
+                    //       )
+                    //     : Text('No Diplôme'),
                     SizedBox(height: 20),
                     Align(
                       alignment: Alignment.centerRight,
@@ -425,7 +435,10 @@ class _MainContentState extends State<MainContent> {
                         onPressed: () {
                           Navigator.of(context).pop();
                         },
-                        child: Text('Fermer',style: TextStyle(color: Colors.white),),
+                        child: Text(
+                          'Fermer',
+                          style: TextStyle(color: Colors.white),
+                        ),
                         style: ElevatedButton.styleFrom(
                           backgroundColor: Color(0xFF228D6D),
                         ),
@@ -620,7 +633,9 @@ class _MainContentState extends State<MainContent> {
                               );
                               Navigator.of(context).pop();
                             },
-                            child: Text('Enregistrer',),
+                            child: Text(
+                              'Enregistrer',
+                            ),
                             style: ElevatedButton.styleFrom(
                               backgroundColor: Color(0xFF228D6D),
                             ),

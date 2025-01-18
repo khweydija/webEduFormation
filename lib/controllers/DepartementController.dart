@@ -38,7 +38,7 @@ class DepartementController extends GetxController {
     try {
       await _service.createDepartement(nom, description);
       fetchDepartements();
-      Get.snackbar('Success', 'Departement created successfully');
+      // Get.snackbar('Success', 'Departement created successfully');
     } catch (e) {
       Get.snackbar('Error', 'Failed to create departement: $e');
     } finally {
@@ -51,7 +51,7 @@ class DepartementController extends GetxController {
     try {
       await _service.updateDepartement(id, nom, description);
       fetchDepartements();
-      Get.snackbar('Success', 'Departement updated successfully');
+      // Get.snackbar('Success', 'Departement updated successfully');
     } catch (e) {
       Get.snackbar('Error', 'Failed to update departement: $e');
     } finally {
@@ -64,7 +64,7 @@ class DepartementController extends GetxController {
     try {
       await _service.deleteDepartement(id);
       fetchDepartements();
-      Get.snackbar('Success', 'Departement deleted successfully');
+      // Get.snackbar('Success', 'Departement deleted successfully');
     } catch (e) {
       Get.snackbar('Error', 'Failed to delete departement: $e');
     } finally {

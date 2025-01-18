@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:webpfe/controllers/catagoriesController.dart';
 
-
 class SearchAndAddc extends StatefulWidget {
   @override
   _SearchAndAddState createState() => _SearchAndAddState();
@@ -33,7 +32,8 @@ class _SearchAndAddState extends State<SearchAndAddc> {
       context: context,
       builder: (BuildContext context) {
         return Dialog(
-          insetPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
+          insetPadding:
+              const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(10),
           ),
@@ -51,8 +51,9 @@ class _SearchAndAddState extends State<SearchAndAddc> {
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         const Text(
-                          'Create Category',
-                          style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+                          'Ajouter une catégorie',
+                          style: TextStyle(
+                              fontSize: 24, fontWeight: FontWeight.bold),
                         ),
                         IconButton(
                           icon: const Icon(Icons.close),
@@ -96,7 +97,8 @@ class _SearchAndAddState extends State<SearchAndAddc> {
                       children: [
                         ElevatedButton(
                           onPressed: _submitCreateCategory,
-                          child: const Text('Ajouter', style: TextStyle(color: Colors.white)),
+                          child: const Text('Ajouter',
+                              style: TextStyle(color: Colors.white)),
                           style: ElevatedButton.styleFrom(
                             backgroundColor: const Color(0xFF228D6D),
                           ),
@@ -147,7 +149,8 @@ class _SearchAndAddState extends State<SearchAndAddc> {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             SizedBox(
-              width: constraints.maxWidth > 800 ? 700 : constraints.maxWidth * 0.7,
+              width:
+                  constraints.maxWidth > 800 ? 700 : constraints.maxWidth * 0.7,
               child: TextField(
                 controller: _searchController,
                 decoration: InputDecoration(
@@ -162,15 +165,17 @@ class _SearchAndAddState extends State<SearchAndAddc> {
                     borderSide: BorderSide.none,
                   ),
                   filled: true,
-                  fillColor: Colors.white,
-                  contentPadding: const EdgeInsets.symmetric(vertical: 0, horizontal: 20),
+                  fillColor: Color.fromARGB(255, 241, 240, 240),
+                  contentPadding:
+                      const EdgeInsets.symmetric(vertical: 0, horizontal: 20),
                 ),
               ),
             ),
             ElevatedButton.icon(
               onPressed: _showCreateCategoryDialog,
               icon: const Icon(Icons.add, color: Colors.white),
-              label: const Text('Ajouter une catégorie', style: TextStyle(color: Colors.white)),
+              label: const Text('Ajouter une catégorie',
+                  style: TextStyle(color: Colors.white)),
               style: ElevatedButton.styleFrom(
                 backgroundColor: const Color(0xFF228D6D),
                 shape: RoundedRectangleBorder(

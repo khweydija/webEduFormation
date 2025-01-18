@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:get/get.dart';
 import 'package:shimmer/shimmer.dart';
 import 'package:webpfe/Views/AppBar.dart';
@@ -32,7 +33,7 @@ class _AdminDashboardState extends State<AdminDashboardDepartement> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
-     // backgroundColor: const Color.fromARGB(255, 245, 244, 244),
+      // backgroundColor: const Color.fromARGB(255, 245, 244, 244),
       body: LayoutBuilder(
         builder: (context, constraints) {
           return Row(
@@ -60,7 +61,7 @@ class MainContent extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
-     // backgroundColor: const Color.fromARGB(255, 245, 244, 244),
+      // backgroundColor: const Color.fromARGB(255, 245, 244, 244),
       appBar: CustomAppBar(),
       body: Container(
         color: Colors.white,
@@ -91,7 +92,8 @@ class MainContent extends StatelessWidget {
                   if (_departementController.isLoading.value) {
                     return shimmerTable();
                   } else if (_departementController.departements.isEmpty) {
-                    return const Center(child: Text('Aucun département trouvé'));
+                    return const Center(
+                        child: Text('Aucun département trouvé'));
                   } else {
                     return Container(
                       decoration: BoxDecoration(
@@ -118,7 +120,14 @@ class MainContent extends StatelessWidget {
                               .map((departement) {
                             return DataRow(cells: [
                               DataCell(Text(departement.nom)),
-                              DataCell(Text(departement.description)),
+                              DataCell(
+                                Text(
+                                  departement.description, // Texte affiché
+                                  maxLines: 1, // Limiter à une seule ligne
+                                  overflow: TextOverflow
+                                      .ellipsis, // Ajouter "..." si le texte est trop long
+                                ),
+                              ),
                               DataCell(Row(
                                 children: [
                                   IconButton(
@@ -261,7 +270,10 @@ class MainContent extends StatelessWidget {
                       onPressed: () {
                         Navigator.of(context).pop();
                       },
-                      child: const Text('Fermer',style: TextStyle(color: Colors.white),),
+                      child: const Text(
+                        'Fermer',
+                        style: TextStyle(color: Colors.white),
+                      ),
                       style: ElevatedButton.styleFrom(
                         backgroundColor: const Color(0xFF228D6D),
                       ),
@@ -337,7 +349,10 @@ class MainContent extends StatelessWidget {
                           );
                           Navigator.of(context).pop();
                         },
-                        child: const Text('Enregistrer'),
+                        child: const Text(
+                          'Enregistrer',
+                          style: TextStyle(color: Colors.white),
+                        ),
                         style: ElevatedButton.styleFrom(
                           backgroundColor: const Color(0xFF228D6D),
                         ),

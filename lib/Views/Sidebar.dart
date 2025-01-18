@@ -84,21 +84,21 @@ class Sidebar extends StatelessWidget {
                 Get.offAllNamed(AppRoutes.dashboardCatagorie);
               },
             ),
-             _SidebarItem(
+            _SidebarItem(
               icon: Icons.workspace_premium,
               text: ' Certifications',
               isSelected: selectedIndex == 6,
               onTap: () {
                 onItemSelected(6);
-               // Get.offAllNamed(AppRoutes.dashboardCatagorie);
+                Get.offAllNamed(AppRoutes.adminDashboardCertification);
               },
             ),
             _SidebarItem(
               icon: Icons.logout,
               text: 'Log out',
-              isSelected: selectedIndex == 6,
+              isSelected: selectedIndex == 7,
               onTap: () {
-                onItemSelected(6);
+                onItemSelected(7);
                 Get.offAllNamed(AppRoutes.loginAdmin);
               },
             ),
@@ -127,7 +127,9 @@ class _SidebarItem extends StatelessWidget {
     return Container(
       margin: EdgeInsets.symmetric(vertical: 4.0),
       decoration: BoxDecoration(
-        color: isSelected ?Color.fromARGB(255, 248, 247, 247) : Colors.transparent,
+        color: isSelected
+            ? Color.fromARGB(255, 248, 247, 247)
+            : Colors.transparent,
         borderRadius: BorderRadius.circular(8),
       ),
       child: ListTile(

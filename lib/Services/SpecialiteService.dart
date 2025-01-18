@@ -29,19 +29,22 @@ class SpecialiteService {
   }
 
   // Get speciality by ID
-  Future<Specialite> getSpecialiteById(int id) async {
-    String? token = box.read('token');
-    final response = await http.get(
-      Uri.parse('$apiUrl/get/$id'),
-      headers: {'Authorization': 'Bearer $token'},
-    );
+  // Get speciality by ID
+Future<Specialite> getSpecialiteById(int id) async {
+  String? token = box.read('token');
+  final response = await http.get(
+    Uri.parse('$apiUrl/get/$id'),
+    headers: {'Authorization': 'Bearer $token'},
+  );
 
-    if (response.statusCode == 200) {
-      return Specialite.fromJson(json.decode(response.body));
-    } else {
-      throw Exception('Speciality not found');
-    }
+  if (response.statusCode == 200) {
+    final String decodedBody = utf8.decode(response.bodyBytes); // Decode the response body
+    return Specialite.fromJson(json.decode(decodedBody)); // Parse the JSON
+  } else {
+    throw Exception('Speciality not found');
   }
+}
+
 
   // Create a speciality
   Future<void> createSpecialite(

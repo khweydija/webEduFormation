@@ -15,7 +15,10 @@ class CategoryService {
     );
 
     if (response.statusCode == 200) {
-      final List<dynamic> data = json.decode(response.body);
+      final String decodedBody = utf8.decode(response.bodyBytes);
+
+      final List<dynamic> data = json.decode(decodedBody);
+
       return data.map((item) => Category.fromJson(item)).toList();
     } else {
       throw Exception('Failed to fetch categories');
@@ -30,7 +33,9 @@ class CategoryService {
     );
 
     if (response.statusCode == 200) {
-      return Category.fromJson(json.decode(response.body));
+      final String decodedBody =
+          utf8.decode(response.bodyBytes); // Decode the response body
+      return Category.fromJson(json.decode(decodedBody)); // Parse the JSON
     } else {
       throw Exception('Category not found');
     }

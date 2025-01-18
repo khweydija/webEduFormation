@@ -90,7 +90,8 @@ class MainContent extends StatelessWidget {
                   if (_specialiteController.isLoading.value) {
                     return shimmerTable();
                   } else if (_specialiteController.specialites.isEmpty) {
-                    return const Center(child: Text('Aucune spécialité trouvée'));
+                    return const Center(
+                        child: Text('Aucune spécialité trouvée'));
                   } else {
                     return Container(
                       decoration: BoxDecoration(
@@ -118,7 +119,14 @@ class MainContent extends StatelessWidget {
                               .map((specialite) {
                             return DataRow(cells: [
                               DataCell(Text(specialite.nom)),
-                              DataCell(Text(specialite.description)),
+                              DataCell(
+                                Text(
+                                  specialite.description, // Texte affiché
+                                  maxLines: 1, // Limiter à une seule ligne
+                                  overflow: TextOverflow
+                                      .ellipsis, // Ajouter "..." si le texte est trop long
+                                ),
+                              ),
                               DataCell(Text(specialite.departement.nom)),
                               DataCell(Row(
                                 children: [
@@ -214,6 +222,7 @@ class MainContent extends StatelessWidget {
       ),
     );
   }
+
   void _showSpecialiteDetailsDialog(BuildContext context, int specialiteId) {
     _specialiteController.getSpecialiteById(specialiteId);
     showDialog(
@@ -273,7 +282,8 @@ class MainContent extends StatelessWidget {
                       onPressed: () {
                         Navigator.of(context).pop();
                       },
-                      child: const Text('Fermer'),
+                      child: const Text('Fermer',
+                          style: TextStyle(color: Colors.white)),
                       style: ElevatedButton.styleFrom(
                         backgroundColor: const Color(0xFF228D6D),
                       ),
@@ -360,7 +370,7 @@ class MainContent extends StatelessWidget {
                     },
                     validator: (value) {
                       if (value == null || value.isEmpty) {
-                        return 'Please select a department';
+                        return 'Veuillez sélectionner un département';
                       }
                       return null;
                     },
@@ -381,7 +391,8 @@ class MainContent extends StatelessWidget {
                             Navigator.of(context).pop();
                           }
                         },
-                        child: const Text('Enregistrer'),
+                        child: const Text('Enregistrer',
+                            style: TextStyle(color: Colors.white)),
                         style: ElevatedButton.styleFrom(
                           backgroundColor: const Color(0xFF228D6D),
                         ),
@@ -391,7 +402,10 @@ class MainContent extends StatelessWidget {
                         onPressed: () {
                           Navigator.of(context).pop();
                         },
-                        child: const Text('Cancel'),
+                        child: const Text(
+                          'Cancel',
+                          style: TextStyle(color: Colors.black),
+                        ),
                         style: TextButton.styleFrom(
                           foregroundColor: Colors.grey,
                         ),
