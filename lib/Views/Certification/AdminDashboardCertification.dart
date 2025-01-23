@@ -3,11 +3,18 @@ import 'package:get/get.dart';
 import 'package:shimmer/shimmer.dart';
 import 'package:webpfe/Views/AppBar.dart';
 import 'package:webpfe/Views/Certification/CertificateScreen.dart';
-import 'package:webpfe/Views/Certification/earchAndAddCertification.dart';
+import 'package:webpfe/Views/Certification/SearchAndAddCertification.dart';
+import 'package:printing/printing.dart';
 
 import 'package:webpfe/Views/Sidebar.dart';
 import 'package:webpfe/controllers/certificationController.dart';
 import 'package:webpfe/models/Certification.dart';
+
+import 'package:printing/printing.dart';
+import 'package:pdf/pdf.dart';
+import 'package:pdf/widgets.dart' as pw;
+import 'dart:typed_data';
+import 'package:flutter/services.dart' show rootBundle;
 
 class AdminDashboardCertification extends StatefulWidget {
   @override
@@ -18,7 +25,7 @@ class AdminDashboardCertification extends StatefulWidget {
 class _AdminDashboardCertificationState
     extends State<AdminDashboardCertification> {
   final CertificationController _certificationController =
-      Get.put(CertificationController());
+      Get.find();
   int selectedIndex = 6;
 
   @override
@@ -88,7 +95,7 @@ class MainCertificationContent extends StatelessWidget {
                 const SizedBox(height: 20),
                 ///////////////////////////////////////////////////////////
                 ////////////////////////////////////////////////////////////////////////////////////////////////////
-                // SearchAndAddCertification(), // Adjust if needed
+                SearchAndAddCertification(), // Adjust if needed
                 ////////////////////////////////
                 ////////////////////////////
                 const SizedBox(height: 20),
@@ -150,6 +157,13 @@ class MainCertificationContent extends StatelessWidget {
                                     onPressed: () {
                                       _showDeleteCertificationDialog(
                                           context, certification.id);
+                                    },
+                                  ),
+                                  IconButton(
+                                    icon: const Icon(Icons.print,
+                                        color: Color(0xFF00352C)),
+                                    onPressed: () {
+                                      _printCertification(certification);
                                     },
                                   ),
                                 ],
@@ -376,6 +390,178 @@ class MainCertificationContent extends StatelessWidget {
       },
     );
   }
+
+/////////////////////////////////////////////////impriment
+  void _printCertification(Certification certification) async {
+    final doc = pw.Document();
+
+    // Load the logo image as Uint8List
+    final Uint8List logoData =
+        await imageFromAssetBundle('assets/images/logoSMART.png');
+
+    // Load a replacement for the watermark (e.g., an icon image)
+    final Uint8List watermarkData = await imageFromAssetBundle(
+        'assets/images/school.png'); // Replace with your watermark image path
+
+    // Define a custom page size (900x700 in points)
+    final PdfPageFormat customPageFormat = PdfPageFormat(900, 700);
+
+    doc.addPage(
+      pw.Page(
+        pageFormat: customPageFormat,
+        margin: const pw.EdgeInsets.all(20),
+        build: (pw.Context context) {
+          return pw.Container(
+            decoration: pw.BoxDecoration(
+              gradient: pw.LinearGradient(
+                colors: [
+                  PdfColor.fromHex('#FFFFFF'),
+                  PdfColor.fromHex('#E3F2FD'),
+                ],
+                begin: pw.Alignment.topCenter,
+                end: pw.Alignment.bottomCenter,
+              ),
+              border:
+                  pw.Border.all(color: PdfColor.fromHex('#BBDEFB'), width: 2),
+              borderRadius: pw.BorderRadius.circular(10),
+            ),
+            child: pw.Stack(
+              children: [
+                // Watermark or background logo
+                pw.Positioned(
+                  top: 100,
+                  right: 100,
+                  child: pw.Opacity(
+                    opacity: 0.1,
+                    child: pw.Image(
+                      pw.MemoryImage(watermarkData), // Use the watermark image
+                      width: 300,
+                      height: 200,
+                    ),
+                  ),
+                ),
+                pw.Column(
+                  mainAxisAlignment: pw.MainAxisAlignment.center,
+                  crossAxisAlignment: pw.CrossAxisAlignment.center,
+                  children: [
+                    // Top Logo
+                    pw.Row(
+                      mainAxisAlignment: pw.MainAxisAlignment.end,
+                      children: [
+                        pw.Image(
+                          pw.MemoryImage(logoData),
+                          width: 100,
+                          height: 80,
+                        ),
+                      ],
+                    ),
+                    pw.Spacer(),
+                    // Certificate Title
+                    pw.Center(
+                      child: pw.Text(
+                        certification.titre.toUpperCase(),
+                        style: pw.TextStyle(
+                          fontSize: 22,
+                          fontWeight: pw.FontWeight.bold,
+                          color: PdfColor.fromHex('#0D47A1'),
+                        ),
+                      ),
+                    ),
+                    pw.SizedBox(height: 10),
+                    // Subheading
+                    pw.Center(
+                      child: pw.Text(
+                        'ATTESTATION DE RÉUSSITE',
+                        style: pw.TextStyle(
+                          fontSize: 16,
+                          fontStyle: pw.FontStyle.italic,
+                          color: PdfColor.fromHex('#1976D2'),
+                        ),
+                      ),
+                    ),
+                    pw.SizedBox(height: 30),
+                    // Recipient Section
+                    pw.Center(
+                      child: pw.Text(
+                        'CECI EST DÉCERNÉ À',
+                        style: pw.TextStyle(
+                          fontSize: 14,
+                          fontWeight: pw.FontWeight.bold,
+                          color: PdfColor.fromHex('#757575'),
+                        ),
+                      ),
+                    ),
+                    pw.SizedBox(height: 10),
+                    pw.Center(
+                      child: pw.Text(
+                        '${certification.employe.nom} ${certification.employe.prenom}',
+                        style: pw.TextStyle(
+                          fontSize: 24,
+                          fontWeight: pw.FontWeight.bold,
+                          color: PdfColor.fromHex('#000000'),
+                        ),
+                      ),
+                    ),
+                    pw.SizedBox(height: 20),
+                    // Certificate Body Text
+                    pw.Padding(
+                      padding: const pw.EdgeInsets.symmetric(horizontal: 40),
+                      child: pw.Text(
+                        "Pour avoir brillamment réussi la formation organisée par SMART MS dans le domaine du développement Front-end avec le framework ${certification.formation.titre}. Ce certificat atteste que ${certification.employe.nom} a démontré un niveau élevé de compréhension et d'assimilation des concepts enseignés.",
+                        textAlign: pw.TextAlign.center,
+                        style: pw.TextStyle(
+                          fontSize: 14,
+                          color: PdfColor.fromHex('#616161'),
+                        ),
+                      ),
+                    ),
+                    pw.Spacer(),
+                    // Signature Section
+                    pw.Align(
+                      alignment: pw.Alignment.bottomRight,
+                      child: pw.Column(
+                        crossAxisAlignment: pw.CrossAxisAlignment.end,
+                        children: [
+                          pw.Text(
+                            'Nevissa Iyoh',
+                            style: pw.TextStyle(
+                              fontSize: 14,
+                              fontWeight: pw.FontWeight.bold,
+                            ),
+                          ),
+                          pw.Text(
+                            'Responsable Unité Développement',
+                            style: pw.TextStyle(
+                              fontSize: 12,
+                              fontStyle: pw.FontStyle.italic,
+                              color: PdfColor.fromHex('#757575'),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          );
+        },
+      ),
+    );
+
+    // Print the PDF
+    await Printing.layoutPdf(
+      onLayout: (PdfPageFormat format) async => doc.save(),
+    );
+  }
+
+// Helper function to load the image as Uint8List
+  Future<Uint8List> imageFromAssetBundle(String assetPath) async {
+    final ByteData data = await rootBundle.load(assetPath);
+    return data.buffer.asUint8List();
+  }
+
+  //////////////////////////////////////////////////
 
   void _showUpdateCertificationDialog(
       BuildContext context, int certificationId) {

@@ -33,7 +33,7 @@ class CertificationController extends GetxController {
     }
   }
 
-  Future<void> createCertification(Certification certification) async {
+  Future<void> createCertification(PostCertification certification) async {
     isLoading(true);
     try {
       await _service.createCertification(certification);

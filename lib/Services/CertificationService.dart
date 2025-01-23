@@ -37,7 +37,7 @@ class CertificationService {
     }
   }
 
-  Future<void> createCertification(Certification certification) async {
+  Future<void> createCertification(PostCertification certification) async {
     String? token = box.read('token');
     final response = await http.post(
       Uri.parse('$apiUrl/create'),

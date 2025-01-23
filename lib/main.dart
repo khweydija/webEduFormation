@@ -17,6 +17,7 @@ import 'package:webpfe/Views/ScreenEmploye/AdminDashboardEmploye.dart';
 import 'package:webpfe/Views/ScreenFormateur/DashboardScreen.dart';
 import 'package:webpfe/Views/Specialite/AdminDashboardSpecialite.dart';
 import 'package:webpfe/Views/StatisticDashboard.dart';
+import 'package:webpfe/controllers/certificationController.dart';
 
 void main() async {
   // WidgetsFlutterBinding.ensureInitialized();
@@ -31,6 +32,7 @@ void main() async {
   //     measurementId: "G-MYPVW3Q3CZ",
   //   ),
   // );
+  Get.put(CertificationController());
   runApp(MyApp());
 }
 
