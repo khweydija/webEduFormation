@@ -8,6 +8,7 @@ import 'package:printing/printing.dart';
 
 import 'package:webpfe/Views/Sidebar.dart';
 import 'package:webpfe/controllers/certificationController.dart';
+// import 'package:webpfe/controllers/certificationController.dart';
 import 'package:webpfe/models/Certification.dart';
 
 import 'package:printing/printing.dart';
@@ -24,8 +25,7 @@ class AdminDashboardCertification extends StatefulWidget {
 
 class _AdminDashboardCertificationState
     extends State<AdminDashboardCertification> {
-  final CertificationController _certificationController =
-      Get.find();
+  final CertificationController _certificationController = Get.find();
   int selectedIndex = 6;
 
   @override
@@ -65,7 +65,7 @@ class _AdminDashboardCertificationState
 }
 
 class MainCertificationContent extends StatelessWidget {
-  final CertificationController _certificationController = Get.find();
+  final CertificationController _certificationController = Get.find<CertificationController>();
 
   @override
   Widget build(BuildContext context) {

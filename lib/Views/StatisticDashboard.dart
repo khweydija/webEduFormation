@@ -1,10 +1,9 @@
+import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:shimmer/shimmer.dart';
 import 'package:webpfe/Views/AppBar.dart';
 import 'package:webpfe/Views/Sidebar.dart';
-import 'package:fl_chart/fl_chart.dart';
-import 'package:webpfe/controllers/StatisticController.dart'; // Update with your actual path
+import 'package:webpfe/controllers/StatisticController.dart';
 
 class StatisticsPage extends StatefulWidget {
   @override
@@ -33,8 +32,6 @@ class _StatisticsPageState extends State<StatisticsPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
-
-      //backgroundColor: Color.fromARGB(255, 245, 244, 244),
       body: LayoutBuilder(
         builder: (context, constraints) {
           return Row(
@@ -62,11 +59,9 @@ class MainContent extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
-      // backgroundColor: Color.fromARGB(255, 245, 244, 244),
       appBar: CustomAppBar(),
       body: Container(
         color: Colors.white,
-        //color: Color.fromARGB(255, 245, 244, 244),
         child: SingleChildScrollView(
           child: Padding(
             padding: const EdgeInsets.all(20),
@@ -84,13 +79,7 @@ class MainContent extends StatelessWidget {
                 SizedBox(height: 20),
                 Obx(() {
                   if (_statisticController.isLoading.value) {
-                    return SingleChildScrollView(
-                      scrollDirection: Axis.horizontal,
-                      child: Row(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: List.generate(5, (index) => shimmerCard()),
-                      ),
-                    );
+                    return Center(child: CircularProgressIndicator());
                   }
 
                   return Column(
@@ -107,7 +96,7 @@ class MainContent extends StatelessWidget {
                               backgroundColor:
                                   Color.fromARGB(255, 241, 241, 239),
                             ),
-                            SizedBox(width: 20), // Space between cards
+                            SizedBox(width: 20),
                             _buildStatisticCard(
                               icon: Icons.school,
                               label: 'Total des Formateurs',
@@ -115,7 +104,7 @@ class MainContent extends StatelessWidget {
                               backgroundColor:
                                   Color.fromARGB(255, 241, 241, 239),
                             ),
-                            SizedBox(width: 20), // Space between cards
+                            SizedBox(width: 20),
                             _buildStatisticCard(
                               icon: Icons.category,
                               label: 'Total des Catégories',
@@ -123,7 +112,7 @@ class MainContent extends StatelessWidget {
                               backgroundColor:
                                   Color.fromARGB(255, 241, 241, 239),
                             ),
-                            SizedBox(width: 20), // Space between cards
+                            SizedBox(width: 20),
                             _buildStatisticCard(
                               icon: Icons.apartment,
                               label: 'Total des Départements',
@@ -132,7 +121,7 @@ class MainContent extends StatelessWidget {
                               backgroundColor:
                                   Color.fromARGB(255, 241, 241, 239),
                             ),
-                            SizedBox(width: 20), // Space between cards
+                            SizedBox(width: 20),
                             _buildStatisticCard(
                               icon: Icons.star,
                               label: 'Total des Spécialités',
@@ -144,52 +133,131 @@ class MainContent extends StatelessWidget {
                         ),
                       ),
                       SizedBox(height: 30),
-                      // Chart Widget
-                      _buildBarChart(),
+
+                      // Add Bar Chart in a Card
+                      Text(
+                        'Planifications par Mois',
+                        style: TextStyle(
+                          fontSize: 20,
+                          fontWeight: FontWeight.bold,
+                          color: Color(0xFF228D6D),
+                        ),
+                      ),
+                      SizedBox(height: 20),
+                      Card(
+                        elevation: 4,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(15),
+                        ),
+                        child: Padding(
+                          padding: const EdgeInsets.all(16),
+                          child: Container(
+                            width: MediaQuery.of(context).size.width *
+                                0.8, // Reduce the width
+                            height: 300, // Set a fixed height
+                            child: Obx(() {
+                              final data = _statisticController
+                                  .planificationsCountByMonth;
+                              if (data.isEmpty) {
+                                return Center(
+                                  child:
+                                      Text('No data available for the chart'),
+                                );
+                              }
+
+                              return BarChart(
+                                BarChartData(
+                                  alignment: BarChartAlignment.spaceAround,
+                                  maxY: (data.values
+                                              .reduce((a, b) => a > b ? a : b) *
+                                          1.2)
+                                      .toDouble(),
+                                  barGroups: data.entries.map((entry) {
+                                    return BarChartGroupData(
+                                      x: entry.key,
+                                      barRods: [
+                                        BarChartRodData(
+                                          toY: entry.value.toDouble(),
+                                          color: Colors.teal,
+                                          width: 15,
+                                          borderRadius:
+                                              BorderRadius.circular(4),
+                                        )
+                                      ],
+                                    );
+                                  }).toList(),
+                                  titlesData: FlTitlesData(
+                                    leftTitles: AxisTitles(
+                                      sideTitles: SideTitles(
+                                        showTitles: true,
+                                        reservedSize: 40,
+                                        getTitlesWidget: (value, meta) {
+                                          // Display only integer values
+                                          if (value % 1 == 0) {
+                                            // Check if the value is an integer
+                                            return Padding(
+                                              padding: const EdgeInsets.only(
+                                                  right: 8.0),
+                                              child: Text(
+                                                value
+                                                    .toInt()
+                                                    .toString(), // Convert to integer for display
+                                                style: TextStyle(fontSize: 12),
+                                              ),
+                                            );
+                                          }
+                                          return SizedBox
+                                              .shrink(); // Hide non-integer values
+                                        },
+                                      ),
+                                    ),
+                                    bottomTitles: AxisTitles(
+                                      sideTitles: SideTitles(
+                                        showTitles: true,
+                                        getTitlesWidget: (value, meta) {
+                                          const monthNames = {
+                                            1: 'Jan',
+                                            2: 'Feb',
+                                            3: 'Mar',
+                                            4: 'Apr',
+                                            5: 'May',
+                                            6: 'Jun',
+                                            7: 'Jul',
+                                            8: 'Aug',
+                                            9: 'Sep',
+                                            10: 'Oct',
+                                            11: 'Nov',
+                                            12: 'Dec',
+                                          };
+                                          if (monthNames
+                                              .containsKey(value.toInt())) {
+                                            return Padding(
+                                              padding: const EdgeInsets.only(
+                                                  top: 8.0),
+                                              child: Text(
+                                                monthNames[value.toInt()]!,
+                                                style: TextStyle(fontSize: 12),
+                                              ),
+                                            );
+                                          }
+                                          return SizedBox.shrink();
+                                        },
+                                      ),
+                                    ),
+                                  ),
+                                  gridData: FlGridData(show: true),
+                                  borderData: FlBorderData(show: false),
+                                ),
+                              );
+                            }),
+                          ),
+                        ),
+                      ),
                     ],
                   );
                 }),
               ],
             ),
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget shimmerCard() {
-    return Shimmer.fromColors(
-      baseColor: Colors.grey[300]!,
-      highlightColor: Colors.grey[100]!,
-      child: Card(
-        elevation: 4,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(15),
-        ),
-        child: Container(
-          width: 200,
-          height: 220,
-          padding: EdgeInsets.all(16),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              CircleAvatar(
-                radius: 30,
-                backgroundColor: Colors.grey[300],
-              ),
-              SizedBox(height: 16),
-              Container(
-                height: 20,
-                width: 60,
-                color: Colors.grey[300],
-              ),
-              SizedBox(height: 8),
-              Container(
-                height: 14,
-                width: 100,
-                color: const Color.fromARGB(255, 243, 242, 242),
-              ),
-            ],
           ),
         ),
       ),
@@ -208,8 +276,8 @@ class MainContent extends StatelessWidget {
         borderRadius: BorderRadius.circular(15),
       ),
       child: Container(
-        width: 200, // Fixed width
-        height: 220, // Fixed height
+        width: 200,
+        height: 220,
         padding: EdgeInsets.all(16),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -239,72 +307,6 @@ class MainContent extends StatelessWidget {
               style: TextStyle(
                 fontSize: 16,
                 color: Colors.black54,
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildBarChart() {
-    return Card(
-      elevation: 4,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(15),
-      ),
-      child: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          children: [
-            Text(
-              'Statistiques des Employés',
-              style: TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
-                color: Colors.black87,
-              ),
-            ),
-            SizedBox(height: 20),
-            AspectRatio(
-              aspectRatio: 1.5,
-              child: BarChart(
-                BarChartData(
-                  barGroups: [
-                    BarChartGroupData(
-                      x: 0,
-                      barRods: [
-                        BarChartRodData(
-                          toY: _statisticController.employeeCount.value
-                              .toDouble(),
-                          color: Color.fromARGB(255, 45, 122, 106),
-                        ),
-                      ],
-                    ),
-                    BarChartGroupData(
-                      x: 1,
-                      barRods: [
-                        BarChartRodData(
-                          toY: _statisticController.formateurCount.value
-                              .toDouble(),
-                          color: Colors.green,
-                        ),
-                      ],
-                    ),
-                    BarChartGroupData(
-                      x: 2,
-                      barRods: [
-                        BarChartRodData(
-                          toY: _statisticController.categoryCount.value
-                              .toDouble(),
-                          color: Color.fromARGB(255, 156, 137, 108),
-                        ),
-                      ],
-                    ),
-                  ],
-                  borderData: FlBorderData(show: false),
-                  titlesData: FlTitlesData(show: false),
-                ),
               ),
             ),
           ],

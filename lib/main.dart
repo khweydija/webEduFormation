@@ -20,7 +20,9 @@ import 'package:webpfe/Views/StatisticDashboard.dart';
 import 'package:webpfe/controllers/certificationController.dart';
 
 void main() async {
-  // WidgetsFlutterBinding.ensureInitialized();
+  WidgetsFlutterBinding.ensureInitialized();
+
+  Get.put(CertificationController());
   // await Firebase.initializeApp(
   //   options: FirebaseOptions(
   //     apiKey: "AIzaSyBm4g2fvDkqrl-tTG7wtFLDB-7-xh439x8",
@@ -32,7 +34,6 @@ void main() async {
   //     measurementId: "G-MYPVW3Q3CZ",
   //   ),
   // );
-  Get.put(CertificationController());
   runApp(MyApp());
 }
 

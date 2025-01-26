@@ -118,6 +118,7 @@ class FormateurController extends GetxController {
     final box = GetStorage();
     String? token = box.read('token');
     try {
+      isLoading(true);
       var response = await http.get(Uri.parse('$apiUrl/list'),
           headers: {'Authorization': 'Bearer $token'});
       print(response.body);
@@ -135,6 +136,8 @@ class FormateurController extends GetxController {
       }
     } catch (e) {
       Get.snackbar('Error', 'An error occurred: $e');
+    } finally {
+      isLoading(false);
     }
   }
 

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:webpfe/controllers/CertificationController.dart';
+import 'package:webpfe/controllers/certificationController.dart';
 import 'package:webpfe/models/Certification.dart';
 
 class SearchAndAddCertification extends StatefulWidget {
@@ -10,7 +10,7 @@ class SearchAndAddCertification extends StatefulWidget {
 }
 
 class _SearchAndAddCertificationState extends State<SearchAndAddCertification> {
-  final CertificationController _certificationController = Get.find();
+  final CertificationController _certificationController = Get.find<CertificationController>();
   final TextEditingController _searchController = TextEditingController();
   final TextEditingController _titreController = TextEditingController();
   final TextEditingController _notesController = TextEditingController();

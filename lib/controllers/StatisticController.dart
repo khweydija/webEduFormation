@@ -9,6 +9,8 @@ class StatisticController extends GetxController {
   var specialiteCount = 0.obs;
   var departementCount = 0.obs;
   var categoryCount = 0.obs;
+  var planificationsCountByMonth = <int, int>{}.obs;
+  var planificationsCountByStatus = <String, double>{}.obs;
   var isLoading = false.obs;
 
   Future<void> fetchStatistics() async {
@@ -77,13 +79,38 @@ class StatisticController extends GetxController {
         Get.snackbar('Error', 'Failed to fetch category count');
       }
 
+      // Fetch planifications count by month
+      var planificationsResponse = await http.get(
+        Uri.parse('http://localhost:8080/api/planifications/countByMonth'),
+        headers: {'Authorization': 'Bearer $token'},
+      );
+      if (planificationsResponse.statusCode == 200) {
+        Map<String, dynamic> planificationsData =
+            jsonDecode(planificationsResponse.body);
+        planificationsCountByMonth.value = planificationsData.map(
+          (key, value) => MapEntry(int.parse(key), int.parse(value.toString())),
+        );
+      } else {
+        Get.snackbar('Error', 'Failed to fetch planifications count by month');
+      }
+
+      // Fetch planifications count by status
+      var statusResponse = await http.get(
+        Uri.parse('http://localhost:8080/api/planifications/countByStatus'),
+        headers: {'Authorization': 'Bearer $token'},
+      );
+      if (statusResponse.statusCode == 200) {
+        Map<String, dynamic> statusData = jsonDecode(statusResponse.body);
+        planificationsCountByStatus.value = statusData.map(
+          (key, value) => MapEntry(key, double.parse(value.toString())),
+        );
+      } else {
+        Get.snackbar('Error', 'Failed to fetch planifications count by status');
+      }
     } catch (e) {
       Get.snackbar('Error', 'Failed to fetch statistics: $e');
     } finally {
       isLoading(false);
     }
   }
-
-
-  
 }
