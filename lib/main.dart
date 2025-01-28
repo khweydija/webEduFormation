@@ -38,6 +38,7 @@ void main() async {
 }
 
 class MyApp extends StatelessWidget {
+   final isDarkMode = false.obs; // Centralized state for dark mode.
   @override
   Widget build(BuildContext context) {
     return GetMaterialApp(

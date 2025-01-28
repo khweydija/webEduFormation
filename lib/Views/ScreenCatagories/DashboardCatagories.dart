@@ -197,7 +197,6 @@ class MainContent extends StatelessWidget {
 
   // Other helper methods (_showCategoryDetailsDialog, etc.) remain unchanged
 
-
   void _showCategoryDetailsDialog(BuildContext context, int categoryId) {
     _categoryController.getCategoryById(categoryId);
     showDialog(
@@ -251,7 +250,10 @@ class MainContent extends StatelessWidget {
                       onPressed: () {
                         Navigator.of(context).pop();
                       },
-                      child: const Text('Fermer',style: TextStyle(color: Colors.white),),
+                      child: const Text(
+                        'Fermer',
+                        style: TextStyle(color: Colors.white),
+                      ),
                       style: ElevatedButton.styleFrom(
                         backgroundColor: const Color(0xFF228D6D),
                       ),
@@ -328,7 +330,10 @@ class MainContent extends StatelessWidget {
                           );
                           Navigator.of(context).pop();
                         },
-                        child: const Text('Enregistrer',style:TextStyle(color: Colors.white),),
+                        child: const Text(
+                          'Enregistrer',
+                          style: TextStyle(color: Colors.white),
+                        ),
                         style: ElevatedButton.styleFrom(
                           backgroundColor: const Color(0xFF228D6D),
                         ),
@@ -367,14 +372,23 @@ class MainContent extends StatelessWidget {
               onPressed: () {
                 Navigator.of(context).pop();
               },
-              child: const Text('Non'),
+              child: const Text(
+                'Non',
+                style: TextStyle(color: Colors.white),
+              ),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Color.fromARGB(255, 200, 202, 202),
+              ),
             ),
             ElevatedButton(
               onPressed: () async {
                 await _categoryController.deleteCategory(categoryId);
                 Navigator.of(context).pop();
               },
-              child: const Text('Oui'),
+              child: const Text(
+                'Oui',
+                style: TextStyle(color: Color.fromARGB(255, 211, 209, 209)),
+              ),
               style: ElevatedButton.styleFrom(
                 backgroundColor: const Color.fromARGB(255, 23, 134, 116),
               ),

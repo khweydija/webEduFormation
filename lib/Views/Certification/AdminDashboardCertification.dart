@@ -70,6 +70,7 @@ class MainCertificationContent extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.white,
       appBar: CustomAppBar(),
       body: Container(
         color: Colors.white,

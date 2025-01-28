@@ -572,7 +572,7 @@ class _MainContentState extends State<MainContent> {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: Text('Confirm Deletion'),
+          title: Text('Confirm la suppression'),
           content: Text(
               'Êtes-vous sûr de vouloir supprimer le formateur par e-mail $formateurEmail?'),
           actions: [
@@ -580,7 +580,13 @@ class _MainContentState extends State<MainContent> {
               onPressed: () {
                 Navigator.of(context).pop();
               },
-              child: Text('Non'),
+              child: const Text(
+                'Non',
+                style: TextStyle(color: Colors.white),
+              ),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Color.fromARGB(255, 200, 202, 202),
+              ),
             ),
             ElevatedButton(
               onPressed: () {
@@ -588,9 +594,12 @@ class _MainContentState extends State<MainContent> {
                 _formateurController.fetchAllFormateurs();
                 Navigator.of(context).pop();
               },
-              child: Text('Oui'),
+              child: const Text(
+                'Oui',
+                style: TextStyle(color: Color.fromARGB(255, 211, 209, 209)),
+              ),
               style: ElevatedButton.styleFrom(
-                backgroundColor: Color.fromARGB(255, 23, 134, 116),
+                backgroundColor: const Color.fromARGB(255, 23, 134, 116),
               ),
             ),
           ],

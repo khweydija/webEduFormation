@@ -9,6 +9,7 @@ class StatisticController extends GetxController {
   var specialiteCount = 0.obs;
   var departementCount = 0.obs;
   var categoryCount = 0.obs;
+  var certificationCount = 0.obs; // Added certification count
   var planificationsCountByMonth = <int, int>{}.obs;
   var planificationsCountByStatus = <String, double>{}.obs;
   var isLoading = false.obs;
@@ -77,6 +78,19 @@ class StatisticController extends GetxController {
         categoryCount.value = int.parse(categoryCountValue.toString());
       } else {
         Get.snackbar('Error', 'Failed to fetch category count');
+      }
+
+      // Fetch certification count
+      var certificationResponse = await http.get(
+        Uri.parse('http://localhost:8080/api/certifications/count'),
+        headers: {'Authorization': 'Bearer $token'},
+      );
+      if (certificationResponse.statusCode == 200) {
+        var certificationCountValue = jsonDecode(certificationResponse.body);
+        certificationCount.value =
+            int.parse(certificationCountValue.toString());
+      } else {
+        Get.snackbar('Error', 'Failed to fetch certification count');
       }
 
       // Fetch planifications count by month

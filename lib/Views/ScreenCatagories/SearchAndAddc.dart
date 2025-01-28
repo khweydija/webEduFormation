@@ -55,12 +55,12 @@ class _SearchAndAddState extends State<SearchAndAddc> {
                           style: TextStyle(
                               fontSize: 24, fontWeight: FontWeight.bold),
                         ),
-                        IconButton(
-                          icon: const Icon(Icons.close),
-                          onPressed: () {
-                            Navigator.of(context).pop();
-                          },
-                        ),
+                        // IconButton(
+                        //   icon: const Icon(Icons.close),
+                        //   onPressed: () {
+                        //     Navigator.of(context).pop();
+                        //   },
+                        // ),
                       ],
                     ),
                     const SizedBox(height: 20),

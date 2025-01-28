@@ -1,7 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:webpfe/controllers/certificationController.dart';
+import 'package:webpfe/controllers/employeController.dart';
+import 'package:webpfe/controllers/formation_controller.dart';
 import 'package:webpfe/models/Certification.dart';
+
+import 'package:webpfe/models/Formation.dart';
 
 class SearchAndAddCertification extends StatefulWidget {
   @override
@@ -10,34 +14,42 @@ class SearchAndAddCertification extends StatefulWidget {
 }
 
 class _SearchAndAddCertificationState extends State<SearchAndAddCertification> {
-  final CertificationController _certificationController = Get.find<CertificationController>();
+  final EmployeController _employeController = Get.put(EmployeController());
+  final FormationController _formationController =
+      Get.put(FormationController());
+  final CertificationController _certificationController =
+      Get.find<CertificationController>();
   final TextEditingController _searchController = TextEditingController();
   final TextEditingController _titreController = TextEditingController();
   final TextEditingController _notesController = TextEditingController();
   final TextEditingController _statutController = TextEditingController();
-  final TextEditingController _formationIdController = TextEditingController();
-  final TextEditingController _employeIdController = TextEditingController();
   DateTime? _dateObtention;
+  Employe? _selectedEmploye;
+  Formation? _selectedFormation;
   final _formKey = GlobalKey<FormState>();
 
-  // Search certifications
+  @override
+  void initState() {
+    super.initState();
+    _employeController.fetchAllEmployes();
+    _formationController.fetchFormationList();
+  }
+
   void _searchCertifications() async {
     if (_searchController.text.isNotEmpty) {
-      // Implement search logic if required
       _certificationController.fetchCertifications();
     } else {
       _certificationController.fetchCertifications();
     }
   }
 
-  // Open dialog to create a certification
   void _showCreateCertificationDialog() {
     _titreController.clear();
     _notesController.clear();
     _statutController.clear();
-    _formationIdController.clear();
-    _employeIdController.clear();
     _dateObtention = null;
+    _selectedEmploye = null;
+    _selectedFormation = null;
 
     showDialog(
       context: context,
@@ -117,34 +129,58 @@ class _SearchAndAddCertificationState extends State<SearchAndAddCertification> {
                       },
                     ),
                     const SizedBox(height: 10),
-                    TextFormField(
-                      controller: _formationIdController,
-                      keyboardType: TextInputType.number,
-                      decoration: const InputDecoration(
-                        labelText: 'Formation ID*',
-                        border: OutlineInputBorder(),
+                    Obx(
+                      () => DropdownButtonFormField<Employe>(
+                        value: _selectedEmploye,
+                        items: _employeController.employes.map((employe) {
+                          return DropdownMenuItem<Employe>(
+                            value: employe,
+                            child: Text('${employe.nom} ${employe.prenom}'),
+                          );
+                        }).toList(),
+                        onChanged: (value) {
+                          setState(() {
+                            _selectedEmploye = value;
+                          });
+                        },
+                        decoration: const InputDecoration(
+                          labelText: 'Employé*',
+                          border: OutlineInputBorder(),
+                        ),
+                        validator: (value) {
+                          if (value == null) {
+                            return 'Veuillez sélectionner un employé';
+                          }
+                          return null;
+                        },
                       ),
-                      validator: (value) {
-                        if (value == null || value.isEmpty) {
-                          return 'Veuillez entrer l\'ID de la formation';
-                        }
-                        return null;
-                      },
                     ),
                     const SizedBox(height: 10),
-                    TextFormField(
-                      controller: _employeIdController,
-                      keyboardType: TextInputType.number,
-                      decoration: const InputDecoration(
-                        labelText: 'Employé ID*',
-                        border: OutlineInputBorder(),
+                    Obx(
+                      () => DropdownButtonFormField<Formation>(
+                        value: _selectedFormation,
+                        items: _formationController.formations.map((formation) {
+                          return DropdownMenuItem<Formation>(
+                            value: formation,
+                            child: Text(formation.titre),
+                          );
+                        }).toList(),
+                        onChanged: (value) {
+                          setState(() {
+                            _selectedFormation = value;
+                          });
+                        },
+                        decoration: const InputDecoration(
+                          labelText: 'Formation*',
+                          border: OutlineInputBorder(),
+                        ),
+                        validator: (value) {
+                          if (value == null) {
+                            return 'Veuillez sélectionner une formation';
+                          }
+                          return null;
+                        },
                       ),
-                      validator: (value) {
-                        if (value == null || value.isEmpty) {
-                          return 'Veuillez entrer l\'ID de l\'employé';
-                        }
-                        return null;
-                      },
                     ),
                     const SizedBox(height: 10),
                     Row(
@@ -208,20 +244,25 @@ class _SearchAndAddCertificationState extends State<SearchAndAddCertification> {
     );
   }
 
-  // Submit the create certification form
   void _submitCreateCertification() async {
     if (_formKey.currentState?.validate() ?? false) {
       try {
+        if (_selectedFormation == null) {
+          Get.snackbar('Erreur', 'Veuillez sélectionner une formation');
+          return;
+        }
+
         final certification = PostCertification(
           titre: _titreController.text,
           notes: _notesController.text,
           statut: _statutController.text,
           dateObtention: _dateObtention!,
-          formationId: int.parse(_formationIdController.text),
-          employeId: int.parse(_employeIdController.text),
+          formationId: _selectedFormation!.id!, // Ensure it's not null
+          employeId: _selectedEmploye!.id,
         );
+
         await _certificationController.createCertification(certification);
-        Navigator.of(context).pop(); // Close dialog on success
+        Navigator.of(context).pop();
         Get.snackbar('Succès', 'Certification créée avec succès');
       } catch (e) {
         Get.snackbar('Erreur', 'Échec de la création de la certification');

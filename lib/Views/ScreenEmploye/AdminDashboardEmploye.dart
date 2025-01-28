@@ -269,7 +269,13 @@ class _MainContentState extends State<MainContent> {
               onPressed: () {
                 Navigator.of(context).pop();
               },
-              child: Text('No'),
+              child: const Text(
+                'Non',
+                style: TextStyle(color: Colors.white),
+              ),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Color.fromARGB(255, 200, 202, 202),
+              ),
             ),
             ElevatedButton(
               onPressed: () {

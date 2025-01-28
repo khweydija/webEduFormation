@@ -390,14 +390,23 @@ class MainContent extends StatelessWidget {
               onPressed: () {
                 Navigator.of(context).pop();
               },
-              child: const Text('Non'),
+              child: const Text(
+                'Non',
+                style: TextStyle(color: Colors.white),
+              ),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Color.fromARGB(255, 200, 202, 202),
+              ),
             ),
             ElevatedButton(
               onPressed: () async {
                 await _departementController.deleteDepartement(departementId);
                 Navigator.of(context).pop();
               },
-              child: const Text('Oui'),
+              child: const Text(
+                'Oui',
+                style: TextStyle(color: Color.fromARGB(255, 211, 209, 209)),
+              ),
               style: ElevatedButton.styleFrom(
                 backgroundColor: const Color.fromARGB(255, 23, 134, 116),
               ),
