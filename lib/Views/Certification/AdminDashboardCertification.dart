@@ -7,7 +7,7 @@ import 'package:webpfe/Views/Certification/SearchAndAddCertification.dart';
 import 'package:printing/printing.dart';
 
 import 'package:webpfe/Views/Sidebar.dart';
-import 'package:webpfe/controllers/certificationController.dart';
+
 // import 'package:webpfe/controllers/certificationController.dart';
 import 'package:webpfe/models/Certification.dart';
 
@@ -16,6 +16,8 @@ import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart' as pw;
 import 'dart:typed_data';
 import 'package:flutter/services.dart' show rootBundle;
+
+import '../../controllers/CertificationController.dart';
 
 class AdminDashboardCertification extends StatefulWidget {
   @override
@@ -65,8 +67,8 @@ class _AdminDashboardCertificationState
 }
 
 class MainCertificationContent extends StatelessWidget {
-  final CertificationController _certificationController = Get.find<CertificationController>();
-
+  final CertificationController _certificationController =
+      Get.find<CertificationController>();
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -94,17 +96,17 @@ class MainCertificationContent extends StatelessWidget {
                   ],
                 ),
                 const SizedBox(height: 20),
-                ///////////////////////////////////////////////////////////
-                ////////////////////////////////////////////////////////////////////////////////////////////////////
-                SearchAndAddCertification(), // Adjust if needed
-                ////////////////////////////////
-                ////////////////////////////
+                // Search and Add Certification Widget
+                SearchAndAddCertification(),
                 const SizedBox(height: 20),
+                // Certifications Table
                 Obx(() {
                   if (_certificationController.isLoading.value) {
-                    return shimmerTable();
-                  } else if (_certificationController.certifications.isEmpty) {
-                    return const Center(child: Text('No certifications found'));
+                    return shimmerTable(); // Shimmer effect for loading state
+                  } else if (_certificationController
+                      .filteredCertifications.isEmpty) {
+                    return const Center(
+                        child: Text('Aucune certification trouvée.'));
                   } else {
                     return Container(
                       decoration: BoxDecoration(
@@ -128,7 +130,7 @@ class MainCertificationContent extends StatelessWidget {
                             DataColumn(label: Text('Employees')),
                             DataColumn(label: Text('Actions')),
                           ],
-                          rows: _certificationController.certifications
+                          rows: _certificationController.filteredCertifications
                               .map((certification) {
                             return DataRow(cells: [
                               DataCell(Text(certification.titre)),
@@ -405,7 +407,7 @@ class MainCertificationContent extends StatelessWidget {
         'assets/images/school.png'); // Replace with your watermark image path
 
     // Define a custom page size (900x700 in points)
-    final PdfPageFormat customPageFormat = PdfPageFormat(900, 700);
+    final PdfPageFormat customPageFormat = PdfPageFormat(800, 600);
 
     doc.addPage(
       pw.Page(
@@ -430,14 +432,14 @@ class MainCertificationContent extends StatelessWidget {
               children: [
                 // Watermark or background logo
                 pw.Positioned(
-                  top: 100,
-                  right: 100,
+                  top: 20,
+                  right: 20,
                   child: pw.Opacity(
                     opacity: 0.1,
                     child: pw.Image(
                       pw.MemoryImage(watermarkData), // Use the watermark image
-                      width: 300,
-                      height: 200,
+                      width: 400,
+                      height: 300,
                     ),
                   ),
                 ),
@@ -451,8 +453,8 @@ class MainCertificationContent extends StatelessWidget {
                       children: [
                         pw.Image(
                           pw.MemoryImage(logoData),
-                          width: 100,
-                          height: 80,
+                          width: 200,
+                          height: 200,
                         ),
                       ],
                     ),
@@ -567,11 +569,210 @@ class MainCertificationContent extends StatelessWidget {
   void _showUpdateCertificationDialog(
       BuildContext context, int certificationId) {
     _certificationController.getCertificationById(certificationId);
-    // Similar to `_showUpdateDepartementDialog`
+
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return Obx(() {
+          if (_certificationController.isLoading.value) {
+            return const Center(child: CircularProgressIndicator());
+          }
+
+          final details = _certificationController.certificationDetails.value;
+          if (details == null) return const SizedBox();
+
+          // Controllers for editing fields
+          final TextEditingController titleController =
+              TextEditingController(text: details.titre);
+          final TextEditingController notesController =
+              TextEditingController(text: details.notes);
+
+          return Dialog(
+            shape: RoundedRectangleBorder(
+                // borderRadius: BorderRadius.circular(15),
+                ),
+            child: Container(
+              width: 700,
+              height: 500,
+              padding: const EdgeInsets.all(20),
+              child: Stack(
+                children: [
+                  // Watermark or background logo
+                  Positioned(
+                    top: 20,
+                    right: 20,
+                    child: Opacity(
+                      opacity: 0.1,
+                      child: Icon(Icons.school, size: 300, color: Colors.blue),
+                    ),
+                  ),
+                  Column(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      // Title
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          const Text(
+                            'Modifier Certification',
+                            style: TextStyle(
+                              fontSize: 22,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.black,
+                            ),
+                          ),
+                          IconButton(
+                            icon: const Icon(Icons.close),
+                            onPressed: () {
+                              Navigator.of(context).pop();
+                            },
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 20),
+                      // Form fields
+                      Expanded(
+                        child: SingleChildScrollView(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              // Title Field
+                              const Text(
+                                'Titre:',
+                                style: TextStyle(fontWeight: FontWeight.bold),
+                              ),
+                              TextField(
+                                controller: titleController,
+                                decoration: InputDecoration(
+                                  hintText: 'Enter title',
+                                  border: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(5),
+                                  ),
+                                ),
+                              ),
+                              const SizedBox(height: 10),
+
+                              // Notes Field
+                              const Text(
+                                'Notes:',
+                                style: TextStyle(fontWeight: FontWeight.bold),
+                              ),
+                              TextField(
+                                controller: notesController,
+                                decoration: InputDecoration(
+                                  hintText: 'Enter notes',
+                                  border: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(5),
+                                  ),
+                                ),
+                              ),
+                              const SizedBox(height: 10),
+
+                              // Employee (display-only)
+                              const Text(
+                                'Employé:',
+                                style: TextStyle(fontWeight: FontWeight.bold),
+                              ),
+                              Text(
+                                '${details.employe.nom} ${details.employe.prenom}',
+                                style: const TextStyle(fontSize: 16),
+                              ),
+
+                              const SizedBox(height: 20),
+                            ],
+                          ),
+                        ),
+                      ),
+                      const SizedBox(height: 10),
+
+                      // Save Button
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.end,
+                        children: [
+                          ElevatedButton(
+                            onPressed: () {
+                              // Update certification logic
+                              final updatedCertification = Certification(
+                                id: details.id,
+                                titre: titleController.text,
+                                notes: notesController.text,
+                                employe: details.employe,
+                                formation: details.formation,
+                                dateObtention: details.dateObtention,
+                                statut: details.statut,
+                              );
+
+                              _certificationController
+                                  .updateCertification(updatedCertification);
+                              Navigator.of(context).pop();
+                            },
+                            child: const Text('Enregistrer',
+                                style: TextStyle(color: Colors.white)),
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: const Color(0xFF228D6D),
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 20,
+                                vertical: 10,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+          );
+        });
+      },
+    );
   }
 
   void _showDeleteCertificationDialog(
       BuildContext context, int certificationId) {
-    // Similar to `_showDeleteConfirmationDialog`
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text(
+            "Confirmation de suppression",
+            style: TextStyle(fontWeight: FontWeight.bold),
+          ),
+          content: const Text(
+            "Êtes-vous sûr de vouloir supprimer cette certification ?",
+          ),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop(); // Ferme le dialogue
+              },
+              child: const Text(
+                'Non',
+                style: TextStyle(color: Colors.white),
+              ),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Color.fromARGB(255, 200, 202, 202),
+              ),
+            ),
+            ElevatedButton(
+              onPressed: () {
+                _certificationController.deleteCertification(certificationId);
+                Navigator.of(context)
+                    .pop(); // Ferme le dialogue après suppression
+              },
+              child: const Text(
+                'Oui',
+                style: TextStyle(color: Color.fromARGB(255, 211, 209, 209)),
+              ),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: const Color.fromARGB(255, 23, 134, 116),
+              ),
+            ),
+          ],
+        );
+      },
+    );
   }
 }

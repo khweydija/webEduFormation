@@ -13,6 +13,9 @@ class SearchAndAdd extends StatefulWidget {
 }
 
 class _SearchAndAddState extends State<SearchAndAdd> {
+
+
+   final TextEditingController _searchController = TextEditingController();
   @override
   void initState() {
     super.initState();
@@ -23,6 +26,16 @@ class _SearchAndAddState extends State<SearchAndAdd> {
     final DepartementController departementController =
         Get.put(DepartementController());
     departementController.fetchDepartements();
+
+    _searchController.addListener(() {
+      _formateurController.filterFormateurs(_searchController.text);
+    });
+  }
+
+  @override
+  void dispose() {
+    _searchController.dispose();
+    super.dispose();
   }
 
   final FormateurController _formateurController =
@@ -109,6 +122,7 @@ class _SearchAndAddState extends State<SearchAndAdd> {
                       ? 700
                       : constraints.maxWidth * 0.7,
                   child: TextField(
+                     controller: _searchController,
                     decoration: InputDecoration(
                       suffixIcon: Icon(Icons.search, color: Colors.black54),
                       hintText: 'Rechercher des formateurs...',

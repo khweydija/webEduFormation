@@ -88,9 +88,10 @@ class MainContent extends StatelessWidget {
                 const SizedBox(height: 20),
                 Obx(() {
                   if (_categoryController.isLoading.value) {
-                    return shimmerTable(); // Shimmer effect for loading state
-                  } else if (_categoryController.categories.isEmpty) {
-                    return const SizedBox.shrink(); // No fallback text
+                    return const Center(child: CircularProgressIndicator());
+                  } else if (_categoryController.filteredCategories.isEmpty) {
+                    return const Text(
+                        'Aucune catégorie trouvée.'); // No fallback text
                   } else {
                     return Container(
                       decoration: BoxDecoration(
@@ -113,7 +114,8 @@ class MainContent extends StatelessWidget {
                             DataColumn(label: Text('Description')),
                             DataColumn(label: Text('Action')),
                           ],
-                          rows: _categoryController.categories.map((category) {
+                          rows: _categoryController.filteredCategories
+                              .map((category) {
                             return DataRow(cells: [
                               DataCell(Text(category.designation)),
                               DataCell(Text(category.description)),

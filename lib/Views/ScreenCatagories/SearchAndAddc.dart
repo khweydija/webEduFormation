@@ -9,19 +9,13 @@ class SearchAndAddc extends StatefulWidget {
 
 class _SearchAndAddState extends State<SearchAndAddc> {
   final CategoryController _categorieController = Get.find();
+
   final TextEditingController _searchController = TextEditingController();
   final TextEditingController _descriptionController = TextEditingController();
   final TextEditingController _designationController = TextEditingController();
   final _formKey = GlobalKey<FormState>();
 
   // Search categories
-  void _searchCategories() async {
-    if (_searchController.text.isNotEmpty) {
-      await _categorieController.searchCategories(_searchController.text);
-    } else {
-      _categorieController.fetchCategories();
-    }
-  }
 
   // Open dialog to create a category
   void _showCreateCategoryDialog() {
@@ -153,13 +147,13 @@ class _SearchAndAddState extends State<SearchAndAddc> {
                   constraints.maxWidth > 800 ? 700 : constraints.maxWidth * 0.7,
               child: TextField(
                 controller: _searchController,
+                onChanged: (query) {
+                  _categorieController
+                      .filterCategories(query); // Filter categories
+                },
                 decoration: InputDecoration(
-                  suffixIcon: IconButton(
-                    icon: const Icon(Icons.search, color: Colors.black54),
-                    onPressed: _searchCategories,
-                  ),
                   hintText: 'Rechercher des catégories...',
-                  hintStyle: const TextStyle(color: Colors.black54),
+                  prefixIcon: Icon(Icons.search, color: Colors.black54),
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(20),
                     borderSide: BorderSide.none,

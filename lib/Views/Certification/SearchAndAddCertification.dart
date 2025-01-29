@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:webpfe/controllers/certificationController.dart';
+
 import 'package:webpfe/controllers/employeController.dart';
 import 'package:webpfe/controllers/formation_controller.dart';
 import 'package:webpfe/models/Certification.dart';
 
 import 'package:webpfe/models/Formation.dart';
+
+import '../../controllers/CertificationController.dart';
 
 class SearchAndAddCertification extends StatefulWidget {
   @override
@@ -17,9 +19,12 @@ class _SearchAndAddCertificationState extends State<SearchAndAddCertification> {
   final EmployeController _employeController = Get.put(EmployeController());
   final FormationController _formationController =
       Get.put(FormationController());
+
   final CertificationController _certificationController =
-      Get.find<CertificationController>();
+      Get.put(CertificationController());
+
   final TextEditingController _searchController = TextEditingController();
+
   final TextEditingController _titreController = TextEditingController();
   final TextEditingController _notesController = TextEditingController();
   final TextEditingController _statutController = TextEditingController();
@@ -199,14 +204,37 @@ class _SearchAndAddCertificationState extends State<SearchAndAddCertification> {
                               initialDate: DateTime.now(),
                               firstDate: DateTime(2000),
                               lastDate: DateTime(2101),
+                              builder: (BuildContext context, Widget? child) {
+                                return Theme(
+                                  data: ThemeData(
+                                    colorScheme: ColorScheme.light(
+                                      primary: Colors
+                                          .teal, // Couleur principale (boutons et en-tête)
+                                      onPrimary: Colors
+                                          .white, // Texte sur fond primary
+                                      onSurface: Colors
+                                          .teal, // Couleur du texte principal (inclut "Select date")
+                                    ),
+                                    textButtonTheme: TextButtonThemeData(
+                                      style: TextButton.styleFrom(
+                                        foregroundColor: Colors
+                                            .teal, // Couleur des boutons "OK" et "Cancel"
+                                      ),
+                                    ),
+                                  ),
+                                  child: child!,
+                                );
+                              },
                             );
+
                             if (picked != null && picked != _dateObtention) {
                               setState(() {
                                 _dateObtention = picked;
                               });
                             }
                           },
-                          child: const Text('Choisir une date'),
+                          child: const Text('Choisir une date',
+                              style: TextStyle(color: Colors.teal)),
                         ),
                       ],
                     ),
@@ -223,15 +251,15 @@ class _SearchAndAddCertificationState extends State<SearchAndAddCertification> {
                           ),
                         ),
                         const SizedBox(width: 10),
-                        TextButton(
-                          onPressed: () {
-                            Navigator.of(context).pop();
-                          },
-                          child: const Text('Annuler'),
-                          style: TextButton.styleFrom(
-                            foregroundColor: Colors.grey,
-                          ),
-                        ),
+                        // TextButton(
+                        //   onPressed: () {
+                        //     Navigator.of(context).pop();
+                        //   },
+                        //   child: const Text('Annuler'),
+                        //   style: TextButton.styleFrom(
+                        //     foregroundColor: Colors.grey,
+                        //   ),
+                        // ),
                       ],
                     ),
                   ],
@@ -282,13 +310,13 @@ class _SearchAndAddCertificationState extends State<SearchAndAddCertification> {
                   constraints.maxWidth > 800 ? 700 : constraints.maxWidth * 0.7,
               child: TextField(
                 controller: _searchController,
+                onChanged: (query) {
+                  _certificationController
+                      .filterCertifications(query); // Filter certifications
+                },
                 decoration: InputDecoration(
-                  suffixIcon: IconButton(
-                    icon: const Icon(Icons.search, color: Colors.black54),
-                    onPressed: _searchCertifications,
-                  ),
                   hintText: 'Rechercher des certifications...',
-                  hintStyle: const TextStyle(color: Colors.black54),
+                  prefixIcon: const Icon(Icons.search, color: Colors.black54),
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(20),
                     borderSide: BorderSide.none,

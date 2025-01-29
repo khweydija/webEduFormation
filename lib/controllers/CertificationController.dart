@@ -8,16 +8,34 @@ class CertificationController extends GetxController {
   var certifications = <Certification>[].obs;
   var certificationDetails = Rxn<Certification>();
   var isLoading = false.obs;
+  var filteredCertifications = <Certification>[].obs;
 
+  // Fetch all certifications
   Future<void> fetchCertifications() async {
     isLoading(true);
     try {
       final fetchedCertifications = await _service.fetchCertifications();
       certifications.assignAll(fetchedCertifications);
+      filteredCertifications
+          .assignAll(fetchedCertifications); // Initialize filtered list
     } catch (e) {
       Get.snackbar('Error', 'Failed to load certifications: $e');
     } finally {
       isLoading(false);
+    }
+  }
+
+  // Filter certifications by titre
+  void filterCertifications(String query) {
+    if (query.isEmpty) {
+      filteredCertifications.assignAll(certifications); // Reset filter
+    } else {
+      filteredCertifications.assignAll(
+        certifications
+            .where((certification) =>
+                certification.titre.toLowerCase().contains(query.toLowerCase()))
+            .toList(),
+      );
     }
   }
 

@@ -12,18 +12,56 @@ class SpecialiteController extends GetxController {
 
    var specialitesByDepartement = <Specialite>[].obs;
 
-  // Fetch all specialities
+
+
+  var filteredSpecialites = <Specialite>[].obs; // List for filtered results
+  
+
+  @override
+  void onInit() {
+    super.onInit();
+    fetchSpecialites(); // Fetch specialties on initialization
+  }
+
+  // Fetch all specialties
   Future<void> fetchSpecialites() async {
     isLoading(true);
     try {
       final fetchedSpecialites = await _service.fetchSpecialites();
       specialites.assignAll(fetchedSpecialites);
+      filteredSpecialites.assignAll(fetchedSpecialites); // Initialize filtered list
     } catch (e) {
-      Get.snackbar('Error', 'Failed to load specialities: $e');
+      Get.snackbar('Error', 'Failed to load specialties: $e');
     } finally {
       isLoading(false);
     }
   }
+
+  // Filter specialties by name
+  void filterSpecialites(String query) {
+    if (query.isEmpty) {
+      filteredSpecialites.assignAll(specialites); // Reset filter
+    } else {
+      filteredSpecialites.assignAll(
+        specialites.where((specialite) =>
+            specialite.nom.toLowerCase().contains(query.toLowerCase())).toList(),
+      );
+    }
+  }
+
+
+  // Fetch all specialities
+  // Future<void> fetchSpecialites() async {
+  //   isLoading(true);
+  //   try {
+  //     final fetchedSpecialites = await _service.fetchSpecialites();
+  //     specialites.assignAll(fetchedSpecialites);
+  //   } catch (e) {
+  //     Get.snackbar('Error', 'Failed to load specialities: $e');
+  //   } finally {
+  //     isLoading(false);
+  //   }
+  // }
 
   // Get speciality by ID
   Future<void> getSpecialiteById(int id) async {

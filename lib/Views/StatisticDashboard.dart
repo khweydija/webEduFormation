@@ -72,7 +72,7 @@ class MainContent extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  'Rapport Statistique',
+                  'Rapport Statistique'.tr,
                   style: TextStyle(
                     fontSize: 24,
                     fontWeight: FontWeight.bold,
@@ -124,7 +124,7 @@ class MainContent extends StatelessWidget {
                           children: [
                             _buildStatisticCard(
                               icon: Icons.people_alt,
-                              label: 'Total des Employés',
+                              label: 'Total des Employés'.tr,
                               count: _statisticController.employeeCount.value,
                               backgroundColor:
                                   Color.fromARGB(255, 241, 241, 239),
@@ -132,7 +132,7 @@ class MainContent extends StatelessWidget {
                             SizedBox(width: 16),
                             _buildStatisticCard(
                               icon: Icons.school,
-                              label: 'Total des Formateurs',
+                              label: 'Total des Formateurs'.tr,
                               count: _statisticController.formateurCount.value,
                               backgroundColor:
                                   Color.fromARGB(255, 241, 241, 239),
@@ -140,7 +140,7 @@ class MainContent extends StatelessWidget {
                             SizedBox(width: 16),
                             _buildStatisticCard(
                               icon: Icons.category,
-                              label: 'Total des Catégories',
+                              label: 'Total des Catégories'.tr,
                               count: _statisticController.categoryCount.value,
                               backgroundColor:
                                   Color.fromARGB(255, 241, 241, 239),
@@ -148,7 +148,7 @@ class MainContent extends StatelessWidget {
                             SizedBox(width: 16),
                             _buildStatisticCard(
                               icon: Icons.apartment,
-                              label: 'Total des Départements',
+                              label: 'Total des Départements'.tr,
                               count:
                                   _statisticController.departementCount.value,
                               backgroundColor:
@@ -157,7 +157,7 @@ class MainContent extends StatelessWidget {
                             SizedBox(width: 16),
                             _buildStatisticCard(
                               icon: Icons.star,
-                              label: 'Total des Spécialités',
+                              label: 'Total des Spécialités'.tr,
                               count: _statisticController.specialiteCount.value,
                               backgroundColor:
                                   Color.fromARGB(255, 241, 241, 239),
@@ -165,7 +165,7 @@ class MainContent extends StatelessWidget {
                             SizedBox(width: 16),
                             _buildStatisticCard(
                               icon: Icons.verified,
-                              label: 'Total des Certifications',
+                              label: 'Total des Certifications'.tr,
                               count:
                                   _statisticController.certificationCount.value,
                               backgroundColor:
@@ -178,7 +178,7 @@ class MainContent extends StatelessWidget {
 
                       // Graphs
                       Text(
-                        'Visualisation Statistique',
+                        'Visualisation Statistique'.tr,
                         style: TextStyle(
                           fontSize: 20,
                           fontWeight: FontWeight.bold,
@@ -205,7 +205,7 @@ class MainContent extends StatelessWidget {
                                     // Title for the Bar Chart
                                     Center(
                                       child: Text(
-                                        'Nombre de Formations par mois',
+                                        'Nombre de Formations par mois'.tr,
                                         style: TextStyle(
                                           fontSize: 16,
                                           fontWeight: FontWeight.bold,
@@ -369,9 +369,9 @@ class MainContent extends StatelessWidget {
                                   height: 250,
                                   child: pie_chart.PieChart(
                                     dataMap: {
-                                      "Formations en cours": 30,
-                                      "Formations en retard": 30,
-                                      "Formations Completés": 40,
+                                      "Formations en cours".tr: 30,
+                                      "Formations en retard".tr: 30,
+                                      "Formations Completés".tr: 40,
                                     },
                                     chartType: pie_chart.ChartType.ring,
                                     ringStrokeWidth: 15,

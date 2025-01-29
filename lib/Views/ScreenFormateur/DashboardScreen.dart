@@ -104,7 +104,7 @@ class _MainContentState extends State<MainContent> {
                 Obx(() {
                   if (_formateurController.isLoading.value) {
                     return shimmerTable();
-                  } else if (_formateurController.formateurs.isEmpty) {
+                  } else if (_formateurController.filteredFormateurs.isEmpty) {
                     return const Center(
                         child: Text(
                       'Aucun formateur trouvé',
@@ -137,8 +137,8 @@ class _MainContentState extends State<MainContent> {
                             DataColumn(label: Text('Statut')),
                             DataColumn(label: Text('Action')),
                           ],
-                          rows:
-                              _formateurController.formateurs.map((formateur) {
+                          rows: _formateurController.filteredFormateurs
+                              .map((formateur) {
                             return DataRow(cells: [
                               DataCell(Text(formateur.nom ?? '')),
                               DataCell(Text(formateur.prenom ?? '')),

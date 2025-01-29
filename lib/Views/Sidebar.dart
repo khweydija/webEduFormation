@@ -59,7 +59,7 @@ class Sidebar extends StatelessWidget {
             ),
             _SidebarItem(
               icon: Icons.person,
-              text: ' Formateurs',
+              text: 'Formateurs',
               isSelected: selectedIndex == 3,
               onTap: () {
                 onItemSelected(3);
@@ -77,7 +77,7 @@ class Sidebar extends StatelessWidget {
             ),
             _SidebarItem(
               icon: Icons.category_sharp,
-              text: ' Categories',
+              text: 'Categories',
               isSelected: selectedIndex == 5,
               onTap: () {
                 onItemSelected(5);
@@ -86,7 +86,7 @@ class Sidebar extends StatelessWidget {
             ),
             _SidebarItem(
               icon: Icons.workspace_premium,
-              text: ' Certifications',
+              text: 'Certifications',
               isSelected: selectedIndex == 6,
               onTap: () {
                 onItemSelected(6);
@@ -138,7 +138,7 @@ class _SidebarItem extends StatelessWidget {
           color: isSelected ? Color(0xFF228D6D) : Colors.black54,
         ),
         title: Text(
-          text,
+          text.tr, // Use translation
           style: TextStyle(
             color: isSelected ? Color(0xFF228D6D) : Colors.black87,
             fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,

@@ -91,7 +91,8 @@ class MainContent extends StatelessWidget {
                 Obx(() {
                   if (_departementController.isLoading.value) {
                     return shimmerTable();
-                  } else if (_departementController.departements.isEmpty) {
+                  } else if (_departementController
+                      .filteredDepartements.isEmpty) {
                     return const Center(
                         child: Text('Aucun département trouvé'));
                   } else {
@@ -116,16 +117,15 @@ class MainContent extends StatelessWidget {
                             DataColumn(label: Text('Description')),
                             DataColumn(label: Text('Action')),
                           ],
-                          rows: _departementController.departements
+                          rows: _departementController.filteredDepartements
                               .map((departement) {
                             return DataRow(cells: [
                               DataCell(Text(departement.nom)),
                               DataCell(
                                 Text(
-                                  departement.description, // Texte affiché
-                                  maxLines: 1, // Limiter à une seule ligne
-                                  overflow: TextOverflow
-                                      .ellipsis, // Ajouter "..." si le texte est trop long
+                                  departement.description,
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
                                 ),
                               ),
                               DataCell(Row(

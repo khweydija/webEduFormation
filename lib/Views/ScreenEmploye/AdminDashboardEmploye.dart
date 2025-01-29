@@ -96,8 +96,10 @@ class _MainContentState extends State<MainContent> {
                 Obx(() {
                   if (_employeController.isLoading.value) {
                     return shimmerTable();
-                  } else if (_employeController.employes.isEmpty) {
-                    return const SizedBox.shrink(); // No fallback text
+                  } else if (_employeController.filteredEmployes.isEmpty) {
+                    return const Center(
+                        child:
+                            Text('Aucun employé trouvé')); // No fallback text
                   } else {
                     return Container(
                       decoration: BoxDecoration(
@@ -126,7 +128,8 @@ class _MainContentState extends State<MainContent> {
                             DataColumn(label: Text('Status')),
                             DataColumn(label: Text('Action')),
                           ],
-                          rows: _employeController.employes.map((employe) {
+                          rows: _employeController.filteredEmployes
+                              .map((employe) {
                             return DataRow(cells: [
                               DataCell(Text(employe.nom ?? '')),
                               DataCell(Text(employe.prenom ?? '')),

@@ -18,20 +18,27 @@ class _SearchAndAddState extends State<SearchAndAddSpecialite> {
   final _formKey = GlobalKey<FormState>();
   String? _selectedDepartement;
 
+
+
+
   @override
   void initState() {
     super.initState();
     _departementController.fetchDepartements();
+    _searchController.addListener(() {
+      _specialiteController.filterSpecialites(_searchController.text);
+    });
   }
 
-  // Search specialities
-  // void _searchSpecialites() async {
-  //   if (_searchController.text.isNotEmpty) {
-  //     await _specialiteController.searchCategories(_searchController.text);
-  //   } else {
-  //     _specialiteController.fetchSpecialites();
-  //   }
-  // }
+  @override
+  void dispose() {
+    _searchController.dispose();
+    _nomController.dispose();
+    _descriptionController.dispose();
+    super.dispose();
+  }
+
+
 
   // Open dialog to create a specialite
   void _showCreateSpecialiteDialog() {
@@ -197,10 +204,6 @@ class _SearchAndAddState extends State<SearchAndAddSpecialite> {
               child: TextField(
                 controller: _searchController,
                 decoration: InputDecoration(
-                  // suffixIcon: IconButton(
-                  //   icon: const Icon(Icons.search, color: Colors.black54),
-                  //   onPressed: _searchSpecialites,
-                  // ),
                   hintText: 'Rechercher des spécialités...',
                   hintStyle: const TextStyle(color: Colors.black54),
                   border: OutlineInputBorder(

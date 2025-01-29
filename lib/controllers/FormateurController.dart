@@ -113,7 +113,16 @@ class FormateurController extends GetxController {
     }
   }
 
-  // Method to fetch all formateurs
+  RxList<Formateur> filteredFormateurs =
+      <Formateur>[].obs; // For filtered results
+
+  @override
+  void onInit() {
+    super.onInit();
+    fetchAllFormateurs();
+  }
+
+  // Fetch all formateurs
   Future<void> fetchAllFormateurs() async {
     final box = GetStorage();
     String? token = box.read('token');
@@ -121,16 +130,12 @@ class FormateurController extends GetxController {
       isLoading(true);
       var response = await http.get(Uri.parse('$apiUrl/list'),
           headers: {'Authorization': 'Bearer $token'});
-      print(response.body);
-      print(response.statusCode);
-      print(response.statusCode);
-      print(response.statusCode);
-      print(response.statusCode);
       if (response.statusCode == 200) {
         List<dynamic> jsonData = json.decode(response.body);
         List<Formateur> data =
             jsonData.map((item) => Formateur.fromJson(item)).toList();
         formateurs.assignAll(data);
+        filteredFormateurs.assignAll(data); // Initialize filtered list
       } else {
         Get.snackbar('Error', 'Failed to load formateurs');
       }
@@ -138,6 +143,21 @@ class FormateurController extends GetxController {
       Get.snackbar('Error', 'An error occurred: $e');
     } finally {
       isLoading(false);
+    }
+  }
+
+  // Filter formateurs by name
+  void filterFormateurs(String query) {
+    if (query.isEmpty) {
+      filteredFormateurs.assignAll(formateurs); // Reset filter
+    } else {
+      filteredFormateurs.assignAll(
+        formateurs
+            .where((formateur) =>
+                formateur.nom.toLowerCase().contains(query.toLowerCase()) ||
+                formateur.prenom.toLowerCase().contains(query.toLowerCase()))
+            .toList(),
+      );
     }
   }
 

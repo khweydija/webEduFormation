@@ -4,8 +4,9 @@ import 'package:get/get.dart';
 class SettingsSheet extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    final isDarkMode = false.obs; // Replace with your actual dark mode controller
-    final selectedLanguage = 'fr'.obs; // Default to French
+    final isDarkMode =
+        false.obs; // Replace with your actual dark mode controller
+    final selectedLanguage = 'fr'.obs; // Default language is French
 
     return Padding(
       padding: const EdgeInsets.all(16.0),
@@ -17,21 +18,20 @@ class SettingsSheet extends StatelessWidget {
                   value: isDarkMode.value,
                   onChanged: (value) {
                     isDarkMode.value = value;
-                    // Implement dark mode logic
                     Get.changeTheme(
                       value ? ThemeData.dark() : ThemeData.light(),
                     );
                   },
                 )),
             title: Text(
-              'Mode Sombre',
+              'Mode Sombre'.tr, // Use translation
               style: TextStyle(fontSize: 18),
             ),
           ),
           Divider(),
           ListTile(
             title: Text(
-              'Changer la langue',
+              'Changer la langue'.tr, // Use translation
               style: TextStyle(fontSize: 18),
             ),
           ),
@@ -54,15 +54,15 @@ class SettingsSheet extends StatelessWidget {
           style: ElevatedButton.styleFrom(
             foregroundColor: selectedLanguage.value == langCode
                 ? Colors.white
-                : Colors.black87, backgroundColor: selectedLanguage.value == langCode
+                : Colors.black87,
+            backgroundColor: selectedLanguage.value == langCode
                 ? Color.fromARGB(255, 24, 86, 88)
                 : Colors.grey[200],
           ),
           onPressed: () {
             selectedLanguage.value = langCode;
-            // Implement language change logic
-            // Example: Get.updateLocale(Locale(langCode));
-            Get.updateLocale(Locale(langCode));
+            Get.updateLocale(Locale(langCode)); // Switch language
+            Get.forceAppUpdate(); // Force UI refresh
           },
           child: Text(label),
         ));

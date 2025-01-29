@@ -89,7 +89,8 @@ class MainContent extends StatelessWidget {
                 Obx(() {
                   if (_specialiteController.isLoading.value) {
                     return shimmerTable();
-                  } else if (_specialiteController.specialites.isEmpty) {
+                  } else if (_specialiteController
+                      .filteredSpecialites.isEmpty) {
                     return const Center(
                         child: Text('Aucune spécialité trouvée'));
                   } else {
@@ -115,16 +116,15 @@ class MainContent extends StatelessWidget {
                             DataColumn(label: Text('Département')),
                             DataColumn(label: Text('Action')),
                           ],
-                          rows: _specialiteController.specialites
+                          rows: _specialiteController.filteredSpecialites
                               .map((specialite) {
                             return DataRow(cells: [
                               DataCell(Text(specialite.nom)),
                               DataCell(
                                 Text(
-                                  specialite.description, // Texte affiché
-                                  maxLines: 1, // Limiter à une seule ligne
-                                  overflow: TextOverflow
-                                      .ellipsis, // Ajouter "..." si le texte est trop long
+                                  specialite.description,
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
                                 ),
                               ),
                               DataCell(Text(specialite.departement.nom)),
@@ -447,7 +447,7 @@ class MainContent extends StatelessWidget {
                 await _specialiteController.deleteSpecialite(specialiteId);
                 Navigator.of(context).pop();
               },
-               child: Text('Oui'),
+              child: Text('Oui'),
               style: ElevatedButton.styleFrom(
                 backgroundColor: Color.fromARGB(255, 23, 134, 116),
               ),

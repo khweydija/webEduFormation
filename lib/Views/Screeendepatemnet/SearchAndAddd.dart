@@ -14,6 +14,25 @@ class _SearchAndAddState extends State<SearchAndAddd> {
   final TextEditingController _nomController = TextEditingController();
   final _formKey = GlobalKey<FormState>();
 
+
+
+
+  @override
+  void initState() {
+    super.initState();
+    _searchController.addListener(() {
+      _departementController.filterDepartements(_searchController.text);
+    });
+  }
+
+  @override
+  void dispose() {
+    _searchController.dispose();
+    _descriptionController.dispose();
+    _nomController.dispose();
+    super.dispose();
+  }
+
   // Ouvrir la boîte de dialogue pour créer un département
   void _showCreateDepartementDialog() {
     _descriptionController.clear();

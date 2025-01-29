@@ -33,6 +33,8 @@ class _SearchAndAddEmployeState extends State<SearchAndAddEmploye> {
   Uint8List? _photoBytes; // Store the selected image as Uint8List for preview
   bool _isPasswordVisible = false;
 
+  
+
   // Picking a photo (image)
   void _pickPhoto() async {
     FilePickerResult? result = await FilePicker.platform.pickFiles(
@@ -143,6 +145,10 @@ class _SearchAndAddEmployeState extends State<SearchAndAddEmploye> {
     final DepartementController departementController =
         Get.put(DepartementController());
     departementController.fetchDepartements();
+
+     _searchController.addListener(() {
+      _employeController.filterEmployes(_searchController.text);
+    });
   }
 
   Widget build(BuildContext context) {
@@ -162,10 +168,6 @@ class _SearchAndAddEmployeState extends State<SearchAndAddEmploye> {
                   child: TextField(
                     controller: _searchController,
                     decoration: InputDecoration(
-                      // suffixIcon: IconButton(
-                      //   icon: Icon(Icons.search, color: Colors.black54),
-                      //   onPressed: _searchEmployee,
-                      // ),
                       hintText: 'Rechercher des employés...',
                       hintStyle: TextStyle(color: Colors.black54),
                       border: OutlineInputBorder(

@@ -13,13 +13,14 @@ class EmployeController extends GetxController {
   final String apiUrl =
       'http://localhost:8080/employes'; // Base URL for employees
 
-  RxList employes = <Employe>[].obs; // List to store all employees
+  RxList<Employe> employes = <Employe>[].obs; // List to store all employees
   RxList<Employe> filteredEmployes =
       <Employe>[].obs; // List to store filtered employees based on search query
   var employeDetails = Rxn<Employe>(); // Store specific employee details
-  var isLoading = false.obs; // To manage loading state for details
-  // var selectedEmploye =
-  //     Rxn<Employe>(); // To store a selected employee's details
+  var isLoading = false.obs;
+
+  
+ 
 
   // Helper method to convert html.File to Uint8List
   Future<Uint8List> _convertFileToUint8List(html.File file) async {
@@ -67,12 +68,13 @@ class EmployeController extends GetxController {
       return null;
     }
   }
-
-  // Method to fetch all employees (useful for initial loading)
+  // Fetch all employees and initialize the filtered list
+ // Method to fetch all employees (useful for initial loading)
   Future<void> fetchAllEmployes() async {
     final box = GetStorage();
     String? token = box.read('token');
     try {
+      isLoading(true); // Add isLoading here
       var response = await http.get(Uri.parse('$apiUrl/list'),
           headers: {'Authorization': 'Bearer $token'});
 
@@ -87,8 +89,26 @@ class EmployeController extends GetxController {
       }
     } catch (e) {
       Get.snackbar('Error', 'An error occurred: $e');
+    } finally {
+      isLoading(false); // Ensure isLoading is set to false
     }
   }
+
+  // Filter employees by name
+  void filterEmployes(String query) {
+    if (query.isEmpty) {
+      filteredEmployes.assignAll(employes); // Reset filter
+    } else {
+      filteredEmployes.assignAll(
+        employes.where((employe) =>
+                employe.nom.toLowerCase().contains(query.toLowerCase()) ||
+                employe.prenom.toLowerCase().contains(query.toLowerCase()))
+            .toList(),
+      );
+    }
+  }
+
+
 
   // Method to fetch details of a specific employee by ID
   Future<void> getEmployeById(int id) async {
@@ -126,8 +146,8 @@ class EmployeController extends GetxController {
   }) async {
     final box = GetStorage();
     String? token = box.read('token');
-    print("id: $id, email: $email, nom: $nom, specialite: $specialite, active: $active, password: $password, photo: $photo, diplome: $diplome");
-    
+    print(
+        "id: $id, email: $email, nom: $nom, specialite: $specialite, active: $active, password: $password, photo: $photo, diplome: $diplome");
 
     try {
       var request =

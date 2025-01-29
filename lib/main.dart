@@ -3,6 +3,7 @@ import 'package:get/get.dart';
 import 'package:get/get_navigation/src/root/get_material_app.dart';
 import 'package:get/get_navigation/src/routes/get_route.dart';
 import 'package:webpfe/AppRoutes.dart';
+import 'package:webpfe/Views/AppTranslations.dart';
 import 'package:webpfe/Views/Certification/AdminDashboardCertification.dart';
 import 'package:webpfe/Views/Certification/CertificateScreen.dart';
 import 'package:webpfe/Views/ForgetScreen/ForgotPassAdmine.dart';
@@ -11,13 +12,14 @@ import 'package:webpfe/Views/ForgetScreen/VerifyCodeScreenAdmin.dart';
 import 'package:webpfe/Views/Screeendepatemnet/AdminDashboardDepartement.dart';
 import 'package:webpfe/Views/ScreenCatagories/DashboardCatagories.dart';
 
+import '../../controllers/CertificationController.dart';
+
 import 'package:webpfe/Views/LoginScreen/LoginAdmin.dart';
 
 import 'package:webpfe/Views/ScreenEmploye/AdminDashboardEmploye.dart';
 import 'package:webpfe/Views/ScreenFormateur/DashboardScreen.dart';
 import 'package:webpfe/Views/Specialite/AdminDashboardSpecialite.dart';
 import 'package:webpfe/Views/StatisticDashboard.dart';
-import 'package:webpfe/controllers/certificationController.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -38,10 +40,12 @@ void main() async {
 }
 
 class MyApp extends StatelessWidget {
-   final isDarkMode = false.obs; // Centralized state for dark mode.
   @override
   Widget build(BuildContext context) {
     return GetMaterialApp(
+      translations: AppTranslations(), // Add translations
+      locale: Locale('fr'), // Default locale
+      fallbackLocale: Locale('en'), // Fallback locale
       debugShowCheckedModeBanner: false,
       initialRoute: AppRoutes.loginAdmin,
       getPages: [

@@ -9,17 +9,50 @@ class DepartementController extends GetxController {
   var departementDetails = Rxn<Departement>();
   var isLoading = false.obs;
 
+  var filteredDepartements = <Departement>[].obs; // List for filtered results
+  
+
+  @override
+  void onInit() {
+    super.onInit();
+    fetchDepartements(); // Fetch departments on initialization
+  }
+
   Future<void> fetchDepartements() async {
     isLoading(true);
     try {
       final fetchedDepartements = await _service.fetchDepartements();
       departements.assignAll(fetchedDepartements);
+      filteredDepartements.assignAll(fetchedDepartements); // Initialize filtered list
     } catch (e) {
       Get.snackbar('Error', 'Failed to load departements: $e');
     } finally {
       isLoading(false);
     }
   }
+
+  void filterDepartements(String query) {
+    if (query.isEmpty) {
+      filteredDepartements.assignAll(departements); // Reset filter
+    } else {
+      filteredDepartements.assignAll(
+        departements.where((departement) =>
+            departement.nom.toLowerCase().contains(query.toLowerCase())).toList(),
+      );
+    }
+  }
+
+  // Future<void> fetchDepartements() async {
+  //   isLoading(true);
+  //   try {
+  //     final fetchedDepartements = await _service.fetchDepartements();
+  //     departements.assignAll(fetchedDepartements);
+  //   } catch (e) {
+  //     Get.snackbar('Error', 'Failed to load departements: $e');
+  //   } finally {
+  //     isLoading(false);
+  //   }
+  // }
 
   Future<void> getDepartementById(int id) async {
     isLoading(true);

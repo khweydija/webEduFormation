@@ -9,17 +9,36 @@ class CategoryController extends GetxController {
   var categoryDetails = Rxn<Category>();
   var isLoading = false.obs;
 
+ var filteredCategories = <Category>[].obs; // List for filtered categories
+
+  // Fetch all categories
   Future<void> fetchCategories() async {
     isLoading(true);
     try {
       final fetchedCategories = await _service.fetchCategories();
       categories.assignAll(fetchedCategories);
+      filteredCategories.assignAll(fetchedCategories); // Initialize filtered list
     } catch (e) {
       Get.snackbar('Error', 'Failed to load categories: $e');
     } finally {
       isLoading(false);
     }
   }
+
+  // Filter categories by designation
+  void filterCategories(String query) {
+    if (query.isEmpty) {
+      filteredCategories.assignAll(categories); // Reset filter
+    } else {
+      filteredCategories.assignAll(
+        categories
+            .where((category) =>
+                category.designation.toLowerCase().contains(query.toLowerCase()))
+            .toList(),
+      );
+    }
+  }
+
 
   Future<void> getCategoryById(int id) async {
     isLoading(true);
